@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Ulti-Mate</string>
+    <string name="action_settings">Settings</string>
+
+    <!--Main Menu Activity Strings-->
+    <string name="resume_button">Resume</string>
+    <string name="new_game_button">New Game</string>
+    <string name="title_activity_game_setup">GameSetupActivity</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+
+    <!--Game Display Activity-->
+    <string name="field_setup_button">Set Up Field</string>
+
+    <!--Game Setup Activity-->
+    <string name="game_title">Game Title</string>
+    <string name="winning_score">Winning Score</string>
+    <string name="time_caps">Time caps</string>
+    <string name="soft_cap">Soft cap</string>
+    <string name="hard_cap">Hard cap</string>
+</resources>

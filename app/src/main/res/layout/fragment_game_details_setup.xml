@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+
+        <!--Setup for game title-->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/gameTitleSetupLabel"
+            android:layout_gravity="center"
+            android:text="@string/game_title"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            />
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/gameTitleEditor"
+            android:layout_gravity="center"
+            android:text="Sample Game Title"/>
+
+        <View
+            android:layout_width="20dp"
+            android:layout_height="2dp"
+            android:layout_marginTop="@dimen/vertical_menu_spacing"
+            android:background="#000000"
+            android:layout_gravity="center" />
+
+        <!--Team setup-->
+        <!--Team 1-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="@dimen/vertical_menu_spacing">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.7"
+                android:id="@+id/team1Label"
+                android:text="Team 1"
+                android:gravity="center"
+                android:layout_gravity="center"
+                />
+
+            <!--TODO Add Image for team 1-->
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.3"
+                android:src="@drawable/sample50px"
+                android:gravity="center" />
+
+        </LinearLayout>
+
+        <!--Team 2-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="@dimen/vertical_menu_spacing">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.7"
+                android:id="@+id/team2Label"
+                android:text="Team 2"
+                android:gravity="center"
+                android:layout_gravity="center"
+                />
+
+            <!--TODO Add Image for team 1-->
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.3"
+                android:src="@drawable/sample50px"
+                android:gravity="center" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+
+</RelativeLayout>
