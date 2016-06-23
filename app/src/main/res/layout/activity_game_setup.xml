@@ -27,51 +27,36 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
         <android.support.v4.view.ViewPager
-            android:id="@+id/container"
+            android:id="@+id/setupViewPager"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="0.9"
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        <com.ogaclejapan.smarttablayout.SmartTabLayout
+            android:id="@+id/smartTab"
+            android:layout_width="match_parent"
+            android:layout_height="16dp"
+            android:layout_below="@+id/setupViewPager"
+            android:layout_gravity="bottom|center_horizontal"
+            app:stl_clickable="false"
+            app:stl_customTabTextLayoutId="@layout/custom_tab_circle"
+            app:stl_dividerColor="@color/transparent"
+            app:stl_dividerThickness="0dp"
+            app:stl_indicatorColor="@color/accent"
+            app:stl_indicatorCornerRadius="4dp"
+            app:stl_indicatorGravity="center"
+            app:stl_indicatorInterpolation="linear"
+            app:stl_indicatorThickness="8dp"
+            app:stl_underlineColor="@color/transparent"
+            app:stl_underlineThickness="0dp"
+            />
 
-
-            <!--<RadioGroup-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="0dp"-->
-                <!--android:layout_weight="0.1">-->
-                <!--<LinearLayout-->
-                    <!--android:layout_width="0dp"-->
-                    <!--android:layout_height="match_parent"-->
-                    <!--android:layout_weight="0.4"/>-->
-                <!--<LinearLayout-->
-                    <!--android:layout_width="0dp"-->
-                    <!--android:layout_height="match_parent"-->
-                    <!--android:layout_weight="0.1">-->
-                    <!--<RadioButton-->
-                        <!--android:layout_width="wrap_content"-->
-                        <!--android:layout_height="wrap_content"-->
-                        <!--android:id="@+id/settingsPage1"/>-->
-                <!--</LinearLayout>-->
-                <!--<LinearLayout-->
-                    <!--android:layout_width="0dp"-->
-                    <!--android:layout_height="match_parent"-->
-                    <!--android:layout_weight="0.1">-->
-                    <!--<RadioButton-->
-                        <!--android:layout_width="wrap_content"-->
-                        <!--android:layout_height="wrap_content"/>-->
-                <!--</LinearLayout>-->
-                <!--<LinearLayout-->
-                    <!--android:layout_width="0dp"-->
-                    <!--android:layout_height="match_parent"-->
-                    <!--android:layout_weight="0.4"/>-->
-            <!--</RadioGroup>-->
-
-    </LinearLayout>
+    </RelativeLayout>
 
 
 </android.support.design.widget.CoordinatorLayout>
