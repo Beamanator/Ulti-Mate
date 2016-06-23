@@ -29,7 +29,7 @@ public class MainMenuActivityFragment extends Fragment {
         newGameButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(),GameDisplayActivity.class);
+                Intent intent = new Intent(getActivity(),GameSetupActivity.class);
                 startActivity(intent);
             }
         });
