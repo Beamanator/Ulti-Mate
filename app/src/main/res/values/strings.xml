@@ -5,13 +5,14 @@
     <!--Main Menu Activity Strings-->
     <string name="resume_button">Resume</string>
     <string name="new_game_button">New Game</string>
-    <string name="title_activity_game_setup">GameSetupActivity</string>
     <string name="section_format">Hello World from section: %1$d</string>
 
     <!--Game Display Activity-->
+    <string name="title_activity_game_display">Ulti-Mate</string>
     <string name="field_setup_button">Set Up Field</string>
 
     <!--Game Setup Activity-->
+    <string name="title_activity_game_setup">Setup</string>
     <string name="game_title">Game Title</string>
     <string name="winning_score">Winning Score</string>
     <string name="time_caps">Time caps</string>

@@ -110,6 +110,8 @@ public class GameSetupActivity extends AppCompatActivity {
     }
 
     private Game getGameFromSetup() {
+
+        // Get required widgets
         EditText gameNameField = (EditText) findViewById(R.id.gameTitleEditor);
         EditText team1NameField = (EditText) findViewById(R.id.team1Name);
         EditText team2NameField = (EditText) findViewById(R.id.team2Name);
@@ -118,15 +120,16 @@ public class GameSetupActivity extends AppCompatActivity {
         Button softCapTimeButton = (Button) findViewById(R.id.softCapInput);
         Button hardCapTimeButton = (Button) findViewById(R.id.hardCapInput);
 
+        // Get data from widgets
         String gameName = gameNameField.getText().toString();
         String team1Name = team1NameField.getText().toString();
         String team2Name = team2NameField.getText().toString();
         int winningScore = Integer.valueOf(winningScoreField.getText().toString());
-
         boolean timeCaps = timeCapsBox.isChecked();
         long softCap = 0;
         long hardCap = 0;
         if (timeCaps) {
+            // Currently stored as milliseconds without date
             softCap = getMilliFrom12HrString(softCapTimeButton.getText().toString());
             hardCap = getMilliFrom12HrString(hardCapTimeButton.getText().toString());
         }
