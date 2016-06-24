@@ -1,6 +1,7 @@
 package io.scoober.ulti.ulti_mate;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.StrictMode;
 import android.support.v7.app.AlertDialog;
@@ -18,14 +19,14 @@ public class GameDisplayActivity extends AppCompatActivity {
     private String pullingTeamName;
     private String team1Side;
 
+    Game game;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_display);
 
-        // TODO: Pull Game data from database
-
-        TextView gameTitle = (TextView) findViewById(R.id.gameTitle);
+        TextView gameTitleView = (TextView) findViewById(R.id.gameTitle);
         Button setupFieldButton = (Button) findViewById(R.id.fieldSetup);
         TextView team1 = (TextView) findViewById(R.id.team1Name);
         TextView team2 = (TextView) findViewById(R.id.team2Name);
@@ -33,16 +34,31 @@ public class GameDisplayActivity extends AppCompatActivity {
         Button endButton = (Button) findViewById(R.id.endButton);
         // TODO: Hook up start / end buttons
 
-        String team1Name = team1.getText().toString();
-        String team2Name = team2.getText().toString();
+        Intent intent = getIntent();
+        // Get Game id from GameSetupActivity. If no game, set id to 0
+        long id = intent.getExtras().getLong(MainMenuActivity.GAME_ID_EXTRA, 0);
 
-        buildPullingTeamDialog(team1Name, team2Name, setupFieldButton);
+        // Get game data from database
+        GameDbAdapter gameDbAdapter = new GameDbAdapter(getBaseContext());
+        gameDbAdapter.open();
+        game = gameDbAdapter.getGame(id);
+        gameDbAdapter.close();
+
+        String team1Name = game.getTeam1Name();
+        String team2Name = game.getTeam2Name();
+        String gameTitle = game.getGameName();
+
+        team1.setText(team1Name);
+        team2.setText(team2Name);
+        gameTitleView.setText(gameTitle);
+
+        buildFieldSetupDialog(team1Name, team2Name, setupFieldButton);
         //TODO: do something with variable pullingTeamName
         //TODO: do something with variable team1Side
 
     }
 
-    private void buildPullingTeamDialog(final String t1, final String t2, Button setupButton) {
+    private void buildFieldSetupDialog(final String t1, final String t2, Button setupButton) {
 
         setupButton.setOnClickListener(new View.OnClickListener() {
             AlertDialog pullDialog;
@@ -61,14 +77,18 @@ public class GameDisplayActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int item) {
                         switch (item) {
                             case 0:
+                                // TODO: Instead of this, set Game variable initPullingTeam to t1,
+                                //   or team1Name if possible
                                 pullingTeamName = t1;
                                 break;
                             case 1:
+                                // TODO: Instead of this, set Game variable initPullingTeam to t2,
+                                //   or team2Name if possible
                                 pullingTeamName = t2;
                                 break;
                         }
                         dialog.dismiss();
-
+                        // TODO: maybe hide setup Button here?
                         buildTeamOrientationDialog(t1, v);
                     }
                 });
@@ -96,12 +116,15 @@ public class GameDisplayActivity extends AppCompatActivity {
                 switch (item) {
                     case 0:
                         team1Side = "Left";
+                        // TODO: instead, set game variable here.
                         break;
                     case 1:
                         team1Side = "Right";
+                        // TODO: instead, set game variable here.
                         break;
                 }
                 dialog.dismiss();
+                // TODO: hide setupButton here if we didn't do this elsewhere
             }
         });
 
