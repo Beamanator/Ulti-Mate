@@ -76,7 +76,6 @@ public class GameSetupActivity extends AppCompatActivity {
                 GameDbAdapter gameDbAdapter = new GameDbAdapter(getBaseContext());
                 gameDbAdapter.open();
                 Game newGame = gameDbAdapter.createGame(game);
-                Log.d("GameParameters",newGame.getId() + newGame.getGameName() + newGame.getWinningScore()+ newGame.getTeam1Score() + newGame.getSoftCapTime());
                 gameDbAdapter.close();
 
                 // Start Game Display Activity
