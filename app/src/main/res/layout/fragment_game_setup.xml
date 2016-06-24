@@ -43,7 +43,8 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:id="@+id/winningScore"
-                android:text="13"/>
+                android:text="13"
+                android:inputType="number" />
         </RelativeLayout>
 
         <RelativeLayout

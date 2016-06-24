@@ -19,9 +19,15 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class GameSetupActivity extends AppCompatActivity {
 
@@ -64,6 +70,16 @@ public class GameSetupActivity extends AppCompatActivity {
         createGameDisplay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Game game = getGameFromSetup();
+
+                // store game to database
+                GameDbAdapter gameDbAdapter = new GameDbAdapter(getBaseContext());
+                gameDbAdapter.open();
+                Game newGame = gameDbAdapter.createGame(game);
+                Log.d("GameParameters",newGame.getId() + newGame.getGameName() + newGame.getWinningScore()+ newGame.getTeam1Score() + newGame.getSoftCapTime());
+                gameDbAdapter.close();
+
+                // Start Game Display Activity
                 Intent intent = new Intent(v.getContext(),GameDisplayActivity.class);
                 startActivity(intent);
             }
@@ -93,6 +109,45 @@ public class GameSetupActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    private Game getGameFromSetup() {
+        EditText gameNameField = (EditText) findViewById(R.id.gameTitleEditor);
+        EditText team1NameField = (EditText) findViewById(R.id.team1Name);
+        EditText team2NameField = (EditText) findViewById(R.id.team2Name);
+        EditText winningScoreField = (EditText) findViewById(R.id.winningScore);
+        CheckBox timeCapsBox = (CheckBox) findViewById(R.id.timeCapsCheckbox);
+        Button softCapTimeButton = (Button) findViewById(R.id.softCapInput);
+        Button hardCapTimeButton = (Button) findViewById(R.id.hardCapInput);
+
+        String gameName = gameNameField.getText().toString();
+        String team1Name = team1NameField.getText().toString();
+        String team2Name = team2NameField.getText().toString();
+        int winningScore = Integer.valueOf(winningScoreField.getText().toString());
+
+        boolean timeCaps = timeCapsBox.isChecked();
+        long softCap = 0;
+        long hardCap = 0;
+        if (timeCaps) {
+            softCap = getMilliFrom12HrString(softCapTimeButton.getText().toString());
+            hardCap = getMilliFrom12HrString(hardCapTimeButton.getText().toString());
+        }
+
+        Game newGame = new Game(gameName,winningScore,team1Name,null,team2Name,null,softCap,hardCap);
+        return newGame;
+    }
+
+    private long getMilliFrom12HrString(String dateString) {
+        SimpleDateFormat sdf = new SimpleDateFormat("h:mm a", Locale.getDefault());
+        try {
+            Date tempDate = sdf.parse(dateString);
+            return tempDate.getTime();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return -1;
+    }
+
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
