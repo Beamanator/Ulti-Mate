@@ -4,6 +4,10 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
 
+    <!--Colors for teams-->
+    <color name="team1default">#de0000</color>
+    <color name="team2default">#0000de</color>
+
     <!--Color for ViewPager Circles-->
     <color name="icon_enabled">#FFFFFFFF</color>
     <color name="icon_disabled">#FF63727B</color>

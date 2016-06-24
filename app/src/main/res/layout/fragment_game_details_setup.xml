@@ -70,7 +70,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.7"
-                android:id="@+id/teamName"
+                android:id="@+id/team2Name"
                 android:hint="Team 2"
                 android:gravity="center"/>
 
