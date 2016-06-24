@@ -66,7 +66,9 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:id="@+id/timeCapsContainer"
+            android:visibility="gone">
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -81,24 +83,22 @@
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:id="@+id/softCapInput"
                 android:text="Set Time" />
-        </RelativeLayout>
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="@string/hard_cap"
                 android:gravity="center"
-                android:id="@+id/hardCapLabel" />
+                android:id="@+id/hardCapLabel"
+                android:layout_below="@+id/softCapInput" />
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:id="@+id/hardCapInput"
-                android:text="Set Time" />
+                android:text="Set Time"
+                android:layout_below="@+id/softCapInput" />
         </RelativeLayout>
 
 

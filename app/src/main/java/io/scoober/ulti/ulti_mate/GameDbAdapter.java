@@ -15,7 +15,7 @@ import java.util.Calendar;
 public class GameDbAdapter {
 
     static final String DATABASE_NAME = "ultimate.db";
-    static final int DATABASE_VERSION = 3;
+    static final int DATABASE_VERSION = 4;
 
     //Games table
     public static final String GAMES_TABLE = "games";
@@ -116,6 +116,42 @@ public class GameDbAdapter {
         cursor.close();
 
         return newGame;
+    }
+
+    public long getRecentGameId() {
+        String q = "select " + C_ID +
+                " from " + GAMES_TABLE +
+                " ORDER BY " + C_DATE_CREATED + " DESC " +
+                "LIMIT 1";
+        Cursor cursor = sqlDB.rawQuery(q,null);
+        if (cursor.getCount() == 0) {
+            return -1;
+        }
+
+        cursor.moveToFirst();
+        long gameId = cursor.getLong(0);
+        cursor.close();
+        return gameId;
+    }
+
+    public long saveGame(Game game) {
+        ContentValues values = new ContentValues();
+        values.put(C_DATE_CREATED, game.getDate());
+        values.put(C_DATE_UPDATED, Calendar.getInstance().getTimeInMillis());
+        values.put(C_GAME_NAME, game.getGameName());
+        values.put(C_WINNING_SCORE, game.getWinningScore());
+        values.put(C_SOFT_CAP_TIME, game.getSoftCapTime());
+        values.put(C_HARD_CAP_TIME, game.getHardCapTime());
+        values.put(C_TEAM_1_NAME, game.getTeam1Name());
+        values.put(C_TEAM_1_COLOR, game.getTeam1Color());
+        values.put(C_TEAM_1_SCORE, game.getTeam1Score());
+        values.put(C_TEAM_2_NAME, game.getTeam2Name());
+        values.put(C_TEAM_2_COLOR, game.getTeam2Color());
+        values.put(C_TEAM_2_SCORE, game.getTeam2Score());
+        values.put(C_INIT_PULL_TEAM, game.getInitPullingTeam());
+        values.put(C_INIT_TEAM_LEFT, game.getInitTeamLeft());
+
+        return sqlDB.update(GAMES_TABLE, values, C_ID + " = " + game.getId(), null);
     }
 
     private Game cursorToGame(Cursor cursor) {

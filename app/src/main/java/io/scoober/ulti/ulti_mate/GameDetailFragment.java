@@ -12,6 +12,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
@@ -38,8 +41,22 @@ public class GameDetailFragment extends Fragment {
 
         View gameDetailView = inflater.inflate(R.layout.fragment_game_setup, container, false);
 
+        CheckBox timeCapsBox = (CheckBox) gameDetailView.findViewById(R.id.timeCapsCheckbox);
+        final RelativeLayout timeCapsContainer = (RelativeLayout) gameDetailView.findViewById(R.id.timeCapsContainer);
         final Button softCapButton = (Button) gameDetailView.findViewById(R.id.softCapInput);
         final Button hardCapButton = (Button) gameDetailView.findViewById(R.id.hardCapInput);
+
+        // Hide the soft/hard caps if the time caps is unchecked.
+        timeCapsBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    timeCapsContainer.setVisibility(View.VISIBLE);
+                } else {
+                    timeCapsContainer.setVisibility(View.GONE);
+                }
+            }
+        });
 
         softCapButton.setOnClickListener(new View.OnClickListener() {
             @Override

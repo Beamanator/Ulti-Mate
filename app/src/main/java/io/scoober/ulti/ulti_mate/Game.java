@@ -81,31 +81,9 @@ public class Game {
         return team2Color;
     }
 
-    public int incrementScore(int teamNumber) {
-        if (teamNumber == 1) {
-            team1Score+=1;
-            return team1Score;
-        } else if(teamNumber == 2) {
-            team2Score+=1;
-            return team2Score;
-        }
-        return -1;
-    }
-
-    public int decrementScore(int teamNumber) {
-        if (teamNumber == 1) {
-            team1Score-=1;
-            return team1Score;
-        } else if(teamNumber == 2) {
-            team2Score-=1;
-            return team2Score;
-        }
-        return -1;
-    }
-
     /*
-    Constructor for building the game from the Game Setup Activity
-     */
+        Constructor for building the game from the Game Setup Activity
+         */
     public Game(String gameName, int winningScore, String team1Name, String team1Color,
                 String team2Name, String team2Color, long softCapTime, long hardCapTime) {
         this.gameName = gameName;
@@ -143,4 +121,35 @@ public class Game {
         this.initTeamLeft = initTeamLeft;
         this.date = date;
     }
+
+    public int incrementScore(int teamNumber) {
+        if (teamNumber == 1) {
+            team1Score+=1;
+            return team1Score;
+        } else if(teamNumber == 2) {
+            team2Score+=1;
+            return team2Score;
+        }
+        return -1;
+    }
+
+    public int decrementScore(int teamNumber) {
+        if (teamNumber == 1) {
+            team1Score-=1;
+            return team1Score;
+        } else if(teamNumber == 2) {
+            team2Score-=1;
+            return team2Score;
+        }
+        return -1;
+    }
+
+    public void setInitPullingTeam(String initPullingTeam) {
+        this.initPullingTeam = initPullingTeam;
+    }
+
+    public void setInitTeamLeft(String initTeamLeft) {
+        this.initTeamLeft = initTeamLeft;
+    }
+
 }

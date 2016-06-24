@@ -13,6 +13,8 @@ import android.widget.Button;
  */
 public class MainMenuActivityFragment extends Fragment {
 
+    long lastGameId;
+
     public MainMenuActivityFragment() {
     }
 
@@ -23,8 +25,21 @@ public class MainMenuActivityFragment extends Fragment {
         View mainMenuLayout = inflater.inflate(R.layout.fragment_main_menu, container, false);
         Button resume = (Button) mainMenuLayout.findViewById(R.id.resumeButton);
         Button newGameButton = (Button) mainMenuLayout.findViewById(R.id.new_game_button);
+        Button myGamesButton = (Button) mainMenuLayout.findViewById(R.id.my_games_button);
 
-        //TODO Resume button
+        getLastGameId(); // get last game ID to activate buttons
+        if (lastGameId != -1) {
+            resume.setEnabled(true);
+        }
+
+        resume.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(),GameDisplayActivity.class);
+                intent.putExtra(MainMenuActivity.GAME_ID_EXTRA, lastGameId);
+                startActivity(intent);
+            }
+        });
 
         newGameButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -34,6 +49,15 @@ public class MainMenuActivityFragment extends Fragment {
             }
         });
 
+        //TODO My Games Button
+
         return mainMenuLayout;
+    }
+
+    private void getLastGameId() {
+        GameDbAdapter gameDbAdapter = new GameDbAdapter(getActivity().getBaseContext());
+        gameDbAdapter.open();
+        lastGameId= gameDbAdapter.getRecentGameId();
+        gameDbAdapter.close();
     }
 }

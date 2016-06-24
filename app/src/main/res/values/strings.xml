@@ -5,6 +5,7 @@
     <!--Main Menu Activity Strings-->
     <string name="resume_button">Resume</string>
     <string name="new_game_button">New Game</string>
+    <string name="my_games_button">My Games</string>
     <string name="section_format">Hello World from section: %1$d</string>
 
     <!--Game Display Activity-->
