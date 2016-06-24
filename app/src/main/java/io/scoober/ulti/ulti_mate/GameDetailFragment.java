@@ -38,8 +38,6 @@ public class GameDetailFragment extends Fragment {
 
         View gameDetailView = inflater.inflate(R.layout.fragment_game_setup, container, false);
 
-        Log.d("GameDetailFragment","Test2");
-
         final Button softCapButton = (Button) gameDetailView.findViewById(R.id.softCapInput);
         final Button hardCapButton = (Button) gameDetailView.findViewById(R.id.hardCapInput);
 
@@ -53,6 +51,7 @@ public class GameDetailFragment extends Fragment {
                         new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                        //TODO Validation on date and time
                         softCapButton.setText(to12Hr(hourOfDay, minute));
                     }
                 },hour,minute,false);

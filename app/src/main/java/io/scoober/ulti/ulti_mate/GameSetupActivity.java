@@ -42,8 +42,6 @@ public class GameSetupActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Log.d("GameSetupActivity","Created Game Setup Activity");
-
         setContentView(R.layout.activity_game_setup);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -97,7 +95,6 @@ public class GameSetupActivity extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
-            Log.d("GameSetupActivity","Position: " + position);
 //            // getItem is called to instantiate the fragment for the given page.
             switch (position) {
                 case 0:

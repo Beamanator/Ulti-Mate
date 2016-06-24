@@ -25,8 +25,6 @@ public class GameDetailSetupFragment extends Fragment {
                              Bundle savedInstanceState) {
         View gameDetailSetupView = inflater.inflate(R.layout.fragment_game_details_setup, container, false);
 
-        Log.d("GameDetailSetupFragment","Test");
-
         return gameDetailSetupView;
     }
 
