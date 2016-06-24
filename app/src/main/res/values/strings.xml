@@ -10,6 +10,11 @@
 
     <!--Game Display Activity-->
     <string name="field_setup_button">Set Up Field</string>
+    <string name="end_button">End Game</string>
+    <string name="start_button">Start Game</string>
+    <string name="soft_cap_text">Soft Cap:</string>
+    <string name="time_remaining_text">Time remaining</string>
+    <string name="status_text">Status:</string>
 
     <!--Game Setup Activity-->
     <string name="game_title">Game Title</string>

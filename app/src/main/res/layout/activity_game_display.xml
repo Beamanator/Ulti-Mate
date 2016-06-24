@@ -25,15 +25,47 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
             android:text="@string/field_setup_button"
             android:id="@+id/fieldSetup"
-            android:layout_gravity="center_horizontal" />
+            android:layout_gravity="center_horizontal"
+            android:visibility="visible"/>
 
-        <!--Field image view-->
-        <ImageView
-            android:layout_width="wrap_content"
+        <!--Layout that contains team color & Field images-->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="invisible"/>
+            android:orientation="horizontal"
+            android:paddingTop="15dp"
+            android:visibility="gone">
+
+            <!--Circle to represent Team 1-->
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.25"
+                android:src="@drawable/team_circle"
+                android:padding="25dp" />
+
+            <!--Field image view-->
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="90dp"
+                android:layout_weight="0.5"
+                android:visibility="visible"
+                android:src="@drawable/field"
+                android:id="@+id/fieldImage"
+                android:layout_gravity="center" />
+
+            <!--Circle to represent Team 2-->
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.25"
+                android:src="@drawable/team_circle"
+                android:padding="25dp"/>
+
+        </LinearLayout>
 
         <!--Teams & Scores-->
         <LinearLayout
@@ -58,17 +90,57 @@
                     android:text="Team 1" />
 
                 <!--Score + Buttons Layout-->
-                <RelativeLayout
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="20dp">
 
                     <!--Score-->
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.5"
+                        android:paddingRight="10dp"
+                        android:text="0"
+                        android:textSize="80dp"
+                        android:textColor="#000000"
+                        android:textAlignment="textEnd"
+                        android:id="@+id/team1Score"/>
 
-                    <!--Add Point Button-->
+                    <!--Add / Subtract Point Buttons-->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.3"
+                        android:orientation="vertical"
+                        android:paddingLeft="10dp">
 
-                    <!--Remove Point Button-->
+                        <Button
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:layout_weight="0.5"
+                            android:text="+"
+                            android:id="@+id/team1Add"
+                            android:textSize="25dp" />
+                        <Button
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:layout_weight="0.5"
+                            android:text="-"
+                            android:id="@+id/team1Subtract"
+                            android:textSize="25dp"
+                            android:enabled="false" />
 
-                </RelativeLayout>
+                    </LinearLayout>
+
+                    <!--Filler View just to take up space-->
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.2"/>
+
+                </LinearLayout>
 
             </LinearLayout>
 
@@ -88,62 +160,104 @@
                     android:text="Team 2"/>
 
                 <!--Score + Buttons Layout-->
-                <RelativeLayout
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="20dp">
 
                     <!--Score-->
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.5"
+                        android:paddingRight="10dp"
+                        android:text="0"
+                        android:textSize="80dp"
+                        android:textColor="#000000"
+                        android:textAlignment="textEnd"
+                        android:id="@+id/team2Score"/>
 
-                    <!--Add Point Button-->
+                    <!--Add / Subtract Point Buttons-->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.3"
+                        android:orientation="vertical"
+                        android:paddingLeft="10dp">
 
-                    <!--Remove Point Button-->
+                        <Button
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:layout_weight="0.5"
+                            android:text="+"
+                            android:id="@+id/team2Add"
+                            android:textSize="25dp" />
+                        <Button
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:layout_weight="0.5"
+                            android:text="-"
+                            android:id="@+id/team2Subtract"
+                            android:textSize="25dp"
+                            android:enabled="false" />
 
-                </RelativeLayout>
+                    </LinearLayout>
+
+                    <!--Filler View just to take up space-->
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.2"/>
+
+                </LinearLayout>
 
             </LinearLayout>
 
         </LinearLayout>
 
-        <!--Start / Pause / End buttons-->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <Button
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:text="Start"
-                android:id="@+id/startPauseButton"/>
-
-            <Button
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:text="End"
-                android:id="@+id/endButton"/>
-
-        </LinearLayout>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
     </LinearLayout>
 
+    <!--Start / Pause / End buttons-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_above="@+id/linearLayout2">
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:text="@string/start_button"
+            android:id="@+id/startPauseButton"
+            android:textSize="15dp" />
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:text="@string/end_button"
+            android:id="@+id/endButton"
+            android:textSize="15dp" />
+    </LinearLayout>
+
+    <!--Soft / Hard Cap Text-->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/statusBar"
         android:id="@+id/linearLayout2"
-        android:background="#323232">
+        android:background="#323232"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:paddingLeft="10dp">
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.4"
-            android:text="Soft Cap:"
+            android:text="@string/soft_cap_text"
             android:id="@+id/capText"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="#ffffff" />
@@ -152,22 +266,27 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.6"
-            android:text="Time remaining"
+            android:text="@string/time_remaining_text"
             android:id="@+id/capTimer"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textAlignment="center"
-            android:textColor="#ffffff" />
+            android:textColor="#ffffff"/>
 
     </LinearLayout>
 
+    <!--Game Status Bar-->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Status..."
+        android:text="@string/status_text"
         android:id="@+id/statusBar"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:layout_alignParentBottom="true"
-        android:background="#FF1D60E7" />
+        android:background="#FF1D60E7"
+        android:textIsSelectable="false"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:paddingLeft="10dp" />
 
 
 </RelativeLayout>
