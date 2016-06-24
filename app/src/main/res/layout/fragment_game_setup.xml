@@ -71,9 +71,34 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="@string/soft_cap"
+                android:gravity="center"
                 android:id="@+id/softCapLabel" />
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:id="@+id/softCapInput"
+                android:text="Set Time" />
         </RelativeLayout>
-
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/hard_cap"
+                android:gravity="center"
+                android:id="@+id/hardCapLabel" />
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:id="@+id/hardCapInput"
+                android:text="Set Time" />
+        </RelativeLayout>
 
 
     </LinearLayout>

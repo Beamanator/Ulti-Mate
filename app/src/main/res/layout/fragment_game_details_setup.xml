@@ -24,7 +24,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/gameTitleEditor"
             android:layout_gravity="center"
-            android:text="Sample Game Title"/>
+            android:hint="Ultimate!" />
 
         <View
             android:layout_width="20dp"
@@ -40,16 +40,14 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_marginTop="@dimen/vertical_menu_spacing">
-
-            <TextView
+            
+            <EditText
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.7"
-                android:id="@+id/team1Label"
-                android:text="Team 1"
-                android:gravity="center"
-                android:layout_gravity="center"
-                />
+                android:id="@+id/team1Name"
+                android:hint="Team 1"
+                android:gravity="center"/>
 
             <!--TODO Add Image for team 1-->
             <ImageView
@@ -68,15 +66,13 @@
             android:orientation="horizontal"
             android:layout_marginTop="@dimen/vertical_menu_spacing">
 
-            <TextView
+            <EditText
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.7"
-                android:id="@+id/team2Label"
-                android:text="Team 2"
-                android:gravity="center"
-                android:layout_gravity="center"
-                />
+                android:id="@+id/teamName"
+                android:hint="Team 2"
+                android:gravity="center"/>
 
             <!--TODO Add Image for team 1-->
             <ImageView
