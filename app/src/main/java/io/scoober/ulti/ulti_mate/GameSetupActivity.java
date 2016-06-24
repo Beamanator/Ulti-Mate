@@ -80,6 +80,7 @@ public class GameSetupActivity extends AppCompatActivity {
 
                 // Start Game Display Activity
                 Intent intent = new Intent(v.getContext(),GameDisplayActivity.class);
+                intent.putExtra(MainMenuActivity.GAME_ID_EXTRA,newGame.getId());
                 startActivity(intent);
             }
         });

@@ -11,6 +11,8 @@ import android.view.MenuItem;
 
 public class MainMenuActivity extends AppCompatActivity {
 
+    public static final String GAME_ID_EXTRA = "io.scoober.ulti.ulti_mate.Game_Id";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
