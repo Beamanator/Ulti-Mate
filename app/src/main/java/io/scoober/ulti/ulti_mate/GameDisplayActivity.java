@@ -11,6 +11,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import org.w3c.dom.Text;
+
 public class GameDisplayActivity extends AppCompatActivity {
 
     private String pullingTeamName;
@@ -21,17 +23,21 @@ public class GameDisplayActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_display);
 
+        // TODO: Pull Game data from database
+
+        TextView gameTitle = (TextView) findViewById(R.id.gameTitle);
         Button setupFieldButton = (Button) findViewById(R.id.fieldSetup);
         TextView team1 = (TextView) findViewById(R.id.team1Name);
         TextView team2 = (TextView) findViewById(R.id.team2Name);
+        Button startPauseButton = (Button) findViewById(R.id.startPauseButton);
+        Button endButton = (Button) findViewById(R.id.endButton);
+        // TODO: Hook up start / end buttons
 
         String team1Name = team1.getText().toString();
         String team2Name = team2.getText().toString();
 
         buildPullingTeamDialog(team1Name, team2Name, setupFieldButton);
         //TODO: do something with variable pullingTeamName
-
-        //buildTeamOrientationDialog(team1Name);
         //TODO: do something with variable team1Side
 
     }
