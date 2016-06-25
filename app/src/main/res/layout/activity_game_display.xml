@@ -74,7 +74,7 @@
             android:layout_marginTop="@dimen/vertical_menu_spacing"
             android:orientation="horizontal">
 
-            <!--"us" team details-->
+            <!--left team details-->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -86,7 +86,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:id="@+id/team1Name"
+                    android:id="@+id/leftTeam"
                     android:text="Team 1" />
 
                 <!--Score + Buttons Layout-->
@@ -106,7 +106,7 @@
                         android:textSize="80dp"
                         android:textColor="#000000"
                         android:textAlignment="textEnd"
-                        android:id="@+id/team1Score"/>
+                        android:id="@+id/leftTeamScore"/>
 
                     <!--Add / Subtract Point Buttons-->
                     <LinearLayout
@@ -121,14 +121,14 @@
                             android:layout_height="0dp"
                             android:layout_weight="0.5"
                             android:text="+"
-                            android:id="@+id/team1Add"
+                            android:id="@+id/leftTeamAdd"
                             android:textSize="25dp" />
                         <Button
                             android:layout_width="wrap_content"
                             android:layout_height="0dp"
                             android:layout_weight="0.5"
                             android:text="-"
-                            android:id="@+id/team1Subtract"
+                            android:id="@+id/leftTeamSubtract"
                             android:textSize="25dp"
                             android:enabled="false" />
 
@@ -156,7 +156,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:id="@+id/team2Name"
+                    android:id="@+id/rightTeam"
                     android:text="Team 2"/>
 
                 <!--Score + Buttons Layout-->
@@ -176,7 +176,7 @@
                         android:textSize="80dp"
                         android:textColor="#000000"
                         android:textAlignment="textEnd"
-                        android:id="@+id/team2Score"/>
+                        android:id="@+id/rightTeamScore"/>
 
                     <!--Add / Subtract Point Buttons-->
                     <LinearLayout
@@ -191,14 +191,14 @@
                             android:layout_height="0dp"
                             android:layout_weight="0.5"
                             android:text="+"
-                            android:id="@+id/team2Add"
+                            android:id="@+id/rightTeamAdd"
                             android:textSize="25dp" />
                         <Button
                             android:layout_width="wrap_content"
                             android:layout_height="0dp"
                             android:layout_weight="0.5"
                             android:text="-"
-                            android:id="@+id/team2Subtract"
+                            android:id="@+id/rightTeamSubtract"
                             android:textSize="25dp"
                             android:enabled="false" />
 
