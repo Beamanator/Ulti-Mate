@@ -3,23 +3,34 @@ package io.scoober.ulti.ulti_mate;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.media.Image;
 import android.os.StrictMode;
+import android.provider.ContactsContract;
 import android.support.annotation.IntegerRes;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.test.suitebuilder.TestMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.w3c.dom.Text;
 
 public class GameDisplayActivity extends AppCompatActivity {
 
-    private String pullingTeamName;
-    private String team1Side;
+    private Button setupFieldButton;
+
+    private LinearLayout gameImagesLayout;
 
     private TextView leftTeam;
     private TextView rightTeam;
@@ -33,7 +44,9 @@ public class GameDisplayActivity extends AppCompatActivity {
     private String team1Name, team2Name;
     private int team1Score, team2Score;
 
-    Game game;
+    private GradientDrawable leftCircle, rightCircle;
+
+    private Game game;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,12 +54,14 @@ public class GameDisplayActivity extends AppCompatActivity {
         setContentView(R.layout.activity_game_display);
 
         TextView gameTitleView = (TextView) findViewById(R.id.gameTitle);
-        Button setupFieldButton = (Button) findViewById(R.id.fieldSetup);
+        setupFieldButton = (Button) findViewById(R.id.fieldSetup);
         leftTeam = (TextView) findViewById(R.id.leftTeam);
         rightTeam = (TextView) findViewById(R.id.rightTeam);
         Button startPauseButton = (Button) findViewById(R.id.startPauseButton);
         Button endButton = (Button) findViewById(R.id.endButton);
         // TODO: Hook up start / end buttons
+
+        gameImagesLayout = (LinearLayout) findViewById(R.id.gameImagesLayout);
 
         leftTeamScore = (TextView) findViewById(R.id.leftTeamScore);
         leftTeamAddButton = (Button) findViewById(R.id.leftTeamAdd);
@@ -54,6 +69,10 @@ public class GameDisplayActivity extends AppCompatActivity {
         rightTeamScore = (TextView) findViewById(R.id.rightTeamScore);
         rightTeamAddButton = (Button) findViewById(R.id.rightTeamAdd);
         rightTeamSubtractButton = (Button) findViewById(R.id.rightTeamSubtract);
+
+        // Image Views
+        ImageView leftTeamCircle = (ImageView) findViewById(R.id.leftTeamCircle);
+        ImageView rightTeamCircle = (ImageView) findViewById(R.id.rightTeamCircle);
 
         Intent intent = getIntent();
         // Get Game id from GameSetupActivity. If no game, set id to 0
@@ -79,10 +98,38 @@ public class GameDisplayActivity extends AppCompatActivity {
         setupScoreButtonListeners(team1Name, leftTeamScore, leftTeamAddButton, leftTeamSubtractButton);
         setupScoreButtonListeners(team2Name, rightTeamScore, rightTeamAddButton, rightTeamSubtractButton);
 
-        buildFieldSetupDialogListener(team1Name, team2Name, setupFieldButton);
+        buildFieldSetupDialogListener(team1Name, team2Name);
         //TODO: do something with variable pullingTeamName
         //TODO: do something with variable team1Side
+
+        leftCircle = createGradientDrawable(Color.RED, 8, Color.BLACK);
+        rightCircle = createGradientDrawable(Color.BLUE, 0, Color.BLACK);
+
+        rightTeamCircle.setImageDrawable(rightCircle);
+        leftTeamCircle.setImageDrawable(leftCircle);
+
+
         //TODO: think about creating a "swapTeams" function in case user wants this
+    }
+
+    private GradientDrawable createGradientDrawable(int color, int strokeSize, int strokeColor) {
+        GradientDrawable gd = new GradientDrawable();
+        gd.setColor(color);
+        gd.setShape(GradientDrawable.OVAL);
+        gd.setStroke(strokeSize, strokeColor);
+        return gd;
+    }
+
+    private void toggleTeamColors() {
+        // TODO: worry about score eventually [halfime n such]
+        int totalScore = game.getTeam1Score() + game.getTeam2Score();
+        if (totalScore % 2 == 0) {
+            leftCircle.setColor(Color.RED);
+            rightCircle.setColor(Color.BLUE);
+        } else {
+            leftCircle.setColor(Color.BLUE);
+            rightCircle.setColor(Color.RED);
+        }
     }
 
     private void setupScoreButtonListeners(final String team, final TextView score, Button addButton, final Button subtractButton) {
@@ -102,6 +149,8 @@ public class GameDisplayActivity extends AppCompatActivity {
                 }
                 saveGameDetails(game);
                 subtractButton.setEnabled(true);
+
+                toggleTeamColors();
             }
         });
 
@@ -126,8 +175,12 @@ public class GameDisplayActivity extends AppCompatActivity {
                     return;
                 }
                 saveGameDetails(game);
+
+                toggleTeamColors();
             }
         });
+
+        //TODO: switch teams' field side
     }
 
     private void inflateTeamData(String t1, String t2, String c1, String c2) {
@@ -148,9 +201,9 @@ public class GameDisplayActivity extends AppCompatActivity {
         //TODO: do something with colors!
     }
 
-    private void buildFieldSetupDialogListener(final String t1, final String t2, Button setupButton) {
+    private void buildFieldSetupDialogListener(final String t1, final String t2) {
 
-        setupButton.setOnClickListener(new View.OnClickListener() {
+        setupFieldButton.setOnClickListener(new View.OnClickListener() {
             AlertDialog pullDialog;
 
             // Strings to show in Dialog with Radio Buttons:
@@ -167,19 +220,14 @@ public class GameDisplayActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int item) {
                         switch (item) {
                             case 0:
-                                // TODO: Instead of this, set Game variable initPullingTeam to t1,
-                                //   or team1Name if possible
-                                pullingTeamName = t1;
+                                game.setInitPullingTeam(t1);
                                 break;
                             case 1:
-                                // TODO: Instead of this, set Game variable initPullingTeam to t2,
-                                //   or team2Name if possible
-                                pullingTeamName = t2;
+                                game.setInitPullingTeam(t2);
                                 break;
                         }
                         dialog.dismiss();
-                        // TODO: maybe hide setup Button here?
-                        buildTeamOrientationDialog(t1, v);
+                        buildTeamOrientationDialog(t1, t2, v);
                     }
                 });
 
@@ -189,7 +237,7 @@ public class GameDisplayActivity extends AppCompatActivity {
         });
     }
 
-    private void buildTeamOrientationDialog(final String t1, View v) {
+    private void buildTeamOrientationDialog(final String t1, final String t2, View v) {
 
         AlertDialog orientationDialog;
 
@@ -205,16 +253,17 @@ public class GameDisplayActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int item) {
                 switch (item) {
                     case 0:
-                        team1Side = "Left";
-                        // TODO: instead, set game variable here.
+                        game.setInitTeamLeft(t1);
                         break;
                     case 1:
-                        team1Side = "Right";
-                        // TODO: instead, set game variable here.
+                        game.setInitTeamLeft(t2);
                         break;
                 }
                 dialog.dismiss();
-                // TODO: hide setupButton here if we didn't do this elsewhere
+                // At this point, both dialog boxes must have been hit & populated Game.
+
+                setupFieldButton.setVisibility(View.GONE);
+                gameImagesLayout.setVisibility(View.VISIBLE);
             }
         });
 
