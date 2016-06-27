@@ -46,6 +46,11 @@ public class GameDisplayActivity extends AppCompatActivity {
 
     private GradientDrawable leftCircle, rightCircle;
 
+    private LinearLayout timeCapBar;
+    private TextView timeCapType, timeCapTimer;
+
+    private ImageView leftTeamCircle, rightTeamCircle;
+
     private Game game;
 
     @Override
@@ -71,8 +76,8 @@ public class GameDisplayActivity extends AppCompatActivity {
         rightTeamSubtractButton = (Button) findViewById(R.id.rightTeamSubtract);
 
         // Image Views
-        ImageView leftTeamCircle = (ImageView) findViewById(R.id.leftTeamCircle);
-        ImageView rightTeamCircle = (ImageView) findViewById(R.id.rightTeamCircle);
+        leftTeamCircle = (ImageView) findViewById(R.id.leftTeamCircle);
+        rightTeamCircle = (ImageView) findViewById(R.id.rightTeamCircle);
 
         Intent intent = getIntent();
         // Get Game id from GameSetupActivity. If no game, set id to 0
@@ -90,10 +95,14 @@ public class GameDisplayActivity extends AppCompatActivity {
 
         // set up basic game details
         gameTitleView.setText(gameTitle);
+
         // TODO: add soft / hard cap info from Game object
+        timeCapBar = (LinearLayout) findViewById(R.id.timeCapBar);
+        timeCapType = (TextView) findViewById(R.id.capText);
+        timeCapTimer = (TextView) findViewById(R.id.capTimer);
 
         // set up team details
-        //TODO: add team colors
+        //TODO: add team colors from game object
         inflateTeamData(team1Name, team2Name, team1Color, team2Color);
         setupScoreButtonListeners(team1Name, leftTeamScore, leftTeamAddButton, leftTeamSubtractButton);
         setupScoreButtonListeners(team2Name, rightTeamScore, rightTeamAddButton, rightTeamSubtractButton);
@@ -101,13 +110,6 @@ public class GameDisplayActivity extends AppCompatActivity {
         buildFieldSetupDialogListener(team1Name, team2Name);
         //TODO: do something with variable pullingTeamName
         //TODO: do something with variable team1Side
-
-        leftCircle = createGradientDrawable(Color.RED, 8, Color.BLACK);
-        rightCircle = createGradientDrawable(Color.BLUE, 0, Color.BLACK);
-
-        rightTeamCircle.setImageDrawable(rightCircle);
-        leftTeamCircle.setImageDrawable(leftCircle);
-
 
         //TODO: think about creating a "swapTeams" function in case user wants this
     }
@@ -123,6 +125,7 @@ public class GameDisplayActivity extends AppCompatActivity {
     private void toggleTeamColors() {
         // TODO: worry about score eventually [halfime n such]
         int totalScore = game.getTeam1Score() + game.getTeam2Score();
+        // TODO: use game.getColor() methods instead of defaults
         if (totalScore % 2 == 0) {
             leftCircle.setColor(Color.RED);
             rightCircle.setColor(Color.BLUE);
@@ -132,18 +135,27 @@ public class GameDisplayActivity extends AppCompatActivity {
         }
     }
 
-    private void setupScoreButtonListeners(final String team, final TextView score, Button addButton, final Button subtractButton) {
+    private void setupScoreButtonListeners(final String team, final TextView score, final Button addButton, final Button subtractButton) {
+        final int finalScore = game.getWinningScore();
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 if (team.equals(team1Name)) {
                     game.incrementScore(1);
                     team1Score += 1;
                     score.setText(Integer.toString(team1Score));
+                    if (team1Score == 90) {
+                        addButton.setEnabled(false);
+                    }
                 } else if (team.equals(team2Name)) {
                     game.incrementScore(2);
                     team2Score += 1;
                     score.setText(Integer.toString(team2Score));
+                    // win by 2 logic
+                    if (team2Score == 90) {
+                        addButton.setEnabled(false);
+                    }
                 } else {
                     return;
                 }
@@ -151,6 +163,7 @@ public class GameDisplayActivity extends AppCompatActivity {
                 subtractButton.setEnabled(true);
 
                 toggleTeamColors();
+
             }
         });
 
@@ -161,15 +174,21 @@ public class GameDisplayActivity extends AppCompatActivity {
                     game.decrementScore(1);
                     team1Score -= 1;
                     score.setText(Integer.toString(team1Score));
-                    if (team1Score == 0) {
-                        subtractButton.setEnabled(false);
+
+                    if (team1Score == 0) { subtractButton.setEnabled(false); }
+                    if (team1Score == 98) {
+                        addButton.setEnabled(true);
                     }
                 } else if (team.equals(team2Name)){
                     game.decrementScore(2);
                     team2Score -= 1;
                     score.setText(Integer.toString(team2Score));
-                    if (team2Score == 0) {
-                        subtractButton.setEnabled(false);
+
+                    // Disable minus button if score is 0
+                    if (team2Score == 0) { subtractButton.setEnabled(false); }
+                    // Enable add button if score is less than 99 (so if it equals 98)
+                    if (team2Score == 98) {
+                        addButton.setEnabled(true);
                     }
                 } else {
                     return;
@@ -179,8 +198,6 @@ public class GameDisplayActivity extends AppCompatActivity {
                 toggleTeamColors();
             }
         });
-
-        //TODO: switch teams' field side
     }
 
     private void inflateTeamData(String t1, String t2, String c1, String c2) {
@@ -191,14 +208,35 @@ public class GameDisplayActivity extends AppCompatActivity {
         leftTeamScore.setText(Integer.toString(team1Score));
         rightTeamScore.setText(Integer.toString(team2Score));
 
-        if (team1Score > 0) {
-            leftTeamSubtractButton.setEnabled(true);
-        }
-        if (team2Score > 0) {
-            rightTeamSubtractButton.setEnabled(true);
+        // Default is disabled buttons, so check if they should be enabled
+        if (team1Score > 0) { leftTeamSubtractButton.setEnabled(true); }
+        if (team2Score > 0) { rightTeamSubtractButton.setEnabled(true); }
+        // Default is enabled buttons, so check if they should be disabled
+        Log.d("GameDisplayA","winning score: " + game.getWinningScore());
+        if (team1Score == game.getWinningScore()) { leftTeamAddButton.setEnabled(false); }
+        if (team2Score == game.getWinningScore()) { rightTeamAddButton.setEnabled(false); }
+
+        // If hard & soft caps are 0, they must have not been clicked
+        // TODO: make sure there's a default time added if the time cap checkbox is true
+        if (game.getHardCapTime() == 0 && game.getSoftCapTime() == 0) {
+            timeCapBar.setVisibility(View.GONE);
+        } else {
+            // TODO: insert logic to figure out if soft cap or hard cap is next.
+            // TODO: format time text better
+            timeCapTimer.setText(Long.toString(game.getSoftCapTime()));
         }
 
-        //TODO: do something with colors!
+        String team1Color = game.getTeam1Color();
+        String team2Color = game.getTeam2Color();
+        if (team1Color == null) {
+            leftCircle = createGradientDrawable(Color.RED, 8, Color.BLACK);
+        } // TODO: add code for when color is defined by game setup activity
+        if (team2Color == null) {
+            rightCircle = createGradientDrawable(Color.BLUE, 0, Color.BLACK);
+        } // TODO: add code for when color is defined by game setup activity
+        leftTeamCircle.setImageDrawable(leftCircle);
+        rightTeamCircle.setImageDrawable(rightCircle);
+
     }
 
     private void buildFieldSetupDialogListener(final String t1, final String t2) {
