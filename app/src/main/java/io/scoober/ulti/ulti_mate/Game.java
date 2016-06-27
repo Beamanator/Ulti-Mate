@@ -81,8 +81,16 @@ public class Game {
         return team2Color;
     }
 
+    public void setInitPullingTeam(String initPullingTeam) {
+        this.initPullingTeam = initPullingTeam;
+    }
+
+    public void setInitTeamLeft(String initTeamLeft) {
+        this.initTeamLeft = initTeamLeft;
+    }
+
     /*
-        Constructor for building the game from the Game Setup Activity
+    Constructor for building the game from the Game Setup Activity
          */
     public Game(String gameName, int winningScore, String team1Name, String team1Color,
                 String team2Name, String team2Color, long softCapTime, long hardCapTime) {
@@ -142,14 +150,6 @@ public class Game {
             return team2Score;
         }
         return -1;
-    }
-
-    public void setInitPullingTeam(String initPullingTeam) {
-        this.initPullingTeam = initPullingTeam;
-    }
-
-    public void setInitTeamLeft(String initTeamLeft) {
-        this.initTeamLeft = initTeamLeft;
     }
 
 }

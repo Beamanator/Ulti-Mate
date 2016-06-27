@@ -24,4 +24,7 @@
     <string name="time_caps">Time caps</string>
     <string name="soft_cap">Soft cap</string>
     <string name="hard_cap">Hard cap</string>
+
+    <!--My Games Activity-->
+    <string name="title_activity_my_games">My Games</string>
 </resources>
