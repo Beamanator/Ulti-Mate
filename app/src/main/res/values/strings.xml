@@ -29,4 +29,6 @@
 
     <!--My Games Activity-->
     <string name="title_activity_my_games">My Games</string>
+    <string name="edit_button">Edit</string>
+    <string name="delete_button">Delete</string>
 </resources>
