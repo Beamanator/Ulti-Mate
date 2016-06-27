@@ -38,6 +38,8 @@ public class MainMenuActivityFragment extends Fragment {
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(),GameDisplayActivity.class);
                 intent.putExtra(MainMenuActivity.GAME_ID_EXTRA, lastGameId);
+                intent.putExtra(MainMenuActivity.GAME_DISPLAY_ARG_EXTRA,
+                        MainMenuActivity.DisplayToLaunch.RESUME);
                 startActivity(intent);
             }
         });

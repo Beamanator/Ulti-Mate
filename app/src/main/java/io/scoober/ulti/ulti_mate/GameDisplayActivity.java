@@ -53,6 +53,7 @@ public class GameDisplayActivity extends AppCompatActivity {
     private ImageView leftTeamCircle, rightTeamCircle;
 
     private Game game;
+    private MainMenuActivity.DisplayToLaunch displayToLaunch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,9 +81,12 @@ public class GameDisplayActivity extends AppCompatActivity {
         leftTeamCircle = (ImageView) findViewById(R.id.leftTeamCircle);
         rightTeamCircle = (ImageView) findViewById(R.id.rightTeamCircle);
 
+        // get data from intents
         Intent intent = getIntent();
         // Get Game id from GameSetupActivity. If no game, set id to 0
         long id = intent.getExtras().getLong(MainMenuActivity.GAME_ID_EXTRA, 0);
+        displayToLaunch = (MainMenuActivity.DisplayToLaunch)
+                intent.getSerializableExtra(MainMenuActivity.GAME_DISPLAY_ARG_EXTRA);
         game = getGameDetails(id);
 
         team1Name = game.getTeam1Name();
@@ -256,16 +260,22 @@ public class GameDisplayActivity extends AppCompatActivity {
         leftTeamCircle.setImageDrawable(leftCircle);
         rightTeamCircle.setImageDrawable(rightCircle);
 
-        if (game.getTeam1Score() > 0 || game.getTeam2Score() > 0) {
-            // On "Resume Game" change text of Start button to "Resume"
-            startButton.setText(R.string.start_resume_button);
-
-            // On "Resume Game" set status to "Paused" text
-            //statusBar.setText(game.getStatusText(game.getGameStatus()));
+        switch (displayToLaunch) {
+            case NEW:
+                statusBar.setText(game.getStatusText(Game.GameStatus.NOT_STARTED, getBaseContext()));
+                break;
+            case RESUME:
+                startButton.setText(R.string.start_resume_button);
+                statusBar.setText(game.getStatusText(Game.GameStatus.PAUSED, getBaseContext()));
+                break;
+            case EDIT:
+                // TODO: run edit game fragment
+                break;
+            case VIEW:
+                // TODO: make sure this is what we want
+                statusBar.setText(game.getStatusText(Game.GameStatus.GAME_OVER, getBaseContext()));
+                break;
         }
-
-        // Game Status stuff:
-        statusBar.setText(game.getStatusText(game.getGameStatus(), getBaseContext()));
     }
 
     private void buildFieldSetupDialogListener(final String t1, final String t2) {
