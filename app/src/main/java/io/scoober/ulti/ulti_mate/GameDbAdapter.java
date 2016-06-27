@@ -25,6 +25,7 @@ public class GameDbAdapter {
 
     // General Game information
     public static final String C_GAME_NAME = "game_name"; // Name of the game
+    public static final String C_GAME_STATUS = "game_status"; // Status of the game
     public static final String C_WINNING_SCORE = "winning_score"; // score needed to win
 
     // Team 1 information
@@ -42,15 +43,14 @@ public class GameDbAdapter {
     public static final String C_HARD_CAP_TIME = "hard_cap_time"; // time of hard cap
     public static final String C_INIT_PULL_TEAM = "init_pull_team"; // Team pulling at the beginning
     public static final String C_INIT_TEAM_LEFT = "init_team_left"; // Team on the left at the beginning
-    public static final String C_GAME_STATUS = "game_status"; // Status of the game
 
     // Date info
     public static final String C_DATE_CREATED = "date_created"; // Date game was created
     public static final String C_DATE_UPDATED = "date_updated"; // Date game was last updated
 
     String[] allColumns = {C_ID, C_GAME_NAME, C_GAME_STATUS, C_WINNING_SCORE, C_TEAM_1_NAME, C_TEAM_1_COLOR,
-            C_TEAM_1_SCORE, C_TEAM_2_NAME, C_TEAM_2_COLOR, C_TEAM_2_SCORE, C_INIT_PULL_TEAM,
-            C_INIT_TEAM_LEFT, C_SOFT_CAP_TIME, C_HARD_CAP_TIME, C_DATE_CREATED, C_DATE_UPDATED};
+            C_TEAM_1_SCORE, C_TEAM_2_NAME, C_TEAM_2_COLOR, C_TEAM_2_SCORE, C_SOFT_CAP_TIME, C_HARD_CAP_TIME,
+            C_INIT_PULL_TEAM, C_INIT_TEAM_LEFT, C_DATE_CREATED, C_DATE_UPDATED};
 
     public static final String CREATE_TABLE_GAMES = "create table " + GAMES_TABLE + " ( "
             + C_ID + " integer primary key autoincrement, "

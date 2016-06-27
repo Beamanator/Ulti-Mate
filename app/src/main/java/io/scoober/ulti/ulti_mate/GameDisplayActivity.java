@@ -105,6 +105,7 @@ public class GameDisplayActivity extends AppCompatActivity {
         // set up team details
         //TODO: add team colors from game object
         inflateTeamData(team1Color, team2Color);
+
         setupScoreButtonListeners(team1Name, leftTeamScore, leftTeamAddButton, leftTeamSubtractButton);
         setupScoreButtonListeners(team2Name, rightTeamScore, rightTeamAddButton, rightTeamSubtractButton);
 
@@ -234,6 +235,7 @@ public class GameDisplayActivity extends AppCompatActivity {
         rightTeamScore.setText(Integer.toString(team2Score));
 
         // If hard & soft caps are 0, they must have not been clicked
+        Log.d("DisplayActivity","Soft: " + game.getSoftCapTime() + " - Hard: " + game.getHardCapTime());
         // TODO: make sure there's a default time added if the time cap checkbox is true
         if (game.getHardCapTime() < 1 && game.getSoftCapTime() < 1) {
             timeCapBar.setVisibility(View.GONE);
@@ -255,7 +257,6 @@ public class GameDisplayActivity extends AppCompatActivity {
         rightTeamCircle.setImageDrawable(rightCircle);
 
         // On "Resume Game" change text of Start button to "Resume"
-        Log.d("Game Display", "t1: " + game.getTeam1Score() + " - t2: " + game.getTeam2Score());
         if (game.getTeam1Score() > 0 || game.getTeam2Score() > 0) {
             startButton.setText(R.string.start_resume_button);
         }

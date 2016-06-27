@@ -164,11 +164,12 @@ public class Game {
     }
 
     /**
-     *
-     * @param status
-     * @return
+     *Description of function
+     * @param status    blah blah
+     * @return          return stuff
      */
     public String getStatusText(GameStatus status) {
+        // TODO: add text to strings resource file
         switch (status) {
             case NOT_STARTED:
                 return "Game Has Not Begun";
