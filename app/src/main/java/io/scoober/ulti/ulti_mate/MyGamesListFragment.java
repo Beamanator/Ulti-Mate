@@ -20,7 +20,7 @@ import java.util.List;
  * A fragment representing a list of Items.
  * <p>
  */
-public class MyGamesFragment extends ListFragment {
+public class MyGamesListFragment extends ListFragment {
 
     private List<Game> games;
     private MyGamesListAdapter gamesListAdapter;
@@ -35,7 +35,7 @@ public class MyGamesFragment extends ListFragment {
 
         GameDbAdapter gameDbAdapter = new GameDbAdapter(getActivity().getBaseContext());
         gameDbAdapter.open();
-        games = gameDbAdapter.getRecentGames(20,0);
+        games = gameDbAdapter.getRecentGames(10,0);
         gameDbAdapter.close();
 
         gamesListAdapter = new MyGamesListAdapter(getActivity(),games);
@@ -46,7 +46,7 @@ public class MyGamesFragment extends ListFragment {
 
         // build dialog
         deleteConfirmDialog();
-        //TODO Add feature to get more than 20 games
+        //TODO Add feature to get more than 10 games
     }
 
 

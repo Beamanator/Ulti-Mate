@@ -15,6 +15,5 @@ public class MyGamesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_my_games);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 }
