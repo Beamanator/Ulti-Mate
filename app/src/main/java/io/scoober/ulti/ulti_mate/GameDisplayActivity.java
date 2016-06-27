@@ -28,7 +28,7 @@ import org.w3c.dom.Text;
 
 public class GameDisplayActivity extends AppCompatActivity {
 
-    private Button setupFieldButton;
+    private Button setupFieldButton, startButton, endButton;
 
     private LinearLayout gameImagesLayout;
 
@@ -62,8 +62,8 @@ public class GameDisplayActivity extends AppCompatActivity {
         setupFieldButton = (Button) findViewById(R.id.fieldSetup);
         leftTeam = (TextView) findViewById(R.id.leftTeam);
         rightTeam = (TextView) findViewById(R.id.rightTeam);
-        Button startPauseButton = (Button) findViewById(R.id.startPauseButton);
-        Button endButton = (Button) findViewById(R.id.endButton);
+        startButton = (Button) findViewById(R.id.startButton);
+        endButton = (Button) findViewById(R.id.endButton);
         // TODO: Hook up start / end buttons
 
         gameImagesLayout = (LinearLayout) findViewById(R.id.gameImagesLayout);
@@ -107,11 +107,34 @@ public class GameDisplayActivity extends AppCompatActivity {
         setupScoreButtonListeners(team1Name, leftTeamScore, leftTeamAddButton, leftTeamSubtractButton);
         setupScoreButtonListeners(team2Name, rightTeamScore, rightTeamAddButton, rightTeamSubtractButton);
 
+        // build start / end button functionality:
+        startGame(startButton, endButton);
+
         buildFieldSetupDialogListener(team1Name, team2Name);
         //TODO: do something with variable pullingTeamName
         //TODO: do something with variable team1Side
 
         //TODO: think about creating a "swapTeams" function in case user wants this
+    }
+
+    private void startGame(final Button startButton, final Button endButton) {
+        startButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int t1score = game.getTeam1Score();
+                int t2score = game.getTeam2Score();
+
+                if (t1score > 0) { leftTeamSubtractButton.setEnabled(true); }
+                if (t1score < 99) { leftTeamAddButton.setEnabled(true); }
+                if (t2score > 0) { rightTeamSubtractButton.setEnabled(true); }
+                if (t2score < 99) { rightTeamAddButton.setEnabled(true); }
+
+                // TODO: set status bar to reflect game has started / halftime / etc.
+
+                endButton.setVisibility(View.VISIBLE);
+                startButton.setVisibility(View.GONE);
+            }
+        });
     }
 
     private GradientDrawable createGradientDrawable(int color, int strokeSize, int strokeColor) {
@@ -143,6 +166,7 @@ public class GameDisplayActivity extends AppCompatActivity {
 
                 if (team.equals(team1Name)) {
                     game.incrementScore(1);
+                    // TODO: replace team1Score with game.getTeam1Score()?
                     team1Score += 1;
                     score.setText(Integer.toString(team1Score));
                     if (team1Score == 99) {
@@ -208,14 +232,6 @@ public class GameDisplayActivity extends AppCompatActivity {
         leftTeamScore.setText(Integer.toString(team1Score));
         rightTeamScore.setText(Integer.toString(team2Score));
 
-        // Default is disabled buttons, so check if they should be enabled
-        if (team1Score > 0) { leftTeamSubtractButton.setEnabled(true); }
-        if (team2Score > 0) { rightTeamSubtractButton.setEnabled(true); }
-        // Default is enabled buttons, so check if they should be disabled
-        Log.d("GameDisplayA","winning score: " + game.getWinningScore());
-        if (team1Score >= 99) { leftTeamAddButton.setEnabled(false); }
-        if (team2Score >= 99) { rightTeamAddButton.setEnabled(false); }
-
         // If hard & soft caps are 0, they must have not been clicked
         // TODO: make sure there's a default time added if the time cap checkbox is true
         if (game.getHardCapTime() < 1 && game.getSoftCapTime() < 1) {
@@ -237,6 +253,11 @@ public class GameDisplayActivity extends AppCompatActivity {
         leftTeamCircle.setImageDrawable(leftCircle);
         rightTeamCircle.setImageDrawable(rightCircle);
 
+        // On "Resume Game" change text of Start button to "Resume"
+        Log.d("Game Display", "t1: " + game.getTeam1Score() + " - t2: " + game.getTeam2Score());
+        if (game.getTeam1Score() > 0 || game.getTeam2Score() > 0) {
+            startButton.setText(R.string.start_resume_button);
+        }
     }
 
     private void buildFieldSetupDialogListener(final String t1, final String t2) {

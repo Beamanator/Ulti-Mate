@@ -122,7 +122,8 @@
                             android:text="+"
                             android:id="@+id/leftTeamAdd"
                             android:textSize="25dp"
-                            android:layout_marginRight="30dp"/>
+                            android:layout_marginRight="30dp"
+                            android:enabled="false" />
                         <Button
                             android:layout_width="wrap_content"
                             android:layout_height="0dp"
@@ -192,7 +193,8 @@
                             android:text="+"
                             android:id="@+id/rightTeamAdd"
                             android:textSize="25dp"
-                            android:layout_marginRight="30dp" />
+                            android:layout_marginRight="30dp"
+                            android:enabled="false" />
                         <Button
                             android:layout_width="wrap_content"
                             android:layout_height="0dp"
@@ -231,8 +233,10 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.5"
             android:text="@string/start_button"
-            android:id="@+id/startPauseButton"
-            android:textSize="15dp" />
+            android:id="@+id/startButton"
+            android:textSize="15dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp" />
 
         <Button
             android:layout_width="0dp"
@@ -240,7 +244,10 @@
             android:layout_weight="0.5"
             android:text="@string/end_button"
             android:id="@+id/endButton"
-            android:textSize="15dp" />
+            android:textSize="15dp"
+            android:visibility="gone"
+            android:layout_marginRight="5dp"
+            android:layout_marginLeft="5dp" />
     </LinearLayout>
 
     <!--Soft / Hard Cap Text-->
