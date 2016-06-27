@@ -14,7 +14,7 @@ public class MainMenuActivity extends AppCompatActivity {
     public static final String GAME_ID_EXTRA = "io.scoober.ulti.ulti_mate.Game_Id";
     public static final String GAME_DISPLAY_ARG_EXTRA = "io.scoober.ulti.ulti_mate.Game_Display_To_Launch";
 
-    public enum DisplayToLaunch {VIEW, EDIT}
+    public enum DisplayToLaunch {NEW, RESUME, VIEW, EDIT}
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -67,8 +67,10 @@ public class GameSetupActivity extends AppCompatActivity {
                 gameDbAdapter.close();
 
                 // Start Game Display Activity
-                Intent intent = new Intent(v.getContext(),GameDisplayActivity.class);
-                intent.putExtra(MainMenuActivity.GAME_ID_EXTRA,newGame.getId());
+                Intent intent = new Intent(v.getContext(), GameDisplayActivity.class);
+                intent.putExtra(MainMenuActivity.GAME_ID_EXTRA, newGame.getId());
+                intent.putExtra(MainMenuActivity.GAME_DISPLAY_ARG_EXTRA,
+                        MainMenuActivity.DisplayToLaunch.NEW);
                 startActivity(intent);
             }
         });

@@ -29,7 +29,7 @@ public class Game {
 
     private GameStatus gameStatus;
     public enum GameStatus { NOT_STARTED, PAUSED, FIRST_HALF, HALFTIME, SECOND_HALF,
-        SOFT_CAP, HARD_CAP, GAME_OVER};
+        SOFT_CAP, HARD_CAP, GAME_OVER}
 
     public long getId() {
         return id;
