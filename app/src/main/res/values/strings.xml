@@ -19,6 +19,16 @@
     <string name="default_status_text">Status:</string>
     <string name="default_game_status_text">- status goes here -</string>
 
+    <!--Game Statuses-->
+    <string name="status_not_started">Game Not Started</string>
+    <string name="status_paused">Game Paused</string>
+    <string name="status_first_half">First Half</string>
+    <string name="status_halftime">Halftime!</string>
+    <string name="status_second_half">Second Half</string>
+    <string name="status_soft_cap">Soft Cap Hit!</string>
+    <string name="status_hard_cap">Hard Cap Hit!</string>
+    <string name="status_game_over">Game Over</string>
+
     <!--Game Setup Activity-->
     <string name="title_activity_game_setup">Setup</string>
     <string name="game_title">Game Title</string>

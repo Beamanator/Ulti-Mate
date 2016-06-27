@@ -256,13 +256,16 @@ public class GameDisplayActivity extends AppCompatActivity {
         leftTeamCircle.setImageDrawable(leftCircle);
         rightTeamCircle.setImageDrawable(rightCircle);
 
-        // On "Resume Game" change text of Start button to "Resume"
         if (game.getTeam1Score() > 0 || game.getTeam2Score() > 0) {
+            // On "Resume Game" change text of Start button to "Resume"
             startButton.setText(R.string.start_resume_button);
+
+            // On "Resume Game" set status to "Paused" text
+            statusBar.setText(game.getStatusText(game.getGameStatus()));
         }
 
         // Game Status stuff:
-        statusBar.setText(game.getStatusText(game.getGameStatus()));
+        statusBar.setText(game.getStatusText(game.getGameStatus(), getBaseContext()));
     }
 
     private void buildFieldSetupDialogListener(final String t1, final String t2) {

@@ -1,5 +1,7 @@
 package io.scoober.ulti.ulti_mate;
 
+import android.content.Context;
+
 /**
  * Created by Navin on 6/24/2016.
  */
@@ -164,23 +166,31 @@ public class Game {
     }
 
     /**
-     *Description of function
-     * @param status    blah blah
-     * @return          return stuff
+     *Translates GameStatus enum values to text in strings.xml resource file
+     * @param status    status enum value that will be translated to a string
+     * @param context   base context used to find strings.xml resource file
+     * @return          return translated value from strings.xml
      */
-    public String getStatusText(GameStatus status) {
-        // TODO: add text to strings resource file
+    public String getStatusText(GameStatus status, Context context) {
         switch (status) {
             case NOT_STARTED:
-                return "Game Has Not Begun";
+                return context.getString(R.string.status_not_started);
             case PAUSED:
-                return "Paused";
+                return context.getString(R.string.status_paused);
+            case FIRST_HALF:
+                return context.getString(R.string.status_first_half);
             case HALFTIME:
-                return "Halftime!";
+                return context.getString(R.string.status_halftime);
+            case SECOND_HALF:
+                return context.getString(R.string.status_second_half);
+            case SOFT_CAP:
+                return context.getString(R.string.status_soft_cap);
+            case HARD_CAP:
+                return context.getString(R.string.status_hard_cap);
             case GAME_OVER:
-                return "Game Over";
+                return context.getString(R.string.status_game_over);
         }
 
-        return "Game Has Not Begun";
+        return context.getString(R.string.status_not_started);
     }
 }
