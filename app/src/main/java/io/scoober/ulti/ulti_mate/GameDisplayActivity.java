@@ -166,6 +166,7 @@ public class GameDisplayActivity extends AppCompatActivity {
 
     private void setupScoreButtonListeners(final String team, final TextView score, final Button addButton, final Button subtractButton) {
         final int finalScore = game.getWinningScore();
+        // TODO: fix bug where buttons link to same score when teams have same name
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
