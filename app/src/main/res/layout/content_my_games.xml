@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -9,9 +9,9 @@
     tools:showIn="@layout/activity_my_games">
 
     <fragment
-        android:id="@+id/mainActivityFrag"
+        android:id="@+id/myGamesFragment"
         android:name="io.scoober.ulti.ulti_mate.MyGamesFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-</android.support.v4.widget.NestedScrollView>
+</LinearLayout>
