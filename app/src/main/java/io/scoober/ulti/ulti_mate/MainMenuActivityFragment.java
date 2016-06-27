@@ -30,6 +30,7 @@ public class MainMenuActivityFragment extends Fragment {
         getLastGameId(); // get last game ID to activate buttons
         if (lastGameId != -1) {
             resume.setEnabled(true);
+            myGamesButton.setEnabled(true);
         }
 
         resume.setOnClickListener(new View.OnClickListener() {
@@ -49,7 +50,13 @@ public class MainMenuActivityFragment extends Fragment {
             }
         });
 
-        //TODO My Games Button
+        myGamesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(),MyGamesActivity.class);
+                startActivity(intent);
+            }
+        });
 
         return mainMenuLayout;
     }

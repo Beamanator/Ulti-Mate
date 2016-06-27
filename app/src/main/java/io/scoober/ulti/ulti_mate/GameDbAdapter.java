@@ -7,7 +7,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 /**
  * Created by Navin on 6/24/2016.
@@ -116,6 +118,32 @@ public class GameDbAdapter {
         cursor.close();
 
         return newGame;
+    }
+
+    /**
+     * Function gets an ArrayList of games from the database, ordered with most recent first.
+     * An offset can be used to get items n to n+offset, useful for limiting lists.
+     * @param numGames Number of Games to return
+     * @param offset   Offset on the SQL query.
+     * @return         ArrayList of games
+     */
+    public ArrayList<Game> getRecentGames(int numGames, int offset) {
+        ArrayList<Game> games = new ArrayList<Game>();
+
+        String limit = Integer.toString(numGames);
+        if (offset != 0) {
+            limit = offset + "," + limit;
+        }
+        Cursor cursor = sqlDB.query(GAMES_TABLE, allColumns, null, null, null, null, C_DATE_CREATED, limit);
+
+        for(cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+            Game game = cursorToGame(cursor);
+            games.add(game);
+        }
+
+        cursor.close();
+
+        return games;
     }
 
     public long getRecentGameId() {
