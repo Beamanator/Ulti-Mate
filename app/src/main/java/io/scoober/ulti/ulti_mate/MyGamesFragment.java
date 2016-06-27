@@ -1,8 +1,10 @@
 package io.scoober.ulti.ulti_mate;
 
 import android.app.ListFragment;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -23,6 +25,9 @@ public class MyGamesFragment extends ListFragment {
     private List<Game> games;
     private MyGamesListAdapter gamesListAdapter;
 
+    private AlertDialog deleteConfirmDialogObject;
+    private boolean confirmDelete;
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
 
@@ -38,8 +43,13 @@ public class MyGamesFragment extends ListFragment {
         setListAdapter(gamesListAdapter);
 
         registerForContextMenu(getListView());
+
+        // build dialog
+        deleteConfirmDialog();
         //TODO Add feature to get more than 20 games
     }
+
+
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
@@ -55,16 +65,11 @@ public class MyGamesFragment extends ListFragment {
                 launchGameDisplay(MainMenuActivity.DisplayToLaunch.EDIT,rowPosition);
                 return true;
             case R.id.delete:
-                GameDbAdapter dbAdapter = new GameDbAdapter(getActivity().getBaseContext());
-                dbAdapter.open();
-
-                //TODO implement deletion in the database
-                //dbAdapter.deleteGame(game.getId());
-
-                games.remove(rowPosition);
-                gamesListAdapter.notifyDataSetChanged();
-
-                dbAdapter.close();
+                confirmDelete = false;
+                deleteConfirmDialogObject.show(); // sets confirmDelete if the user confirms deletion
+                if (confirmDelete) {
+                    deleteGame(game, rowPosition);
+                }
 
                 return true;
         }
@@ -95,5 +100,35 @@ public class MyGamesFragment extends ListFragment {
         intent.putExtra(MainMenuActivity.GAME_DISPLAY_ARG_EXTRA, dtl);
         startActivity(intent);
 
+    }
+
+    private void deleteGame(Game game, int rowPosition) {
+        GameDbAdapter dbAdapter = new GameDbAdapter(getActivity().getBaseContext());
+        dbAdapter.open();
+        dbAdapter.deleteGame(game.getId());
+        dbAdapter.close();
+
+        games.remove(rowPosition);
+        gamesListAdapter.notifyDataSetChanged();
+    }
+
+    private void deleteConfirmDialog() {
+        AlertDialog.Builder confirmBuilder = new AlertDialog.Builder(getActivity());
+        confirmBuilder.setTitle("Confirm Delete");
+        confirmBuilder.setMessage("Are you sure you want to delete this game?");
+        confirmBuilder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                confirmDelete=true;
+            }
+        });
+        confirmBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                confirmDelete=false;
+            }
+        });
+
+        deleteConfirmDialogObject = confirmBuilder.create();
     }
 }

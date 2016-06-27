@@ -261,7 +261,7 @@ public class GameDisplayActivity extends AppCompatActivity {
             startButton.setText(R.string.start_resume_button);
 
             // On "Resume Game" set status to "Paused" text
-            statusBar.setText(game.getStatusText(game.getGameStatus()));
+            //statusBar.setText(game.getStatusText(game.getGameStatus()));
         }
 
         // Game Status stuff:

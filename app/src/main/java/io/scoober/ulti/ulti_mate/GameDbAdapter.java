@@ -137,7 +137,7 @@ public class GameDbAdapter {
         if (offset != 0) {
             limit = offset + "," + limit;
         }
-        Cursor cursor = sqlDB.query(GAMES_TABLE, allColumns, null, null, null, null, C_DATE_CREATED, limit);
+        Cursor cursor = sqlDB.query(GAMES_TABLE, allColumns, null, null, null, null, C_DATE_CREATED + " DESC", limit);
 
         for(cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
             Game game = cursorToGame(cursor);
@@ -184,6 +184,10 @@ public class GameDbAdapter {
         values.put(C_GAME_STATUS, game.getGameStatus().name());
 
         return sqlDB.update(GAMES_TABLE, values, C_ID + " = " + game.getId(), null);
+    }
+
+    public long deleteGame(long idToDelete) {
+        return sqlDB.delete(GAMES_TABLE, C_ID + " = " + idToDelete, null);
     }
 
     private Game cursorToGame(Cursor cursor) {
