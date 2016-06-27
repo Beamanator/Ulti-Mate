@@ -145,7 +145,7 @@ public class GameDisplayActivity extends AppCompatActivity {
                     game.incrementScore(1);
                     team1Score += 1;
                     score.setText(Integer.toString(team1Score));
-                    if (team1Score == 90) {
+                    if (team1Score == 99) {
                         addButton.setEnabled(false);
                     }
                 } else if (team.equals(team2Name)) {
@@ -153,7 +153,7 @@ public class GameDisplayActivity extends AppCompatActivity {
                     team2Score += 1;
                     score.setText(Integer.toString(team2Score));
                     // win by 2 logic
-                    if (team2Score == 90) {
+                    if (team2Score == 99) {
                         addButton.setEnabled(false);
                     }
                 } else {
@@ -213,12 +213,12 @@ public class GameDisplayActivity extends AppCompatActivity {
         if (team2Score > 0) { rightTeamSubtractButton.setEnabled(true); }
         // Default is enabled buttons, so check if they should be disabled
         Log.d("GameDisplayA","winning score: " + game.getWinningScore());
-        if (team1Score == game.getWinningScore()) { leftTeamAddButton.setEnabled(false); }
-        if (team2Score == game.getWinningScore()) { rightTeamAddButton.setEnabled(false); }
+        if (team1Score >= 99) { leftTeamAddButton.setEnabled(false); }
+        if (team2Score >= 99) { rightTeamAddButton.setEnabled(false); }
 
         // If hard & soft caps are 0, they must have not been clicked
         // TODO: make sure there's a default time added if the time cap checkbox is true
-        if (game.getHardCapTime() == 0 && game.getSoftCapTime() == 0) {
+        if (game.getHardCapTime() < 1 && game.getSoftCapTime() < 1) {
             timeCapBar.setVisibility(View.GONE);
         } else {
             // TODO: insert logic to figure out if soft cap or hard cap is next.
