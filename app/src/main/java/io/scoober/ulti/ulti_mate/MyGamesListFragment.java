@@ -20,7 +20,7 @@ import java.util.List;
  * A fragment representing a list of Items.
  * <p>
  */
-public class MyGamesFragment extends ListFragment {
+public class MyGamesListFragment extends ListFragment {
 
     private List<Game> games;
     private MyGamesListAdapter gamesListAdapter;
