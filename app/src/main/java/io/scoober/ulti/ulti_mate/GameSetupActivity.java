@@ -131,25 +131,15 @@ public class GameSetupActivity extends AppCompatActivity {
         long hardCap = 0;
         if (timeCaps) {
             // Currently stored as milliseconds without date
-            softCap = getMilliFrom12HrString(softCapTimeButton.getText().toString());
-            hardCap = getMilliFrom12HrString(hardCapTimeButton.getText().toString());
+            softCap = Utils.getMilliFrom12HrString(softCapTimeButton.getText().toString());
+            hardCap = Utils.getMilliFrom12HrString(hardCapTimeButton.getText().toString());
         }
 
         Game newGame = new Game(gameName,winningScore,team1Name,null,team2Name,null,softCap,hardCap);
         return newGame;
     }
 
-    private long getMilliFrom12HrString(String dateString) {
-        SimpleDateFormat sdf = new SimpleDateFormat("h:mm a", Locale.getDefault());
-        try {
-            Date tempDate = sdf.parse(dateString);
-            return tempDate.getTime();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
-        return -1;
-    }
 
 
     /**

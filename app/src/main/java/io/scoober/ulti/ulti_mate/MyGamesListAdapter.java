@@ -49,7 +49,7 @@ public class MyGamesListAdapter extends ArrayAdapter<Game> {
         Game game = getItem(position);
         //TODO think of internationalization
         holder.title.setText(game.getGameName());
-        holder.date.setText(getDateString(game.getDate()));
+        holder.date.setText(Utils.getDateString(game.getDate()));
         holder.score.setText(game.getTeam1Score() + "-" + game.getTeam2Score());
         holder.teams.setText(game.getTeam1Name() + " vs " + game.getTeam2Name());
 
@@ -78,9 +78,5 @@ public class MyGamesListAdapter extends ArrayAdapter<Game> {
 //        return games.size();
 //    }
 
-    //TODO Move to utils
-    public String getDateString(long milli) {
-        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.getDefault());
-        return sdf.format(new Date(milli));
-    }
+
 }

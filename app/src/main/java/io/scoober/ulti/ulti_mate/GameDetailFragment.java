@@ -69,7 +69,7 @@ public class GameDetailFragment extends Fragment {
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                         //TODO Validation on date and time
-                        softCapButton.setText(to12Hr(hourOfDay, minute));
+                        softCapButton.setText(Utils.to12Hr(hourOfDay, minute));
                     }
                 },hour,minute,false);
                 softCapTimePicker.show();
@@ -87,7 +87,7 @@ public class GameDetailFragment extends Fragment {
                             @Override
                             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                                 //TODO Validation on date and time (must be greater than current)
-                                hardCapButton.setText(to12Hr(hourOfDay, minute));
+                                hardCapButton.setText(Utils.to12Hr(hourOfDay, minute));
                             }
                         },hour,minute,false);
                 hardCapTimePicker.show();
@@ -97,17 +97,6 @@ public class GameDetailFragment extends Fragment {
         return gameDetailView;
     }
 
-    private static String to12Hr(int hourOfDay, int minute) {
-        String timeString = hourOfDay + ":" + minute;
-        SimpleDateFormat sdf24 = new SimpleDateFormat("HH:mm", Locale.getDefault());
-        try {
-            Date timeAsDate = sdf24.parse(timeString);
-            SimpleDateFormat sdf12 = new SimpleDateFormat("h:mm a", Locale.getDefault());
-            return sdf12.format(timeAsDate);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
+
 
 }
