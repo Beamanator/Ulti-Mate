@@ -16,7 +16,8 @@
     <string name="start_resume_button">Resume Game</string>
     <string name="soft_cap_text">Soft Cap:</string>
     <string name="time_remaining_text">Time remaining</string>
-    <string name="status_text">Status:</string>
+    <string name="default_status_text">Status:</string>
+    <string name="default_game_status_text">- status goes here -</string>
 
     <!--Game Setup Activity-->
     <string name="title_activity_game_setup">Setup</string>

@@ -17,7 +17,7 @@ import java.util.List;
 public class GameDbAdapter {
 
     static final String DATABASE_NAME = "ultimate.db";
-    static final int DATABASE_VERSION = 4;
+    static final int DATABASE_VERSION = 5;
 
     //Games table
     public static final String GAMES_TABLE = "games";
@@ -42,18 +42,20 @@ public class GameDbAdapter {
     public static final String C_HARD_CAP_TIME = "hard_cap_time"; // time of hard cap
     public static final String C_INIT_PULL_TEAM = "init_pull_team"; // Team pulling at the beginning
     public static final String C_INIT_TEAM_LEFT = "init_team_left"; // Team on the left at the beginning
+    public static final String C_GAME_STATUS = "game_status"; // Status of the game
 
     // Date info
     public static final String C_DATE_CREATED = "date_created"; // Date game was created
     public static final String C_DATE_UPDATED = "date_updated"; // Date game was last updated
 
-    String[] allColumns = {C_ID, C_GAME_NAME, C_WINNING_SCORE, C_TEAM_1_NAME, C_TEAM_1_COLOR,
+    String[] allColumns = {C_ID, C_GAME_NAME, C_GAME_STATUS, C_WINNING_SCORE, C_TEAM_1_NAME, C_TEAM_1_COLOR,
             C_TEAM_1_SCORE, C_TEAM_2_NAME, C_TEAM_2_COLOR, C_TEAM_2_SCORE, C_INIT_PULL_TEAM,
             C_INIT_TEAM_LEFT, C_SOFT_CAP_TIME, C_HARD_CAP_TIME, C_DATE_CREATED, C_DATE_UPDATED};
 
     public static final String CREATE_TABLE_GAMES = "create table " + GAMES_TABLE + " ( "
             + C_ID + " integer primary key autoincrement, "
             + C_GAME_NAME + " text not null, "
+            + C_GAME_STATUS + " text not null, "
             + C_WINNING_SCORE + " integer not null, "
             + C_TEAM_1_NAME + " text not null, "
             + C_TEAM_1_COLOR + " text, "
@@ -92,6 +94,7 @@ public class GameDbAdapter {
         values.put(C_DATE_CREATED, Calendar.getInstance().getTimeInMillis());
         values.put(C_DATE_UPDATED, Calendar.getInstance().getTimeInMillis());
         values.put(C_GAME_NAME, game.getGameName());
+        values.put(C_GAME_STATUS, game.getGameStatus().name());
         values.put(C_WINNING_SCORE, game.getWinningScore());
         values.put(C_SOFT_CAP_TIME, game.getSoftCapTime());
         values.put(C_HARD_CAP_TIME, game.getHardCapTime());
@@ -178,6 +181,7 @@ public class GameDbAdapter {
         values.put(C_TEAM_2_SCORE, game.getTeam2Score());
         values.put(C_INIT_PULL_TEAM, game.getInitPullingTeam());
         values.put(C_INIT_TEAM_LEFT, game.getInitTeamLeft());
+        values.put(C_GAME_STATUS, game.getGameStatus().name());
 
         return sqlDB.update(GAMES_TABLE, values, C_ID + " = " + game.getId(), null);
     }
@@ -186,21 +190,22 @@ public class GameDbAdapter {
         // Transform query into game object
         long id = cursor.getLong(0);
         String gameName = cursor.getString(1);
-        int winningScore = cursor.getInt(2); // score needed to win
-        String team1Name = cursor.getString(3); // Team Name
-        String team1Color = cursor.getString(4); // Team Color
-        int team1Score = cursor.getInt(5); // Team Score
-        String team2Name = cursor.getString(6); // Team Name
-        String team2Color = cursor.getString(7); // Team Color
-        int team2Score = cursor.getInt(8); // Team Score
-        long softCapTime = cursor.getLong(9); // time of soft cap
-        long hardCapTime = cursor.getLong(10); // time of hard cap
-        String initPullingTeam = cursor.getString(11); // Team pulling at the beginning
-        String initTeamLeft = cursor.getString(12); // Team on the left at the beginning
-        long date = cursor.getLong(13); // Date game was created
+        Game.GameStatus status = Game.GameStatus.valueOf(cursor.getString(2)); // Status of game
+        int winningScore = cursor.getInt(3); // score needed to win
+        String team1Name = cursor.getString(4); // Team Name
+        String team1Color = cursor.getString(5); // Team Color
+        int team1Score = cursor.getInt(6); // Team Score
+        String team2Name = cursor.getString(7); // Team Name
+        String team2Color = cursor.getString(8); // Team Color
+        int team2Score = cursor.getInt(9); // Team Score
+        long softCapTime = cursor.getLong(10); // time of soft cap
+        long hardCapTime = cursor.getLong(11); // time of hard cap
+        String initPullingTeam = cursor.getString(12); // Team pulling at the beginning
+        String initTeamLeft = cursor.getString(13); // Team on the left at the beginning
+        long date = cursor.getLong(14); // Date game was created
 
         // Create game object and return it.
-        Game newGame = new Game(id, gameName, winningScore,team1Score,team2Score,
+        Game newGame = new Game(id, gameName, status, winningScore,team1Score,team2Score,
                 team1Name, team1Color, team2Name, team2Color,
                 softCapTime, hardCapTime, initPullingTeam, initTeamLeft, date);
 

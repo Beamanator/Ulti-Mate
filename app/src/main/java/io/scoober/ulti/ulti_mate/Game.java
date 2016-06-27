@@ -25,6 +25,10 @@ public class Game {
     private String team2Name; // Team Name
     private String team2Color; // Team Color
 
+    private GameStatus gameStatus;
+    public enum GameStatus { NOT_STARTED, PAUSED, FIRST_HALF, HALFTIME, SECOND_HALF,
+        SOFT_CAP, HARD_CAP, GAME_OVER};
+
     public long getId() {
         return id;
     }
@@ -73,6 +77,10 @@ public class Game {
         return team1Color;
     }
 
+    public GameStatus getGameStatus() { return gameStatus; }
+
+    public void setGameStatus(GameStatus status) { this.gameStatus = status; }
+
     public String getTeam2Name() {
         return team2Name;
     }
@@ -106,14 +114,16 @@ public class Game {
         this.id=0;
         this.team1Score = 0;
         this.team2Score = 0;
+        this.gameStatus = GameStatus.NOT_STARTED;
     }
 
     /*
     Constructor for building the game from a database
      */
-    public Game(long id, String gameName, int winningScore, int team1Score, int team2Score,
+    public Game(long id, String gameName, GameStatus status, int winningScore, int team1Score, int team2Score,
                 String team1Name, String team1Color, String team2Name, String team2Color,
-                long softCapTime, long hardCapTime, String initPullingTeam, String initTeamLeft, long date) {
+                long softCapTime, long hardCapTime, String initPullingTeam, String initTeamLeft,
+                long date) {
         this.id = id;
         this.gameName = gameName;
         this.winningScore = winningScore;
@@ -128,6 +138,7 @@ public class Game {
         this.initPullingTeam = initPullingTeam;
         this.initTeamLeft = initTeamLeft;
         this.date = date;
+        this.gameStatus = status;
     }
 
     public int incrementScore(int teamNumber) {
@@ -152,4 +163,23 @@ public class Game {
         return -1;
     }
 
+    /**
+     *
+     * @param status
+     * @return
+     */
+    public String getStatusText(GameStatus status) {
+        switch (status) {
+            case NOT_STARTED:
+                return "Game Has Not Begun";
+            case PAUSED:
+                return "Paused";
+            case HALFTIME:
+                return "Halftime!";
+            case GAME_OVER:
+                return "Game Over";
+        }
+
+        return "Game Has Not Begun";
+    }
 }

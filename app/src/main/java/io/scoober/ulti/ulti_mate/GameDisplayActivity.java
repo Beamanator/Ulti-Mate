@@ -29,6 +29,7 @@ import org.w3c.dom.Text;
 public class GameDisplayActivity extends AppCompatActivity {
 
     private Button setupFieldButton, startButton, endButton;
+    private TextView statusBar;
 
     private LinearLayout gameImagesLayout;
 
@@ -64,7 +65,7 @@ public class GameDisplayActivity extends AppCompatActivity {
         rightTeam = (TextView) findViewById(R.id.rightTeam);
         startButton = (Button) findViewById(R.id.startButton);
         endButton = (Button) findViewById(R.id.endButton);
-        // TODO: Hook up start / end buttons
+        statusBar = (TextView) findViewById(R.id.gameStatusText);
 
         gameImagesLayout = (LinearLayout) findViewById(R.id.gameImagesLayout);
 
@@ -103,7 +104,7 @@ public class GameDisplayActivity extends AppCompatActivity {
 
         // set up team details
         //TODO: add team colors from game object
-        inflateTeamData(team1Name, team2Name, team1Color, team2Color);
+        inflateTeamData(team1Color, team2Color);
         setupScoreButtonListeners(team1Name, leftTeamScore, leftTeamAddButton, leftTeamSubtractButton);
         setupScoreButtonListeners(team2Name, rightTeamScore, rightTeamAddButton, rightTeamSubtractButton);
 
@@ -224,10 +225,10 @@ public class GameDisplayActivity extends AppCompatActivity {
         });
     }
 
-    private void inflateTeamData(String t1, String t2, String c1, String c2) {
+    private void inflateTeamData(String c1, String c2) {
         //TODO: possibly set variables based on team orientation?
-        leftTeam.setText(t1);
-        rightTeam.setText(t2);
+        leftTeam.setText(team1Name);
+        rightTeam.setText(team2Name);
 
         leftTeamScore.setText(Integer.toString(team1Score));
         rightTeamScore.setText(Integer.toString(team2Score));
@@ -258,6 +259,9 @@ public class GameDisplayActivity extends AppCompatActivity {
         if (game.getTeam1Score() > 0 || game.getTeam2Score() > 0) {
             startButton.setText(R.string.start_resume_button);
         }
+
+        // Game Status stuff:
+        statusBar.setText(game.getStatusText(game.getGameStatus()));
     }
 
     private void buildFieldSetupDialogListener(final String t1, final String t2) {

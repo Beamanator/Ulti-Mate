@@ -283,18 +283,36 @@
     </LinearLayout>
 
     <!--Game Status Bar-->
-    <TextView
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/status_text"
-        android:id="@+id/statusBar"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:layout_alignParentBottom="true"
         android:background="#FF1D60E7"
-        android:textIsSelectable="false"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
-        android:paddingLeft="10dp" />
+        android:id="@+id/statusBar"
+        android:layout_alignParentBottom="true">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/default_status_text"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:layout_alignParentLeft="true"
+            android:id="@+id/defaultStatusText"
+            android:textIsSelectable="false"
+            android:padding="10dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/default_game_status_text"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textIsSelectable="false"
+            android:id="@+id/gameStatusText"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:layout_alignParentTop="true"
+            android:layout_toEndOf="@+id/defaultStatusText" />
+
+    </RelativeLayout>
 
 
 </RelativeLayout>
