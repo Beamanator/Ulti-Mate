@@ -1,13 +1,273 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="io.scoober.ulti.ulti_mate.GameDisplayEditFragment">
+    android:layout_height="match_parent">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:id="@+id/linearLayout">
 
-</FrameLayout>
+        <!--Game Title-->
+        <ViewSwitcher
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:id="@+id/gameTitleSwitcher">
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:hint="@string/game_title_hint_text"
+                android:id="@+id/gameTitleEdit"
+                android:textAlignment="center"
+                android:layout_gravity="center"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="@string/game_title_hint_text"
+                android:id="@+id/gameTitleView"
+                android:textAlignment="center"
+                android:layout_gravity="center"/>
+        </ViewSwitcher>
+
+        <!--TODO: Maybe put image here so page looks less boring?-->
+
+        <!--Teams & Scores-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/vertical_menu_spacing"
+            android:orientation="horizontal"
+            android:baselineAligned="false">
+
+            <!--left team details-->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:orientation="vertical">
+
+                <!--Team 1 name-->
+                <ViewSwitcher
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:id="@+id/team1NameSwitcher">
+
+                    <EditText
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/leftTeamNameEdit"
+                        android:layout_gravity="center"
+                        android:textAlignment="center"
+                        android:hint="@string/team_1_hint_text" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/leftTeamNameView"
+                        android:hint="@string/team_1_hint_text"
+                        android:textAlignment="center"
+                        android:layout_gravity="center"/>
+                </ViewSwitcher>
+
+                <!--Score + Buttons Layout-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="20dp">
+
+                    <!--Score-->
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.6"
+                        android:text="0"
+                        android:textSize="80sp"
+                        android:textColor="#000000"
+                        android:textAlignment="center"
+                        android:id="@+id/leftTeamScoreEdit" />
+
+                    <!--Add / Subtract Point Buttons-->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.4"
+                        android:orientation="vertical">
+
+                        <Button
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:layout_weight="0.5"
+                            android:text="+"
+                            android:id="@+id/leftTeamAddEdit"
+                            android:textSize="25sp"
+                            android:layout_marginRight="30dp"
+                            android:enabled="false" />
+                        <Button
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:layout_weight="0.5"
+                            android:text="-"
+                            android:id="@+id/leftTeamSubtractEdit"
+                            android:textSize="25sp"
+                            android:enabled="false"
+                            android:layout_marginRight="30dp" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!--team 2 details-->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:orientation="vertical">
+
+                <!--Team 2 name-->
+                <ViewSwitcher
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:id="@+id/team2NameSwitcher">
+
+                    <EditText
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/rightTeamNameEdit"
+                        android:hint="@string/team_2_hint_text"
+                        android:layout_gravity="center"
+                        android:textAlignment="center"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/rightTeamNameView"
+                        android:hint="@string/team_2_hint_text"
+                        android:layout_gravity="center"
+                        android:textAlignment="center"/>
+                </ViewSwitcher>
+
+                <!--Score + Buttons Layout-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="20dp">
+
+                    <!--Score-->
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.6"
+                        android:text="0"
+                        android:textSize="80sp"
+                        android:textColor="#000000"
+                        android:textAlignment="center"
+                        android:id="@+id/rightTeamScoreEdit"/>
+
+                    <!--Add / Subtract Point Buttons-->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.4"
+                        android:orientation="vertical">
+
+                        <Button
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:layout_weight="0.5"
+                            android:text="+"
+                            android:id="@+id/rightTeamAddEdit"
+                            android:textSize="25sp"
+                            android:layout_marginRight="30dp"
+                            android:enabled="false" />
+                        <Button
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:layout_weight="0.5"
+                            android:text="-"
+                            android:id="@+id/rightTeamSubtractEdit"
+                            android:textSize="25dp"
+                            android:enabled="false"
+                            android:layout_marginRight="30dp" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!--Edit button-->
+    <ViewSwitcher
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/timeBar"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:id="@+id/viewEditButtonSwitcher" >
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/save_button_text"
+            android:id="@+id/saveButton"
+            android:textSize="15sp"/>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/edit_button_text"
+            android:id="@+id/editButton"
+            android:textSize="15sp"/>
+    </ViewSwitcher>
+
+    <!--Game Status Bar-->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FF1D60E7"
+        android:id="@+id/timeBar"
+        android:layout_alignParentBottom="true">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/default_game_length_text"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:layout_alignParentLeft="true"
+            android:id="@+id/defaultGameLengthText"
+            android:textIsSelectable="false"
+            android:padding="10dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/game_length_text"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textIsSelectable="false"
+            android:id="@+id/gameLengthText"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:layout_alignParentTop="true"
+            android:layout_toEndOf="@+id/defaultGameLengthText" />
+
+    </RelativeLayout>
+
+
+</RelativeLayout>
