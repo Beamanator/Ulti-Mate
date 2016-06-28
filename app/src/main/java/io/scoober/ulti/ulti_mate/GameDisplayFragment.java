@@ -27,7 +27,7 @@ public class GameDisplayFragment extends Fragment {
     private Button rightTeamSubtractButton;
 
     private TextView statusBar, leftTeam, rightTeam, leftTeamScore, rightTeamScore;
-    private TextView timeCapType, timeCapTimer, gameTitleView;
+    private TextView timeCapType, timeCapTimer, gameTitleView, gameStatusText;
 
     private int team1Score, team2Score;
     private GradientDrawable leftCircle, rightCircle;
@@ -76,6 +76,20 @@ public class GameDisplayFragment extends Fragment {
         buildFieldSetupDialogListener(t1Name, t2Name);
 
         //TODO: think about creating a "swapTeams" function in case user wants this
+
+        switch (displayToLaunch) {
+            case NEW:
+                gameStatusText.setText(Game.getStatusText(Game.GameStatus.NOT_STARTED, getActivity().getBaseContext()));
+                break;
+            case RESUME:
+                startButton.setText(R.string.start_resume_button);
+                gameStatusText.setText(Game.getStatusText(Game.GameStatus.PAUSED, getActivity().getBaseContext()));
+                break;
+            case VIEW:
+                // TODO: make sure this is what we want
+                gameStatusText.setText(Game.getStatusText(Game.GameStatus.GAME_OVER, getActivity().getBaseContext()));
+                break;
+        }
 
         // Inflate the layout for this fragment
         return fragmentLayout;
@@ -280,13 +294,13 @@ public class GameDisplayFragment extends Fragment {
     }
 
     private void getWidgetReferences(View v) {
-        TextView gameTitleView = (TextView) v.findViewById(R.id.gameTitle);
+        gameTitleView = (TextView) v.findViewById(R.id.gameTitle);
         setupFieldButton = (Button) v.findViewById(R.id.fieldSetup);
         leftTeam = (TextView) v.findViewById(R.id.leftTeam);
         rightTeam = (TextView) v.findViewById(R.id.rightTeam);
         startButton = (Button) v.findViewById(R.id.startButton);
         endButton = (Button) v.findViewById(R.id.endButton);
-        statusBar = (TextView) v.findViewById(R.id.gameStatusText);
+        gameStatusText = (TextView) v.findViewById(R.id.gameStatusText);
 
         gameImagesLayout = (LinearLayout) v.findViewById(R.id.gameImagesLayout);
 

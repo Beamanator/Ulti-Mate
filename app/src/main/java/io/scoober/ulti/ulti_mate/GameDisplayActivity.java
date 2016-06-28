@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -17,10 +19,6 @@ import android.widget.TextView;
 public class GameDisplayActivity extends AppCompatActivity {
 
     private MainMenuActivity.DisplayToLaunch displayToLaunch;
-    private TextView gameStatusText;
-    private Button startButton;
-
-    Intent newIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,43 +27,35 @@ public class GameDisplayActivity extends AppCompatActivity {
 
         // get data from intent
         Intent oldIntent = getIntent();
-        long id = oldIntent.getExtras().getLong(MainMenuActivity.GAME_ID_EXTRA, 0);
+//        long id = oldIntent.getExtras().getLong(MainMenuActivity.GAME_ID_EXTRA, 0);
         displayToLaunch = (MainMenuActivity.DisplayToLaunch)
                 oldIntent.getSerializableExtra(MainMenuActivity.GAME_DISPLAY_ARG_EXTRA);
 
-        // get reference to some widgets
-        gameStatusText = (TextView) findViewById(R.id.gameStatusText);
-        startButton = (Button) findViewById(R.id.startButton);
+        // Manage all fragments -> so we can add our display / edit display fragments:
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
         // handle different cases for where Activity is called from
         switch (displayToLaunch) {
             case NEW:
-                newIntent = new Intent (this, GameDisplayFragment.class);
-                gameStatusText.setText(Game.getStatusText(Game.GameStatus.NOT_STARTED, getBaseContext()));
+                GameDisplayFragment gameFrag1 = new GameDisplayFragment();
+                fragmentTransaction.add(R.id.game_container, gameFrag1, "GAME_DISPLAY_FRAGMENT");
                 break;
             case RESUME:
-                newIntent = new Intent (this, GameDisplayFragment.class);
-                startButton.setText(R.string.start_resume_button);
-                gameStatusText.setText(Game.getStatusText(Game.GameStatus.PAUSED, getBaseContext()));
+                GameDisplayFragment gameFrag2 = new GameDisplayFragment();
+                fragmentTransaction.add(R.id.game_container, gameFrag2, "GAME_DISPLAY_FRAGMENT");
                 break;
             case EDIT:
                 // TODO: run edit game fragment - GameDisplayEditFragment.class
-                // newIntent = new Intent (this, GameDisplayEditFragment.class);
                 break;
             case VIEW:
-                newIntent = new Intent (this, GameDisplayFragment.class);
+                GameDisplayFragment gameFrag3 = new GameDisplayFragment();
+                fragmentTransaction.add(R.id.game_container, gameFrag3, "GAME_DISPLAY_FRAGMENT");
                 // TODO: make sure this is what we want
-                gameStatusText.setText(Game.getStatusText(Game.GameStatus.GAME_OVER, getBaseContext()));
                 break;
         }
 
-        // pass id along from old intent
-        newIntent.putExtra(MainMenuActivity.GAME_ID_EXTRA, id);
-
-        // pass displayToLaunch along from old intent
-        newIntent.putExtra(MainMenuActivity.GAME_DISPLAY_ARG_EXTRA, displayToLaunch);
-
-        // start new activity
-        startActivity(newIntent);
+        // commit changes so everything works.
+        fragmentTransaction.commit();
     }
 }
