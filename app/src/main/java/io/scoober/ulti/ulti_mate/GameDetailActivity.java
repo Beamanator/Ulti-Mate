@@ -1,23 +1,23 @@
 package io.scoober.ulti.ulti_mate;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 
-public class GameSetupActivity extends AppCompatActivity {
+import com.ogaclejapan.smarttablayout.SmartTabLayout;
+
+public class GameDetailActivity extends AppCompatActivity {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -28,6 +28,7 @@ public class GameSetupActivity extends AppCompatActivity {
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
     private SectionsPagerAdapter mSectionsPagerAdapter;
+    private static final int NUM_PAGES = 2;
 
     /**
      * The {@link ViewPager} that will host the section contents.
@@ -38,7 +39,7 @@ public class GameSetupActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_game_setup);
+        setContentView(R.layout.activity_game_detail);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -51,27 +52,14 @@ public class GameSetupActivity extends AppCompatActivity {
         mViewPager = (ViewPager) findViewById(R.id.setupViewPager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
-        //SmartTabLayout viewPagerTab = (SmartTabLayout) findViewById(R.id.smartTab);
-        //viewPagerTab.setViewPager(mViewPager);
+        SmartTabLayout viewPagerTab = (SmartTabLayout) findViewById(R.id.smartTab);
+        viewPagerTab.setViewPager(mViewPager);
 
         Button createGameDisplay= (Button) findViewById(R.id.createGameDisplay);
         createGameDisplay.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                Game game = createGameFromSetup();
-
-                // store game to database
-                GameDbAdapter gameDbAdapter = new GameDbAdapter(getBaseContext());
-                gameDbAdapter.open();
-                Game newGame = gameDbAdapter.createGame(game);
-                gameDbAdapter.close();
-
-                // Start Game Display Activity
-                Intent intent = new Intent(v.getContext(), GameDisplayActivity.class);
-                intent.putExtra(MainMenuActivity.GAME_ID_EXTRA, newGame.getId());
-                intent.putExtra(MainMenuActivity.GAME_DISPLAY_ARG_EXTRA,
-                        MainMenuActivity.DisplayToLaunch.NEW);
-                startActivity(intent);
+            public void onClick(View view) {
+                launchGameDisplay(view);
             }
         });
 
@@ -98,6 +86,23 @@ public class GameSetupActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void launchGameDisplay(View view) {
+        Game game = createGameFromSetup();
+
+        // store game to database
+        GameDbAdapter gameDbAdapter = new GameDbAdapter(getBaseContext());
+        gameDbAdapter.open();
+        Game newGame = gameDbAdapter.createGame(game);
+        gameDbAdapter.close();
+
+        // Start Game Display Activity
+        Intent intent = new Intent(view.getContext(), GameDisplayActivity.class);
+        intent.putExtra(MainMenuActivity.GAME_ID_EXTRA, newGame.getId());
+        intent.putExtra(MainMenuActivity.GAME_DISPLAY_ARG_EXTRA,
+                MainMenuActivity.DisplayToLaunch.NEW);
+        startActivity(intent);
     }
 
     private Game createGameFromSetup() {
@@ -157,7 +162,7 @@ public class GameSetupActivity extends AppCompatActivity {
         @Override
         public int getCount() {
             // Show 2 total pages.
-            return 2;
+            return NUM_PAGES;
         }
 
         @Override
