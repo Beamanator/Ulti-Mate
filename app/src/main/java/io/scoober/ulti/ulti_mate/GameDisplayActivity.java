@@ -46,16 +46,24 @@ public class GameDisplayActivity extends AppCompatActivity {
                 fragmentTransaction.add(R.id.game_container, gameFrag2, "GAME_DISPLAY_FRAGMENT");
                 break;
             case EDIT:
-                // TODO: run edit game fragment - GameDisplayEditFragment.class
+                GameDisplayEditFragment gameEditFrag1 = new GameDisplayEditFragment();
+                fragmentTransaction.add(R.id.game_container, gameEditFrag1, "GAME_DISPLAY_EDIT_FRAGMENT");
                 break;
             case VIEW:
-                GameDisplayFragment gameFrag3 = new GameDisplayFragment();
-                fragmentTransaction.add(R.id.game_container, gameFrag3, "GAME_DISPLAY_FRAGMENT");
-                // TODO: make sure this is what we want
+                GameDisplayEditFragment gameEditFrag2 = new GameDisplayEditFragment();
+                fragmentTransaction.add(R.id.game_container, gameEditFrag2, "GAME_DISPLAY_EDIT_FRAGMENT");
                 break;
         }
 
         // commit changes so everything works.
         fragmentTransaction.commit();
+    }
+
+    public Game getGameDetails(long gameID) {
+        GameDbAdapter gameDbAdapter = new GameDbAdapter(getBaseContext());
+        gameDbAdapter.open();
+        Game newGame = gameDbAdapter.getGame(gameID);
+        gameDbAdapter.close();
+        return newGame;
     }
 }

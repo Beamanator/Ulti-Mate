@@ -44,14 +44,15 @@ public class GameDisplayFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View fragmentLayout = inflater.inflate(R.layout.fragment_game_display, container, false);
+        View fragmentLayout = inflater.inflate(R.layout.fragment_game_display,
+                container, false);
 
         // get data from intent:
         Intent intent = getActivity().getIntent();
         long id = intent.getExtras().getLong(MainMenuActivity.GAME_ID_EXTRA, 0);
         displayToLaunch = (MainMenuActivity.DisplayToLaunch)
                 intent.getSerializableExtra(MainMenuActivity.GAME_DISPLAY_ARG_EXTRA);
-        game = getGameDetails(id);
+        game = Utils.getGameDetails(getActivity().getBaseContext(), id);
 
         // set up widget references
         getWidgetReferences(fragmentLayout);
@@ -84,10 +85,6 @@ public class GameDisplayFragment extends Fragment {
             case RESUME:
                 startButton.setText(R.string.start_resume_button);
                 gameStatusText.setText(Game.getStatusText(Game.GameStatus.PAUSED, getActivity().getBaseContext()));
-                break;
-            case VIEW:
-                // TODO: make sure this is what we want
-                gameStatusText.setText(Game.getStatusText(Game.GameStatus.GAME_OVER, getActivity().getBaseContext()));
                 break;
         }
 
@@ -154,7 +151,7 @@ public class GameDisplayFragment extends Fragment {
                 } else {
                     return;
                 }
-                saveGameDetails(game);
+                Utils.saveGameDetails(getActivity().getBaseContext(), game);
                 subtractButton.setEnabled(true);
 
                 toggleTeamColors();
@@ -188,7 +185,7 @@ public class GameDisplayFragment extends Fragment {
                 } else {
                     return;
                 }
-                saveGameDetails(game);
+                Utils.saveGameDetails(getActivity().getBaseContext(), game);
 
                 toggleTeamColors();
             }
@@ -318,22 +315,6 @@ public class GameDisplayFragment extends Fragment {
         timeCapBar = (LinearLayout) v.findViewById(R.id.timeCapBar);
         timeCapType = (TextView) v.findViewById(R.id.capText);
         timeCapTimer = (TextView) v.findViewById(R.id.capTimer);
-    }
-
-    public long saveGameDetails(Game g) {
-        GameDbAdapter gameDbAdapter = new GameDbAdapter(getActivity().getBaseContext());
-        gameDbAdapter.open();
-        long gameID = gameDbAdapter.saveGame(g);
-        gameDbAdapter.close();
-        return gameID;
-    }
-
-    public Game getGameDetails(long gameID) {
-        GameDbAdapter gameDbAdapter = new GameDbAdapter(getActivity().getBaseContext());
-        gameDbAdapter.open();
-        Game newGame = gameDbAdapter.getGame(gameID);
-        gameDbAdapter.close();
-        return newGame;
     }
 
     private void toggleTeamColors() {

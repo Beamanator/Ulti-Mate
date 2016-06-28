@@ -1,5 +1,7 @@
 package io.scoober.ulti.ulti_mate;
 
+import android.content.Context;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -57,5 +59,33 @@ public class Utils {
             e.printStackTrace();
         }
         return null;
+    }
+
+    /**
+     * Function gets game information from database via a given id and a specified context.
+     * @param c         Context to pass to GameDbAdapter
+     * @param gameID    ID of game to be returned
+     * @return          Game object with given ID
+     */
+    public static Game getGameDetails(Context c, long gameID) {
+        GameDbAdapter gameDbAdapter = new GameDbAdapter(c);
+        gameDbAdapter.open();
+        Game newGame = gameDbAdapter.getGame(gameID);
+        gameDbAdapter.close();
+        return newGame;
+    }
+
+    /**
+     * Function saves game information to database via a given id and a specified context
+     * @param c         Context to pass to GameDbAdapter
+     * @param g         Game object to save to database
+     * @return          long ID of game saved
+     */
+    public static long saveGameDetails(Context c, Game g) {
+        GameDbAdapter gameDbAdapter = new GameDbAdapter(c);
+        gameDbAdapter.open();
+        long gameID = gameDbAdapter.saveGame(g);
+        gameDbAdapter.close();
+        return gameID;
     }
 }
