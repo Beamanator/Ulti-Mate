@@ -8,7 +8,7 @@
     <string name="my_games_button">My Games</string>
     <string name="section_format">Hello World from section: %1$d</string>
 
-    <!--Game Display Activity-->
+    <!--Game Display Fragment-->
     <string name="title_activity_game_display">Ulti-Mate</string>
     <string name="field_setup_button">Set Up Field</string>
     <string name="end_button">End Game</string>
@@ -18,6 +18,15 @@
     <string name="time_remaining_text">Time remaining</string>
     <string name="default_status_text">Status:</string>
     <string name="default_game_status_text">- status goes here -</string>
+
+    <!--Game Display Edit Fragment-->
+    <string name="team_1_hint_text">Team 1</string>
+    <string name="team_2_hint_text">Team 2</string>
+    <string name="game_title_hint_text">Game Title</string>
+    <string name="edit_button_text">Edit Game</string>
+    <string name="save_button_text">Save Game</string>
+    <string name="default_game_length_text">Game Length:</string>
+    <string name="game_length_text">- time goes here -</string>
 
     <!--Game Statuses-->
     <string name="status_not_started">Game Not Started</string>

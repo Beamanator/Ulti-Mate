@@ -26,6 +26,7 @@ public class GameDisplayActivity extends AppCompatActivity {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
         // handle different cases for where Activity is called from
+        Log.d("GameDispAct","display: " + displayToLaunch.name());
         switch (displayToLaunch) {
             case NEW:
                 GameDisplayFragment gameFrag1 = new GameDisplayFragment();
