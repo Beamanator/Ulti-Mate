@@ -71,7 +71,7 @@ public class GameDisplayActivity extends AppCompatActivity {
 
         // get data from intents
         Intent intent = getIntent();
-        // Get Game id from GameDetailActivity. If no game, set id to 0
+        // Get Game id from GameSetupActivity. If no game, set id to 0
         long id = intent.getExtras().getLong(MainMenuActivity.GAME_ID_EXTRA, 0);
         displayToLaunch = (MainMenuActivity.DisplayToLaunch)
                 intent.getSerializableExtra(MainMenuActivity.GAME_DISPLAY_ARG_EXTRA);

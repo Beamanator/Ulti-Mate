@@ -31,11 +31,14 @@
 
     <!--Game Setup Activity-->
     <string name="title_activity_game_setup">Setup</string>
-    <string name="game_title">Game Title</string>
+    <string name="team_setup_title">Team Setup</string>
+    <string name="game_setup_title">Game Setup</string>
+    <string name="game_name_hint">Game Name</string>
     <string name="winning_score">Winning Score</string>
     <string name="time_caps">Time caps</string>
     <string name="soft_cap">Soft cap</string>
     <string name="hard_cap">Hard cap</string>
+    <string name="button_set_time">Set Time</string>
 
     <!--My Games Activity-->
     <string name="title_activity_my_games">My Games</string>

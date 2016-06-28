@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".GameDetailActivity">
+    tools:context=".GameSetupActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -64,31 +64,6 @@
             android:id="@+id/createGameDisplay"
             android:text="Create"
             android:layout_alignParentBottom="true"/>
-
-        <!--<ProgressBar-->
-            <!--style="?android:attr/progressBarStyleHorizontal"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:id="@+id/progressBar"-->
-            <!--android:layout_above="@+id/createGameDisplay"-->
-            <!--android:layout_centerHorizontal="true"-->
-            <!--android:progress="70" />-->
-
-        <!--<ProgressBar-->
-            <!--style="?android:attr/progressBarStyleHorizontal"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:id="@+id/progressBar2"-->
-            <!--android:layout_above="@+id/progressBar"-->
-            <!--android:layout_centerHorizontal="true" />-->
-
-        <!--<SeekBar-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:id="@+id/seekBar"-->
-            <!--android:layout_above="@+id/progressBar2"-->
-            <!--android:layout_centerHorizontal="true" />-->
-
     </RelativeLayout>
 
 
