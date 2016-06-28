@@ -121,7 +121,7 @@
                             android:layout_weight="0.5"
                             android:text="+"
                             android:id="@+id/leftTeamAdd"
-                            android:textSize="25dp"
+                            android:textSize="25sp"
                             android:layout_marginRight="30dp"
                             android:enabled="false" />
                         <Button
@@ -234,7 +234,7 @@
             android:layout_weight="0.5"
             android:text="@string/start_button"
             android:id="@+id/startButton"
-            android:textSize="15dp"
+            android:textSize="15sp"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp" />
 
@@ -244,7 +244,7 @@
             android:layout_weight="0.5"
             android:text="@string/end_button"
             android:id="@+id/endButton"
-            android:textSize="15dp"
+            android:textSize="15sp"
             android:visibility="gone"
             android:layout_marginRight="5dp"
             android:layout_marginLeft="5dp" />
@@ -259,7 +259,7 @@
         android:background="#323232"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
-        android:paddingLeft="10dp">
+        android:paddingStart="10dp">
 
         <TextView
             android:layout_width="0dp"
