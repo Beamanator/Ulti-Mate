@@ -106,10 +106,10 @@ public class GameDisplayFragment extends Fragment {
         String t1Color = game.getTeam1Color();
         String t2Color = game.getTeam2Color();
         if (t1Color == null) {
-            leftCircle = createGradientDrawable(Color.RED, 8, Color.BLACK);
+            leftCircle = Utils.createGradientDrawableCircle(100, Color.RED, 8, Color.BLACK);
         } // TODO: add code for when color is defined by game setup activity
         if (t2Color == null) {
-            rightCircle = createGradientDrawable(Color.BLUE, 0, Color.BLACK);
+            rightCircle = Utils.createGradientDrawableCircle(100, Color.BLUE, 0, Color.BLACK);
         } // TODO: add code for when color is defined by game setup activity
         leftTeamCircle.setImageDrawable(leftCircle);
         rightTeamCircle.setImageDrawable(rightCircle);
@@ -282,13 +282,7 @@ public class GameDisplayFragment extends Fragment {
         orientationDialog.show();
     }
 
-    private GradientDrawable createGradientDrawable(int color, int strokeSize, int strokeColor) {
-        GradientDrawable gd = new GradientDrawable();
-        gd.setColor(color);
-        gd.setShape(GradientDrawable.OVAL);
-        gd.setStroke(strokeSize, strokeColor);
-        return gd;
-    }
+
 
     private void getWidgetReferences(View v) {
         gameTitleView = (TextView) v.findViewById(R.id.gameTitle);

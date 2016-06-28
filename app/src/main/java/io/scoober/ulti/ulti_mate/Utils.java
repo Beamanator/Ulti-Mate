@@ -1,6 +1,7 @@
 package io.scoober.ulti.ulti_mate;
 
 import android.content.Context;
+import android.graphics.drawable.GradientDrawable;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -87,5 +88,19 @@ public class Utils {
         long gameID = gameDbAdapter.saveGame(g);
         gameDbAdapter.close();
         return gameID;
+    }
+
+    /*
+    Drawable Utils
+     */
+
+    public static GradientDrawable createGradientDrawableCircle(
+            int size, int color, int strokeSize, int strokeColor) {
+        GradientDrawable gd = new GradientDrawable();
+        gd.setColor(color);
+        gd.setShape(GradientDrawable.OVAL);
+        gd.setStroke(strokeSize, strokeColor);
+        gd.setSize(size,size);
+        return gd;
     }
 }

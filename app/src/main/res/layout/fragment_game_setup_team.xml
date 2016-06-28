@@ -50,7 +50,7 @@
             android:layout_alignParentEnd="true"
             android:layout_margin="@dimen/text_margin"
             android:background="@android:color/transparent"
-            android:src="@drawable/team_circle_50dp"
+            android:src="@drawable/sample50dp"
             android:id="@+id/team1ImageButton"/>
 
     </RelativeLayout>
@@ -78,7 +78,7 @@
             android:layout_alignParentEnd="true"
             android:layout_margin="@dimen/text_margin"
             android:background="@android:color/transparent"
-            android:src="@drawable/team_circle_50dp"
+            android:src="@drawable/sample50dp"
             android:id="@+id/team2ImageButton"/>
     </RelativeLayout>
 </LinearLayout>
