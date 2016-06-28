@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="io.scoober.ulti.ulti_mate.GameDisplayActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:id="@+id/linearLayout">
+
+        <!--Game Title-->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Game Title"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:id="@+id/gameTitle"
+            android:layout_gravity="center_horizontal" />
+
+        <!--Set up field button-->
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="@string/field_setup_button"
+            android:id="@+id/fieldSetup"
+            android:layout_gravity="center_horizontal"
+            android:visibility="visible"/>
+
+        <!--Layout that contains team color & Field images-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="15dp"
+            android:id="@+id/gameImagesLayout"
+            android:visibility="gone">
+
+            <!--Circle to represent the team on the Left side of the field-->
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.25"
+                android:padding="25dp"
+                android:id="@+id/leftTeamCircle"
+                android:cropToPadding="false" />
+
+            <!--Field image view-->
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="90dp"
+                android:layout_weight="0.5"
+                android:src="@drawable/field"
+                android:id="@+id/fieldImage"
+                android:layout_gravity="center" />
+
+            <!--Circle to represent the team on the Right side of the field-->
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.25"
+                android:padding="25dp"
+                android:id="@+id/rightTeamCircle"/>
+
+        </LinearLayout>
+
+        <!--Teams & Scores-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/vertical_menu_spacing"
+            android:orientation="horizontal">
+
+            <!--left team details-->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:orientation="vertical">
+
+                <!--Team "us" name-->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:id="@+id/leftTeam"
+                    android:text="Team 1" />
+
+                <!--Score + Buttons Layout-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="20dp">
+
+                    <!--Score-->
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.6"
+                        android:text="0"
+                        android:textSize="80sp"
+                        android:textColor="#000000"
+                        android:textAlignment="center"
+                        android:id="@+id/leftTeamScore" />
+
+                    <!--Add / Subtract Point Buttons-->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.4"
+                        android:orientation="vertical">
+
+                        <Button
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:layout_weight="0.5"
+                            android:text="+"
+                            android:id="@+id/leftTeamAdd"
+                            android:textSize="25sp"
+                            android:layout_marginRight="30dp"
+                            android:enabled="false" />
+                        <Button
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:layout_weight="0.5"
+                            android:text="-"
+                            android:id="@+id/leftTeamSubtract"
+                            android:textSize="25sp"
+                            android:enabled="false"
+                            android:layout_marginRight="30dp" />
+
+                    </LinearLayout>
+
+                    <!--Filler View just to take up space-->
+                    <!--<View-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="match_parent"-->
+                    <!--android:layout_weight="0.2"/>-->
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!--"them" team details-->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:orientation="vertical">
+
+                <!--Team "them" name-->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:id="@+id/rightTeam"
+                    android:text="Team 2"/>
+
+                <!--Score + Buttons Layout-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="20dp">
+
+                    <!--Score-->
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.6"
+                        android:text="0"
+                        android:textSize="80sp"
+                        android:textColor="#000000"
+                        android:textAlignment="center"
+                        android:id="@+id/rightTeamScore"/>
+
+                    <!--Add / Subtract Point Buttons-->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.4"
+                        android:orientation="vertical">
+
+                        <Button
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:layout_weight="0.5"
+                            android:text="+"
+                            android:id="@+id/rightTeamAdd"
+                            android:textSize="25dp"
+                            android:layout_marginRight="30dp"
+                            android:enabled="false" />
+                        <Button
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:layout_weight="0.5"
+                            android:text="-"
+                            android:id="@+id/rightTeamSubtract"
+                            android:textSize="25dp"
+                            android:enabled="false"
+                            android:layout_marginRight="30dp" />
+
+                    </LinearLayout>
+
+                    <!--Filler View just to take up space-->
+                    <!--<View-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="match_parent"-->
+                    <!--android:layout_weight="0.2"/>-->
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!--Start / Pause / End buttons-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_above="@+id/timeCapBar">
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:text="@string/start_button"
+            android:id="@+id/startButton"
+            android:textSize="15sp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp" />
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:text="@string/end_button"
+            android:id="@+id/endButton"
+            android:textSize="15sp"
+            android:visibility="gone"
+            android:layout_marginRight="5dp"
+            android:layout_marginLeft="5dp" />
+    </LinearLayout>
+
+    <!--Soft / Hard Cap Text-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/statusBar"
+        android:id="@+id/timeCapBar"
+        android:background="#323232"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:paddingStart="10dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.4"
+            android:text="@string/soft_cap_text"
+            android:id="@+id/capText"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="#ffffff" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.6"
+            android:text="@string/time_remaining_text"
+            android:id="@+id/capTimer"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textAlignment="center"
+            android:textColor="#ffffff"/>
+
+    </LinearLayout>
+
+    <!--Game Status Bar-->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FF1D60E7"
+        android:id="@+id/statusBar"
+        android:layout_alignParentBottom="true">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/default_status_text"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:layout_alignParentLeft="true"
+            android:id="@+id/defaultStatusText"
+            android:textIsSelectable="false"
+            android:padding="10dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/default_game_status_text"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textIsSelectable="false"
+            android:id="@+id/gameStatusText"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:layout_alignParentTop="true"
+            android:layout_toEndOf="@+id/defaultStatusText" />
+
+    </RelativeLayout>
+
+
+</RelativeLayout>
