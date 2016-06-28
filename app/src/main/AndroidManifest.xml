@@ -19,7 +19,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".GameDetailActivity"
+            android:name=".GameSetupActivity"
             android:label="@string/title_activity_game_setup"
             android:parentActivityName=".MainMenuActivity"
             android:theme="@style/AppTheme.NoActionBar">

@@ -17,7 +17,7 @@ import android.widget.EditText;
 
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 
-public class GameDetailActivity extends AppCompatActivity {
+public class GameSetupActivity extends AppCompatActivity {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -121,6 +121,10 @@ public class GameDetailActivity extends AppCompatActivity {
         String team1Name = team1NameField.getText().toString();
         String team2Name = team2NameField.getText().toString();
         int winningScore = Integer.valueOf(winningScoreField.getText().toString());
+        //TODO move to defaults in Game.java
+        if (winningScore == 0) {
+            winningScore = 13;
+        }
         boolean timeCaps = timeCapsBox.isChecked();
         long softCap = 0;
         long hardCap = 0;
@@ -152,9 +156,9 @@ public class GameDetailActivity extends AppCompatActivity {
 //            // getItem is called to instantiate the fragment for the given page.
             switch (position) {
                 case 0:
-                    return new GameDetailSetupFragment();
+                    return new GameSetupDetailFragment();
                 case 1:
-                    return new GameDetailFragment();
+                    return new GameSetupTeamFragment();
             }
             return null;
         }

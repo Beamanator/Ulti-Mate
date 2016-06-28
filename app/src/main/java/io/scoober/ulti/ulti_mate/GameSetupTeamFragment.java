@@ -10,10 +10,10 @@ import android.view.ViewGroup;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class GameDetailSetupFragment extends Fragment {
+public class GameSetupTeamFragment extends Fragment {
 
 
-    public GameDetailSetupFragment() {
+    public GameSetupTeamFragment() {
         // Required empty public constructor
     }
 
@@ -21,7 +21,7 @@ public class GameDetailSetupFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View gameDetailSetupView = inflater.inflate(R.layout.fragment_game_details_setup, container, false);
+        View gameDetailSetupView = inflater.inflate(R.layout.fragment_game_setup_team, container, false);
 
         return gameDetailSetupView;
     }

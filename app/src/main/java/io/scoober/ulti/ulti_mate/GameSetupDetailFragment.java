@@ -18,10 +18,10 @@ import java.util.Calendar;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class GameDetailFragment extends Fragment {
+public class GameSetupDetailFragment extends Fragment {
 
 
-    public GameDetailFragment() {
+    public GameSetupDetailFragment() {
         // Required empty public constructor
     }
 
@@ -30,7 +30,7 @@ public class GameDetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View gameDetailView = inflater.inflate(R.layout.fragment_game_setup, container, false);
+        View gameDetailView = inflater.inflate(R.layout.fragment_game_setup_detail, container, false);
 
         CheckBox timeCapsBox = (CheckBox) gameDetailView.findViewById(R.id.timeCapsCheckbox);
         final RelativeLayout timeCapsContainer = (RelativeLayout) gameDetailView.findViewById(R.id.timeCapsContainer);
