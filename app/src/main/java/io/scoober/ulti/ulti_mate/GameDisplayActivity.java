@@ -28,340 +28,56 @@ import org.w3c.dom.Text;
 
 public class GameDisplayActivity extends AppCompatActivity {
 
-    private Button setupFieldButton, startButton, endButton;
-    private TextView statusBar;
-
-    private LinearLayout gameImagesLayout;
-
-    private TextView leftTeam;
-    private TextView rightTeam;
-    private TextView leftTeamScore;
-    private Button leftTeamAddButton;
-    private Button leftTeamSubtractButton;
-    private TextView rightTeamScore;
-    private Button rightTeamAddButton;
-    private Button rightTeamSubtractButton;
-
-    private String team1Name, team2Name;
-    private int team1Score, team2Score;
-
-    private GradientDrawable leftCircle, rightCircle;
-
-    private LinearLayout timeCapBar;
-    private TextView timeCapType, timeCapTimer;
-
-    private ImageView leftTeamCircle, rightTeamCircle;
-
-    private Game game;
     private MainMenuActivity.DisplayToLaunch displayToLaunch;
+    private TextView gameStatusText;
+    private Button startButton;
+
+    Intent newIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_display);
 
-        TextView gameTitleView = (TextView) findViewById(R.id.gameTitle);
-        setupFieldButton = (Button) findViewById(R.id.fieldSetup);
-        leftTeam = (TextView) findViewById(R.id.leftTeam);
-        rightTeam = (TextView) findViewById(R.id.rightTeam);
-        startButton = (Button) findViewById(R.id.startButton);
-        endButton = (Button) findViewById(R.id.endButton);
-        statusBar = (TextView) findViewById(R.id.gameStatusText);
-
-        gameImagesLayout = (LinearLayout) findViewById(R.id.gameImagesLayout);
-
-        leftTeamScore = (TextView) findViewById(R.id.leftTeamScore);
-        leftTeamAddButton = (Button) findViewById(R.id.leftTeamAdd);
-        leftTeamSubtractButton = (Button) findViewById(R.id.leftTeamSubtract);
-        rightTeamScore = (TextView) findViewById(R.id.rightTeamScore);
-        rightTeamAddButton = (Button) findViewById(R.id.rightTeamAdd);
-        rightTeamSubtractButton = (Button) findViewById(R.id.rightTeamSubtract);
-
-        // Image Views
-        leftTeamCircle = (ImageView) findViewById(R.id.leftTeamCircle);
-        rightTeamCircle = (ImageView) findViewById(R.id.rightTeamCircle);
-
-        // get data from intents
-        Intent intent = getIntent();
-        // Get Game id from GameSetupActivity. If no game, set id to 0
-        long id = intent.getExtras().getLong(MainMenuActivity.GAME_ID_EXTRA, 0);
+        // get data from intent
+        Intent oldIntent = getIntent();
+        long id = oldIntent.getExtras().getLong(MainMenuActivity.GAME_ID_EXTRA, 0);
         displayToLaunch = (MainMenuActivity.DisplayToLaunch)
-                intent.getSerializableExtra(MainMenuActivity.GAME_DISPLAY_ARG_EXTRA);
-        game = getGameDetails(id);
+                oldIntent.getSerializableExtra(MainMenuActivity.GAME_DISPLAY_ARG_EXTRA);
 
-        team1Name = game.getTeam1Name();
-        team2Name = game.getTeam2Name();
-        String gameTitle = game.getGameName();
-        String initTeamLeft = game.getInitTeamLeft();
-        team1Score = game.getTeam1Score();
-        team2Score = game.getTeam2Score();
-        String team1Color = game.getTeam1Color();
-        String team2Color = game.getTeam2Color();
+        // get reference to some widgets
+        gameStatusText = (TextView) findViewById(R.id.gameStatusText);
+        startButton = (Button) findViewById(R.id.startButton);
 
-        // set up basic game details
-        gameTitleView.setText(gameTitle);
-
-        // TODO: add soft / hard cap info from Game object
-        timeCapBar = (LinearLayout) findViewById(R.id.timeCapBar);
-        timeCapType = (TextView) findViewById(R.id.capText);
-        timeCapTimer = (TextView) findViewById(R.id.capTimer);
-
-        // set up team details
-        //TODO: add team colors from game object
-        inflateTeamData(team1Color, team2Color);
-
-        setupScoreButtonListeners(team1Name, leftTeamScore, leftTeamAddButton, leftTeamSubtractButton);
-        setupScoreButtonListeners(team2Name, rightTeamScore, rightTeamAddButton, rightTeamSubtractButton);
-
-        // build start / end button functionality:
-        startGame(startButton, endButton);
-
-        buildFieldSetupDialogListener(team1Name, team2Name);
-        //TODO: do something with variable pullingTeamName
-        //TODO: do something with variable team1Side
-
-        //TODO: think about creating a "swapTeams" function in case user wants this
-    }
-
-    private void startGame(final Button startButton, final Button endButton) {
-        startButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int t1score = game.getTeam1Score();
-                int t2score = game.getTeam2Score();
-
-                if (t1score > 0) { leftTeamSubtractButton.setEnabled(true); }
-                if (t1score < 99) { leftTeamAddButton.setEnabled(true); }
-                if (t2score > 0) { rightTeamSubtractButton.setEnabled(true); }
-                if (t2score < 99) { rightTeamAddButton.setEnabled(true); }
-
-                // TODO: set status bar to reflect game has started / halftime / etc.
-
-                endButton.setVisibility(View.VISIBLE);
-                startButton.setVisibility(View.GONE);
-            }
-        });
-    }
-
-    private GradientDrawable createGradientDrawable(int color, int strokeSize, int strokeColor) {
-        GradientDrawable gd = new GradientDrawable();
-        gd.setColor(color);
-        gd.setShape(GradientDrawable.OVAL);
-        gd.setStroke(strokeSize, strokeColor);
-        return gd;
-    }
-
-    private void toggleTeamColors() {
-        // TODO: worry about score eventually [halfime n such]
-        int totalScore = game.getTeam1Score() + game.getTeam2Score();
-        // TODO: use game.getColor() methods instead of defaults
-        if (totalScore % 2 == 0) {
-            leftCircle.setColor(Color.RED);
-            rightCircle.setColor(Color.BLUE);
-        } else {
-            leftCircle.setColor(Color.BLUE);
-            rightCircle.setColor(Color.RED);
-        }
-    }
-
-    private void setupScoreButtonListeners(final String team, final TextView score, final Button addButton, final Button subtractButton) {
-        final int finalScore = game.getWinningScore();
-        // TODO: fix bug where buttons link to same score when teams have same name
-        addButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (team.equals(team1Name)) {
-                    game.incrementScore(1);
-                    // TODO: replace team1Score with game.getTeam1Score()?
-                    team1Score += 1;
-                    score.setText(Integer.toString(team1Score));
-                    if (team1Score == 99) {
-                        addButton.setEnabled(false);
-                    }
-                } else if (team.equals(team2Name)) {
-                    game.incrementScore(2);
-                    team2Score += 1;
-                    score.setText(Integer.toString(team2Score));
-                    // win by 2 logic
-                    if (team2Score == 99) {
-                        addButton.setEnabled(false);
-                    }
-                } else {
-                    return;
-                }
-                saveGameDetails(game);
-                subtractButton.setEnabled(true);
-
-                toggleTeamColors();
-
-            }
-        });
-
-        subtractButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (team.equals(team1Name)) {
-                    game.decrementScore(1);
-                    team1Score -= 1;
-                    score.setText(Integer.toString(team1Score));
-
-                    if (team1Score == 0) { subtractButton.setEnabled(false); }
-                    if (team1Score == 98) {
-                        addButton.setEnabled(true);
-                    }
-                } else if (team.equals(team2Name)){
-                    game.decrementScore(2);
-                    team2Score -= 1;
-                    score.setText(Integer.toString(team2Score));
-
-                    // Disable minus button if score is 0
-                    if (team2Score == 0) { subtractButton.setEnabled(false); }
-                    // Enable add button if score is less than 99 (so if it equals 98)
-                    if (team2Score == 98) {
-                        addButton.setEnabled(true);
-                    }
-                } else {
-                    return;
-                }
-                saveGameDetails(game);
-
-                toggleTeamColors();
-            }
-        });
-    }
-
-    private void inflateTeamData(String c1, String c2) {
-        //TODO: possibly set variables based on team orientation?
-        leftTeam.setText(team1Name);
-        rightTeam.setText(team2Name);
-
-        leftTeamScore.setText(Integer.toString(team1Score));
-        rightTeamScore.setText(Integer.toString(team2Score));
-
-        // If hard & soft caps are 0, they must have not been clicked
-        Log.d("DisplayActivity","Soft: " + game.getSoftCapTime() + " - Hard: " + game.getHardCapTime());
-        // TODO: make sure there's a default time added if the time cap checkbox is true
-        if (game.getHardCapTime() < 1 && game.getSoftCapTime() < 1) {
-            timeCapBar.setVisibility(View.GONE);
-        } else {
-            // TODO: insert logic to figure out if soft cap or hard cap is next.
-            // TODO: format time text better
-            timeCapTimer.setText(Long.toString(game.getSoftCapTime()));
-        }
-
-        String team1Color = game.getTeam1Color();
-        String team2Color = game.getTeam2Color();
-        if (team1Color == null) {
-            leftCircle = createGradientDrawable(Color.RED, 8, Color.BLACK);
-        } // TODO: add code for when color is defined by game setup activity
-        if (team2Color == null) {
-            rightCircle = createGradientDrawable(Color.BLUE, 0, Color.BLACK);
-        } // TODO: add code for when color is defined by game setup activity
-        leftTeamCircle.setImageDrawable(leftCircle);
-        rightTeamCircle.setImageDrawable(rightCircle);
-
+        // handle different cases for where Activity is called from
         switch (displayToLaunch) {
             case NEW:
-                statusBar.setText(game.getStatusText(Game.GameStatus.NOT_STARTED, getBaseContext()));
+                newIntent = new Intent (this, GameDisplayFragment.class);
+                gameStatusText.setText(Game.getStatusText(Game.GameStatus.NOT_STARTED, getBaseContext()));
                 break;
             case RESUME:
+                newIntent = new Intent (this, GameDisplayFragment.class);
                 startButton.setText(R.string.start_resume_button);
-                statusBar.setText(game.getStatusText(Game.GameStatus.PAUSED, getBaseContext()));
+                gameStatusText.setText(Game.getStatusText(Game.GameStatus.PAUSED, getBaseContext()));
                 break;
             case EDIT:
-                // TODO: run edit game fragment
+                // TODO: run edit game fragment - GameDisplayEditFragment.class
+                // newIntent = new Intent (this, GameDisplayEditFragment.class);
                 break;
             case VIEW:
+                newIntent = new Intent (this, GameDisplayFragment.class);
                 // TODO: make sure this is what we want
-                statusBar.setText(game.getStatusText(Game.GameStatus.GAME_OVER, getBaseContext()));
+                gameStatusText.setText(Game.getStatusText(Game.GameStatus.GAME_OVER, getBaseContext()));
                 break;
         }
-    }
 
-    private void buildFieldSetupDialogListener(final String t1, final String t2) {
+        // pass id along from old intent
+        newIntent.putExtra(MainMenuActivity.GAME_ID_EXTRA, id);
 
-        setupFieldButton.setOnClickListener(new View.OnClickListener() {
-            AlertDialog pullDialog;
+        // pass displayToLaunch along from old intent
+        newIntent.putExtra(MainMenuActivity.GAME_DISPLAY_ARG_EXTRA, displayToLaunch);
 
-            // Strings to show in Dialog with Radio Buttons:
-            final CharSequence[] items = {t1, t2};
-
-            @Override
-            public void onClick(final View v) {
-                AlertDialog.Builder dialogBox = new AlertDialog.Builder(v.getContext());
-
-                dialogBox.setTitle("Which Team Pulls First?");
-
-                // 2nd param = automatically checked item
-                dialogBox.setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int item) {
-                        switch (item) {
-                            case 0:
-                                game.setInitPullingTeam(t1);
-                                break;
-                            case 1:
-                                game.setInitPullingTeam(t2);
-                                break;
-                        }
-                        dialog.dismiss();
-                        buildTeamOrientationDialog(t1, t2, v);
-                    }
-                });
-
-                pullDialog = dialogBox.create();
-                pullDialog.show();
-            }
-        });
-    }
-
-    private void buildTeamOrientationDialog(final String t1, final String t2, View v) {
-
-        AlertDialog orientationDialog;
-
-        // Strings to show in Dialog with Radio Buttons:
-        final CharSequence[] items = {"Left", "Right"};
-
-        AlertDialog.Builder dialogBox = new AlertDialog.Builder(v.getContext());
-
-        dialogBox.setTitle("Which Side is " + t1 + " on?");
-
-        // 2nd param = automatically checked item
-        dialogBox.setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int item) {
-                switch (item) {
-                    case 0:
-                        game.setInitTeamLeft(t1);
-                        break;
-                    case 1:
-                        game.setInitTeamLeft(t2);
-                        break;
-                }
-                dialog.dismiss();
-                // At this point, both dialog boxes must have been hit & populated Game.
-
-                setupFieldButton.setVisibility(View.GONE);
-                gameImagesLayout.setVisibility(View.VISIBLE);
-            }
-        });
-
-        orientationDialog = dialogBox.create();
-        orientationDialog.show();
-    }
-
-    public long saveGameDetails(Game g) {
-        GameDbAdapter gameDbAdapter = new GameDbAdapter(getBaseContext());
-        gameDbAdapter.open();
-        long gameID = gameDbAdapter.saveGame(g);
-        gameDbAdapter.close();
-        return gameID;
-    }
-
-    public Game getGameDetails(long gameID) {
-        GameDbAdapter gameDbAdapter = new GameDbAdapter(getBaseContext());
-        gameDbAdapter.open();
-        Game newGame = gameDbAdapter.getGame(gameID);
-        gameDbAdapter.close();
-        return newGame;
+        // start new activity
+        startActivity(newIntent);
     }
 }

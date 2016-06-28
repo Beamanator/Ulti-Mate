@@ -171,7 +171,7 @@ public class Game {
      * @param context   base context used to find strings.xml resource file
      * @return          return translated value from strings.xml
      */
-    public String getStatusText(GameStatus status, Context context) {
+    public static String getStatusText(GameStatus status, Context context) {
         switch (status) {
             case NOT_STARTED:
                 return context.getString(R.string.status_not_started);
