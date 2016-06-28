@@ -62,7 +62,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/createGameDisplay"
-            android:text="Create"
+            android:text="@string/button_create_game"
             android:layout_alignParentBottom="true"/>
     </RelativeLayout>
 

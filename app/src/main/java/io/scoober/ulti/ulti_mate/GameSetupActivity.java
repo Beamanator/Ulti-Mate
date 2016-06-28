@@ -156,9 +156,9 @@ public class GameSetupActivity extends AppCompatActivity {
 //            // getItem is called to instantiate the fragment for the given page.
             switch (position) {
                 case 0:
-                    return new GameSetupTeamFragment();
-                case 1:
                     return new GameSetupDetailFragment();
+                case 1:
+                    return new GameSetupTeamFragment();
             }
             return null;
         }

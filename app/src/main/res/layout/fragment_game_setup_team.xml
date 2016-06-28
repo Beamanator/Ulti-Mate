@@ -1,86 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        >
+    <!--Setup for game title-->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/gameTitleSetupLabel"
+        android:layout_gravity="center"
+        android:text="@string/team_setup_title"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        />
 
-        <!--Setup for game title-->
-        <TextView
+    <View
+        android:layout_width="20dp"
+        android:layout_height="2dp"
+        android:layout_marginTop="@dimen/vertical_menu_spacing"
+        android:background="#000000"
+        android:layout_gravity="center" />
+
+    <!--Team setup-->
+    <!--Team 1-->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/vertical_menu_spacing">
+
+        <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/gameTitleSetupLabel"
-            android:layout_gravity="center"
-            android:text="@string/team_setup_title"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            />
+            android:layout_toStartOf="@+id/team1ImageButton"
+            android:layout_alignParentStart="true"
+            android:layout_alignBottom="@+id/team1ImageButton"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:id="@+id/team1Name"
+            android:hint="@string/team_1_name_hint" />
 
-        <View
-            android:layout_width="20dp"
-            android:layout_height="2dp"
-            android:layout_marginTop="@dimen/vertical_menu_spacing"
-            android:background="#000000"
-            android:layout_gravity="center" />
-
-        <!--Team setup-->
-        <!--Team 1-->
-        <LinearLayout
-            android:layout_width="match_parent"
+        <ImageButton
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="@dimen/vertical_menu_spacing">
-            
-            <EditText
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.7"
-                android:id="@+id/team1Name"
-                android:hint="Team 1"
-                android:gravity="center"
-                android:singleLine="true" />
+            android:layout_alignParentEnd="true"
+            android:layout_margin="@dimen/text_margin"
+            android:background="@android:color/transparent"
+            android:src="@drawable/team_circle_50dp"
+            android:id="@+id/team1ImageButton"/>
 
-            <ImageView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.3"
-                android:src="@drawable/team_circle_50dp"
-                android:layout_gravity="center" />
+    </RelativeLayout>
 
-        </LinearLayout>
+    <!--Team 2-->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/vertical_menu_spacing">
 
-        <!--Team 2-->
-        <LinearLayout
-            android:layout_width="match_parent"
+        <EditText
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="@dimen/vertical_menu_spacing">
+            android:layout_toStartOf="@+id/team2ImageButton"
+            android:layout_alignParentStart="true"
+            android:layout_alignBottom="@+id/team2ImageButton"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:id="@+id/team2Name"
+            android:hint="@string/team_2_name_hint" />
 
-            <EditText
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.7"
-                android:id="@+id/team2Name"
-                android:hint="Team 2"
-                android:gravity="center"
-                android:singleLine="true" />
-
-            <ImageView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.3"
-                android:src="@drawable/team_circle_50dp"
-                android:layout_gravity="center" />
-
-        </LinearLayout>
-    </LinearLayout>
-
-</RelativeLayout>
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_margin="@dimen/text_margin"
+            android:background="@android:color/transparent"
+            android:src="@drawable/team_circle_50dp"
+            android:id="@+id/team2ImageButton"/>
+    </RelativeLayout>
+</LinearLayout>
