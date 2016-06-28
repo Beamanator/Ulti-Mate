@@ -47,7 +47,7 @@ public class MainMenuActivityFragment extends Fragment {
         newGameButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(),GameSetupActivity.class);
+                Intent intent = new Intent(getActivity(),GameDetailActivity.class);
                 startActivity(intent);
             }
         });

@@ -5,9 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.ContextMenu;
-import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -114,15 +112,15 @@ public class MyGamesListFragment extends ListFragment {
 
     private void deleteConfirmDialog() {
         AlertDialog.Builder confirmBuilder = new AlertDialog.Builder(getActivity());
-        confirmBuilder.setTitle("Confirm Delete");
-        confirmBuilder.setMessage("Are you sure you want to delete this game?");
-        confirmBuilder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+        confirmBuilder.setTitle(R.string.confirm_delete_title);
+        confirmBuilder.setMessage(R.string.confirm_delete_question);
+        confirmBuilder.setPositiveButton(R.string.confirm_button, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 confirmDelete=true;
             }
         });
-        confirmBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        confirmBuilder.setNegativeButton(R.string.cancel_button, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 confirmDelete=false;

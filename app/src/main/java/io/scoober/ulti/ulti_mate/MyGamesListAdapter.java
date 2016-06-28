@@ -1,16 +1,14 @@
 package io.scoober.ulti.ulti_mate;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 public class MyGamesListAdapter extends ArrayAdapter<Game> {
 
@@ -45,13 +43,19 @@ public class MyGamesListAdapter extends ArrayAdapter<Game> {
             holder= (GameViewHolder) convertView.getTag();
         }
 
-        // analogous to onBindViewHolder() from RecycleView.Adapter
+        // block below analogous to onBindViewHolder() from RecycleView.Adapter
         Game game = getItem(position);
-        //TODO think of internationalization
+
+        // Get view resources to convert string resource id to string
+        Resources res = convertView.getResources();
+
+        // set TextView texts
         holder.title.setText(game.getGameName());
         holder.date.setText(Utils.getDateString(game.getDate()));
-        holder.score.setText(game.getTeam1Score() + "-" + game.getTeam2Score());
-        holder.teams.setText(game.getTeam1Name() + " vs " + game.getTeam2Name());
+        holder.score.setText(res.getString(R.string.score_list_text,
+                game.getTeam1Score(), game.getTeam2Score()));
+        holder.teams.setText(res.getString(R.string.team_list_text,
+                game.getTeam1Name(), game.getTeam2Name()));
 
         return convertView;
     }
