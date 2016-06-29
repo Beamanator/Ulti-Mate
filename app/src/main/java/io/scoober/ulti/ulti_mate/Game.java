@@ -31,6 +31,12 @@ public class Game {
     public enum GameStatus { NOT_STARTED, PAUSED, FIRST_HALF, HALFTIME, SECOND_HALF,
         SOFT_CAP, HARD_CAP, GAME_OVER}
 
+    //DEFAULT VALUES
+    public static final String DEFAULT_GAME_NAME = "Ultimate Game";
+    public static final int DEFAULT_WINNING_SCORE = 13; // score needed to win
+    public static final String DEFAULT_TEAM_1_NAME = "Our Team"; // Team Name
+    public static final String DEFAULT_TEAM_2_NAME = "Their Team"; // Team Name
+
     public long getId() {
         return id;
     }
@@ -100,8 +106,9 @@ public class Game {
     }
 
     /*
-    Constructor for building the game from the Game Setup Activity
-         */
+    Constructor for building the game from the Game Setup Activity. Defaults are set here
+    and will not need to be reset again, as this will populate them in the database.
+    */
     public Game(String gameName, int winningScore, String team1Name, int team1Color,
                 String team2Name, int team2Color, long softCapTime, long hardCapTime) {
         this.gameName = gameName;
@@ -113,9 +120,21 @@ public class Game {
         this.softCapTime = softCapTime;
         this.hardCapTime = hardCapTime;
 
-        this.id=0;
+        // set defaults
         this.team1Score = 0;
         this.team2Score = 0;
+        if (gameName == null) {
+            this.gameName = DEFAULT_GAME_NAME;
+        }
+        if (winningScore == 0) {
+            this.winningScore = DEFAULT_WINNING_SCORE;
+        }
+        if (team1Name == null) {
+            this.team1Name = DEFAULT_TEAM_1_NAME;
+        }
+        if (team2Name == null) {
+            this.team2Name = DEFAULT_TEAM_2_NAME;
+        }
         this.gameStatus = GameStatus.NOT_STARTED;
     }
 
