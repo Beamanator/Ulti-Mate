@@ -21,11 +21,11 @@ public class Game {
 
     // Team 1 information
     private String team1Name; // Team Name
-    private String team1Color; // Team Color
+    private int team1Color; // Team Color
 
     // Team 2 information
     private String team2Name; // Team Name
-    private String team2Color; // Team Color
+    private int team2Color; // Team Color
 
     private GameStatus gameStatus;
     public enum GameStatus { NOT_STARTED, PAUSED, FIRST_HALF, HALFTIME, SECOND_HALF,
@@ -75,7 +75,7 @@ public class Game {
         return team1Name;
     }
 
-    public String getTeam1Color() {
+    public int getTeam1Color() {
         return team1Color;
     }
 
@@ -87,7 +87,7 @@ public class Game {
         return team2Name;
     }
 
-    public String getTeam2Color() {
+    public int getTeam2Color() {
         return team2Color;
     }
 
@@ -102,8 +102,8 @@ public class Game {
     /*
     Constructor for building the game from the Game Setup Activity
          */
-    public Game(String gameName, int winningScore, String team1Name, String team1Color,
-                String team2Name, String team2Color, long softCapTime, long hardCapTime) {
+    public Game(String gameName, int winningScore, String team1Name, int team1Color,
+                String team2Name, int team2Color, long softCapTime, long hardCapTime) {
         this.gameName = gameName;
         this.winningScore = winningScore;
         this.team1Name = team1Name;
@@ -123,7 +123,7 @@ public class Game {
     Constructor for building the game from a database
      */
     public Game(long id, String gameName, GameStatus status, int winningScore, int team1Score, int team2Score,
-                String team1Name, String team1Color, String team2Name, String team2Color,
+                String team1Name, int team1Color, String team2Name, int team2Color,
                 long softCapTime, long hardCapTime, String initPullingTeam, String initTeamLeft,
                 long date) {
         this.id = id;

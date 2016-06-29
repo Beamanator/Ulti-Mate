@@ -108,14 +108,9 @@ public class GameDisplayFragment extends Fragment {
         rightTeamScore.setText(Integer.toString(game.getTeam2Score()));
         //TODO: possibly set variables based on team orientation?
 
-        String t1Color = game.getTeam1Color();
-        String t2Color = game.getTeam2Color();
-        if (t1Color == null) {
-            leftCircle = Utils.createGradientDrawableCircle(100, Color.RED, 8, Color.BLACK);
-        } // TODO: add code for when color is defined by game setup activity
-        if (t2Color == null) {
-            rightCircle = Utils.createGradientDrawableCircle(100, Color.BLUE, 0, Color.BLACK);
-        } // TODO: add code for when color is defined by game setup activity
+        int mdBlack = getResources().getColor(R.color.md_black_1000);
+        leftCircle = Utils.createGradientDrawableCircle(100, game.getTeam1Color(), 8, mdBlack);
+        rightCircle = Utils.createGradientDrawableCircle(100, game.getTeam2Color(), 0, mdBlack);
         leftTeamCircle.setImageDrawable(leftCircle);
         rightTeamCircle.setImageDrawable(rightCircle);
 
