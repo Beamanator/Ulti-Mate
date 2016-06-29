@@ -34,12 +34,13 @@ public class GameSetupActivity extends AppCompatActivity {
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
+    Button createGameDisplay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_game_detail);
+        setContentView(R.layout.activity_game_setup);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -48,20 +49,30 @@ public class GameSetupActivity extends AppCompatActivity {
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
-        // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.setupViewPager);
-        mViewPager.setAdapter(mSectionsPagerAdapter);
-
-        SmartTabLayout viewPagerTab = (SmartTabLayout) findViewById(R.id.smartTab);
-        viewPagerTab.setViewPager(mViewPager);
-
-        Button createGameDisplay= (Button) findViewById(R.id.createGameDisplay);
+        createGameDisplay= (Button) findViewById(R.id.createGameDisplay);
         createGameDisplay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 launchGameDisplay(view);
             }
         });
+
+        // Set up the ViewPager with the sections adapter.
+        mViewPager = (ViewPager) findViewById(R.id.setupViewPager);
+        mViewPager.setAdapter(mSectionsPagerAdapter);
+
+        mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                if (position == 1 && createGameDisplay.getVisibility() != View.VISIBLE) {
+                    createGameDisplay.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+        SmartTabLayout viewPagerTab = (SmartTabLayout) findViewById(R.id.smartTab);
+        viewPagerTab.setViewPager(mViewPager);
 
     }
 
@@ -116,15 +127,9 @@ public class GameSetupActivity extends AppCompatActivity {
         Button softCapTimeButton = (Button) findViewById(R.id.softCapInput);
         Button hardCapTimeButton = (Button) findViewById(R.id.hardCapInput);
 
-        // Get data from widgets
+        // Get game data from widgets
         String gameName = gameNameField.getText().toString();
-        String team1Name = team1NameField.getText().toString();
-        String team2Name = team2NameField.getText().toString();
         int winningScore = Integer.valueOf(winningScoreField.getText().toString());
-        //TODO move to defaults in Game.java
-        if (winningScore == 0) {
-            winningScore = 13;
-        }
         boolean timeCaps = timeCapsBox.isChecked();
         long softCap = 0;
         long hardCap = 0;
@@ -134,7 +139,16 @@ public class GameSetupActivity extends AppCompatActivity {
             hardCap = Utils.getMilliFrom12HrString(hardCapTimeButton.getText().toString());
         }
 
-        Game newGame = new Game(gameName,winningScore,team1Name,null,team2Name,null,softCap,hardCap);
+        // Get team data from widgets
+        String team1Name = team1NameField.getText().toString();
+        String team2Name = team2NameField.getText().toString();
+
+        // TODO think of a better way to get the fragment or store this data
+        GameSetupTeamFragment teamSetupFrag = (GameSetupTeamFragment) mSectionsPagerAdapter.getItem(1);
+        int team1Color = teamSetupFrag.getTeamColor(1);
+        int team2Color = teamSetupFrag.getTeamColor(2);
+
+        Game newGame = new Game(gameName,winningScore,team1Name,team1Color,team2Name,team2Color,softCap,hardCap);
         return newGame;
     }
 

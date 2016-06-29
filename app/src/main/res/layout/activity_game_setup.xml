@@ -43,7 +43,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            app:stl_clickable="false"
+            app:stl_clickable="true"
             app:stl_customTabTextLayoutId="@layout/custom_tab_square"
             app:stl_dividerColor="@color/transparent"
             app:stl_dividerThickness="0dp"
@@ -63,7 +63,8 @@
             android:layout_height="wrap_content"
             android:id="@+id/createGameDisplay"
             android:text="@string/button_create_game"
-            android:layout_alignParentBottom="true"/>
+            android:layout_alignParentBottom="true"
+            android:visibility="invisible"/>
     </RelativeLayout>
 
 
