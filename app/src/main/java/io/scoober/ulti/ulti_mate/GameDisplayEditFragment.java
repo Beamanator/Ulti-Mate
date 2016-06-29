@@ -2,7 +2,6 @@ package io.scoober.ulti.ulti_mate;
 
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -12,8 +11,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
-
-import org.w3c.dom.Text;
 
 
 /**
@@ -124,8 +121,8 @@ public class GameDisplayEditFragment extends Fragment {
         leftTeamScore.setText(Integer.toString(game.getTeam1Score()));
         rightTeamScore.setText(Integer.toString(game.getTeam2Score()));
 
-        String t1Color = game.getTeam1Color();
-        String t2Color = game.getTeam2Color();
+        int t1Color = game.getTeam1Color();
+        int t2Color = game.getTeam2Color();
         // TODO: maybe add color to team text / background
 
         // Game length bar information:

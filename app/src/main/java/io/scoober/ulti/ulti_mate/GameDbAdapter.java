@@ -16,7 +16,7 @@ import java.util.Calendar;
 public class GameDbAdapter {
 
     static final String DATABASE_NAME = "ultimate.db";
-    static final int DATABASE_VERSION = 5;
+    static final int DATABASE_VERSION = 6;
 
     //Games table
     public static final String GAMES_TABLE = "games";
@@ -57,10 +57,10 @@ public class GameDbAdapter {
             + C_GAME_STATUS + " text not null, "
             + C_WINNING_SCORE + " integer not null, "
             + C_TEAM_1_NAME + " text not null, "
-            + C_TEAM_1_COLOR + " text, "
+            + C_TEAM_1_COLOR + " integer not null, "
             + C_TEAM_1_SCORE + " integer not null, "
             + C_TEAM_2_NAME + " text not null, "
-            + C_TEAM_2_COLOR + " text, "
+            + C_TEAM_2_COLOR + " integer not null, "
             + C_TEAM_2_SCORE + " integer not null, "
             + C_SOFT_CAP_TIME + " text, "
             + C_HARD_CAP_TIME + " text, "
@@ -196,10 +196,10 @@ public class GameDbAdapter {
         Game.GameStatus status = Game.GameStatus.valueOf(cursor.getString(2)); // Status of game
         int winningScore = cursor.getInt(3); // score needed to win
         String team1Name = cursor.getString(4); // Team Name
-        String team1Color = cursor.getString(5); // Team Color
+        int team1Color = cursor.getInt(5); // Team Color
         int team1Score = cursor.getInt(6); // Team Score
         String team2Name = cursor.getString(7); // Team Name
-        String team2Color = cursor.getString(8); // Team Color
+        int team2Color = cursor.getInt(8); // Team Color
         int team2Score = cursor.getInt(9); // Team Score
         long softCapTime = cursor.getLong(10); // time of soft cap
         long hardCapTime = cursor.getLong(11); // time of hard cap
