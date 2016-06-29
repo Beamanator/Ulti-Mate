@@ -37,6 +37,7 @@
     <string name="status_soft_cap">Soft Cap Hit!</string>
     <string name="status_hard_cap">Hard Cap Hit!</string>
     <string name="status_game_over">Game Over</string>
+    <string name="status_in_progress">Game In Progress</string>
 
     <!--Game Setup Activity-->
     <string name="title_activity_game_setup">Setup</string>

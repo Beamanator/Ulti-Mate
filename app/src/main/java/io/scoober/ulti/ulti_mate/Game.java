@@ -29,7 +29,7 @@ public class Game {
 
     private GameStatus gameStatus;
     public enum GameStatus { NOT_STARTED, PAUSED, FIRST_HALF, HALFTIME, SECOND_HALF,
-        SOFT_CAP, HARD_CAP, GAME_OVER}
+        SOFT_CAP, HARD_CAP, GAME_OVER, IN_PROGRESS}
 
     //DEFAULT VALUES
     public static final String DEFAULT_GAME_NAME = "Ultimate Game";
@@ -208,8 +208,86 @@ public class Game {
                 return context.getString(R.string.status_hard_cap);
             case GAME_OVER:
                 return context.getString(R.string.status_game_over);
+            case IN_PROGRESS:
+                return context.getString(R.string.status_in_progress);
         }
 
         return context.getString(R.string.status_not_started);
+    }
+
+    /**
+     * Function to calculate game status and change the gameStatusText. Halftime is defined
+     * as (score to win + 1) / 2, unless there is no winning score defined for the game.
+     * @param dir       Variable to designate score change direction (-1 = minus button,
+     *                  0 = initialization, 1 = add button)
+     */
+    public GameStatus calculateGameStatus(int dir, int teamScored) {
+        int t1score = getTeam1Score();
+        int t2score = getTeam2Score();
+        int winScore = getWinningScore();
+        int halftimeScore;
+        Game.GameStatus status;
+
+        if (winScore < 2) {
+            // User never entered a score / screwed up. No halftime statuses.
+
+            status = GameStatus.IN_PROGRESS;
+        } else {
+            // Calculate halftime:
+            if (winScore % 2 == 0) {
+                // winScore is even in this case, so halftime is half the winScore.
+                halftimeScore = winScore / 2;
+            } else {
+                // winScore is odd in this case, so halftime is (winScore + 1) / 2.
+                //  ex: game to 13, halftime is at 7
+                halftimeScore = (winScore + 1) / 2;
+            }
+
+            // Figure out which team is winning.
+            if (t1score > t2score) {
+                // Team 1 winning
+                if (t1score < halftimeScore) {
+                    // status: first half
+                    status = GameStatus.FIRST_HALF;
+                } else if (t1score == halftimeScore) {
+                    // if dir is 1, halftime. otherwise, 2nd half
+                    if (dir == 1 && teamScored == 1) {
+                        status = GameStatus.HALFTIME;
+                    } else {
+                        status = GameStatus.SECOND_HALF;
+                    }
+                } else {
+                    // status: second half
+                    status = GameStatus.SECOND_HALF;
+                }
+            } else if (t1score == t2score) {
+                // Scores equal
+                if (t1score < halftimeScore) {
+                    // status: first half
+                    status = GameStatus.FIRST_HALF;
+                } else {
+                    // status: second half
+                    status = GameStatus.SECOND_HALF;
+                }
+            } else {
+                // Team 2 winning
+                if (t2score < halftimeScore) {
+                    // status: first half
+                    status = GameStatus.FIRST_HALF;
+                } else if (t2score == halftimeScore) {
+                    // if dir is 1, halftime. otherwise, 2nd half
+                    if (dir == 1 && teamScored == 2) {
+                        status = GameStatus.HALFTIME;
+                    } else {
+                        status = GameStatus.SECOND_HALF;
+                    }
+                } else {
+                    // status: second half
+                    status = GameStatus.SECOND_HALF;
+                }
+            }
+        }
+
+        return status;
     }
 }
