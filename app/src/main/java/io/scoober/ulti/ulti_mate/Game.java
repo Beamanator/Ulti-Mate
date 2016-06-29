@@ -43,6 +43,8 @@ public class Game {
         return gameName;
     }
 
+    public void setGameName(String name) { this.gameName = name; }
+
     public int getWinningScore() {
         return winningScore;
     }
@@ -59,9 +61,13 @@ public class Game {
         return team1Score;
     }
 
+    public void setTeam1Score(int score) { this.team1Score = score; }
+
     public int getTeam2Score() {
         return team2Score;
     }
+
+    public void setTeam2Score(int score) {this.team2Score = score; }
 
     public String getInitPullingTeam() {
         return initPullingTeam;
@@ -75,6 +81,8 @@ public class Game {
         return team1Name;
     }
 
+    public void setTeam1Name(String name) { this.team1Name = name; }
+
     public int getTeam1Color() {
         return team1Color;
     }
@@ -86,6 +94,8 @@ public class Game {
     public String getTeam2Name() {
         return team2Name;
     }
+
+    public void setTeam2Name(String name) { this.team2Name = name; }
 
     public int getTeam2Color() {
         return team2Color;
