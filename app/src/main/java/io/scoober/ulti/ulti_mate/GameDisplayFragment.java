@@ -8,6 +8,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.PaintDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -215,6 +216,39 @@ public class GameDisplayFragment extends Fragment {
                 startButton.setVisibility(View.GONE);
             }
         });
+
+        endButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                final AlertDialog.Builder confirmBuilder = new AlertDialog.Builder(getActivity());
+                confirmBuilder.setTitle("Confirm Game End");
+                confirmBuilder.setMessage("Are you sure you want to end the game?");
+                confirmBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        endGame(v);
+                    }
+                });
+                confirmBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Do nothing?
+                        // TODO: remove this click listener?
+                    }
+                });
+
+                confirmBuilder.create();
+                confirmBuilder.show();
+            }
+        });
+    }
+
+    private void endGame(View v) {
+        Intent intent = new Intent(v.getContext(),GameDisplayActivity.class);
+        intent.putExtra(MainMenuActivity.GAME_ID_EXTRA, game.getId());
+        intent.putExtra(MainMenuActivity.GAME_DISPLAY_ARG_EXTRA,
+                MainMenuActivity.DisplayToLaunch.VIEW);
+        startActivity(intent);
     }
 
     /**
