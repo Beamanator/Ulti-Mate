@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.PaintDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -55,10 +56,6 @@ public class GameDisplayFragment extends Fragment {
                 intent.getSerializableExtra(MainMenuActivity.GAME_DISPLAY_ARG_EXTRA);
         game = Utils.getGameDetails(getActivity().getBaseContext(), id);
 
-        // TODO: remove this log:
-        Log.d("onCreate","t1 score: " + game.getTeam1Score() + ", t2 score: " +
-                game.getTeam2Score());
-
         // set up widget references
         getWidgetReferences(fragmentLayout);
 
@@ -85,11 +82,11 @@ public class GameDisplayFragment extends Fragment {
 
         switch (displayToLaunch) {
             case NEW:
-                gameStatusText.setText(Game.getStatusText(Game.GameStatus.NOT_STARTED, getActivity().getBaseContext()));
+                setGameStatusText(Game.GameStatus.NOT_STARTED);
                 break;
             case RESUME:
                 startButton.setText(R.string.start_resume_button);
-                gameStatusText.setText(Game.getStatusText(Game.GameStatus.PAUSED, getActivity().getBaseContext()));
+                setGameStatusText(Game.GameStatus.PAUSED);
                 break;
         }
 
@@ -136,18 +133,17 @@ public class GameDisplayFragment extends Fragment {
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                // TODO: remove this log:
-                Log.d("addButton","t1 score: " + game.getTeam1Score() + ", t2 score: " +
-                        game.getTeam2Score());
+                int teamScored;
 
                 if (team.equals(game.getTeam1Name())) {
+                    teamScored = 1;
                     team1Score = game.incrementScore(1);
                     score.setText(Integer.toString(team1Score));
                     if (team1Score == 99) {
                         addButton.setEnabled(false);
                     }
                 } else if (team.equals(game.getTeam2Name())) {
+                    teamScored = 2;
                     team2Score = game.incrementScore(2);
                     score.setText(Integer.toString(team2Score));
                     if (team2Score == 99) {
@@ -160,14 +156,16 @@ public class GameDisplayFragment extends Fragment {
                 subtractButton.setEnabled(true);
 
                 toggleTeamColors();
-
+                calculateGameStatus(1, teamScored);
             }
         });
 
         subtractButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                int teamScored;
                 if (team.equals(game.getTeam1Name())) {
+                    teamScored = 1;
                     team1Score = game.decrementScore(1);
                     score.setText(Integer.toString(team1Score));
 
@@ -176,6 +174,7 @@ public class GameDisplayFragment extends Fragment {
                         addButton.setEnabled(true);
                     }
                 } else if (team.equals(game.getTeam2Name())){
+                    teamScored = 2;
                     team2Score = game.decrementScore(2);
                     score.setText(Integer.toString(team2Score));
 
@@ -191,17 +190,20 @@ public class GameDisplayFragment extends Fragment {
                 Utils.saveGameDetails(getActivity().getBaseContext(), game);
 
                 toggleTeamColors();
+                calculateGameStatus(-1, teamScored);
             }
         });
     }
 
+    /**
+     * Function to allow users to start changing scores and viewing game statuses.
+     * @param startButton   Start / Resume button. Once clicked, game is started / resumed
+     * @param endButton     TODO: End button will store data to database and lock game
+     */
     private void startGame(final Button startButton, final Button endButton) {
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO: remove this log:
-                Log.d("startButton","t1 score: " + game.getTeam1Score() + ", t2 score: " +
-                        game.getTeam2Score());
 
                 int t1score = game.getTeam1Score();
                 int t2score = game.getTeam2Score();
@@ -211,12 +213,29 @@ public class GameDisplayFragment extends Fragment {
                 if (t2score > 0) { rightTeamSubtractButton.setEnabled(true); }
                 if (t2score < 99) { rightTeamAddButton.setEnabled(true); }
 
-                // TODO: set status bar to reflect game has started / halftime / etc.
+                // Update status bar to reflect game status
+                calculateGameStatus(0, 0);
 
                 endButton.setVisibility(View.VISIBLE);
                 startButton.setVisibility(View.GONE);
             }
         });
+    }
+
+    /**
+     * Function to simplify setting the gameStatusText TextView.
+     * @param status    status in the enum Game.GameStatus
+     */
+    private void setGameStatusText(Game.GameStatus status) {
+        gameStatusText.setText(Game.getStatusText(status,
+                getActivity().getBaseContext() ) );
+    }
+
+    private void calculateGameStatus(int dir, int team) {
+        Game.GameStatus status = game.calculateGameStatus(dir, team);
+        // TODO: Create notification for users if halftime?
+
+        setGameStatusText(status);
     }
 
     private void buildFieldSetupDialogListener(final String t1, final String t2) {
@@ -288,8 +307,6 @@ public class GameDisplayFragment extends Fragment {
         orientationDialog = dialogBox.create();
         orientationDialog.show();
     }
-
-
 
     private void getWidgetReferences(View v) {
         gameTitleView = (TextView) v.findViewById(R.id.gameTitle);
