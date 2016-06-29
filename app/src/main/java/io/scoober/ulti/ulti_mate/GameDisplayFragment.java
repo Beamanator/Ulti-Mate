@@ -8,6 +8,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,6 +54,10 @@ public class GameDisplayFragment extends Fragment {
         displayToLaunch = (MainMenuActivity.DisplayToLaunch)
                 intent.getSerializableExtra(MainMenuActivity.GAME_DISPLAY_ARG_EXTRA);
         game = Utils.getGameDetails(getActivity().getBaseContext(), id);
+
+        // TODO: remove this log:
+        Log.d("onCreate","t1 score: " + game.getTeam1Score() + ", t2 score: " +
+                game.getTeam2Score());
 
         // set up widget references
         getWidgetReferences(fragmentLayout);
@@ -132,19 +137,19 @@ public class GameDisplayFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
+                // TODO: remove this log:
+                Log.d("addButton","t1 score: " + game.getTeam1Score() + ", t2 score: " +
+                        game.getTeam2Score());
+
                 if (team.equals(game.getTeam1Name())) {
-                    game.incrementScore(1);
-                    // TODO: replace team1Score with game.getTeam1Score()?
-                    team1Score += 1;
+                    team1Score = game.incrementScore(1);
                     score.setText(Integer.toString(team1Score));
                     if (team1Score == 99) {
                         addButton.setEnabled(false);
                     }
                 } else if (team.equals(game.getTeam2Name())) {
-                    game.incrementScore(2);
-                    team2Score += 1;
+                    team2Score = game.incrementScore(2);
                     score.setText(Integer.toString(team2Score));
-                    // win by 2 logic
                     if (team2Score == 99) {
                         addButton.setEnabled(false);
                     }
@@ -163,8 +168,7 @@ public class GameDisplayFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (team.equals(game.getTeam1Name())) {
-                    game.decrementScore(1);
-                    team1Score -= 1;
+                    team1Score = game.decrementScore(1);
                     score.setText(Integer.toString(team1Score));
 
                     if (team1Score == 0) { subtractButton.setEnabled(false); }
@@ -172,8 +176,7 @@ public class GameDisplayFragment extends Fragment {
                         addButton.setEnabled(true);
                     }
                 } else if (team.equals(game.getTeam2Name())){
-                    game.decrementScore(2);
-                    team2Score -= 1;
+                    team2Score = game.decrementScore(2);
                     score.setText(Integer.toString(team2Score));
 
                     // Disable minus button if score is 0
@@ -196,6 +199,10 @@ public class GameDisplayFragment extends Fragment {
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // TODO: remove this log:
+                Log.d("startButton","t1 score: " + game.getTeam1Score() + ", t2 score: " +
+                        game.getTeam2Score());
+
                 int t1score = game.getTeam1Score();
                 int t2score = game.getTeam2Score();
 

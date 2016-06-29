@@ -145,22 +145,22 @@ public class Game {
 
     public int incrementScore(int teamNumber) {
         if (teamNumber == 1) {
-            team1Score+=1;
-            return team1Score;
+            this.team1Score+=1;
+            return this.team1Score;
         } else if(teamNumber == 2) {
-            team2Score+=1;
-            return team2Score;
+            this.team2Score+=1;
+            return this.team2Score;
         }
         return -1;
     }
 
     public int decrementScore(int teamNumber) {
         if (teamNumber == 1) {
-            team1Score-=1;
-            return team1Score;
+            this.team1Score-=1;
+            return this.team1Score;
         } else if(teamNumber == 2) {
-            team2Score-=1;
-            return team2Score;
+            this.team2Score-=1;
+            return this.team2Score;
         }
         return -1;
     }
