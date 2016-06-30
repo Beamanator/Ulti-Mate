@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -129,7 +130,10 @@ public class GameSetupActivity extends AppCompatActivity {
 
         // Get game data from widgets
         String gameName = gameNameField.getText().toString();
-        int winningScore = Integer.valueOf(winningScoreField.getText().toString());
+        int winningScore = 0;
+        if (!winningScoreField.getText().toString().isEmpty()) {
+            winningScore = Integer.valueOf(winningScoreField.getText().toString());
+        }
         boolean timeCaps = timeCapsBox.isChecked();
         long softCap = 0;
         long hardCap = 0;
@@ -161,6 +165,9 @@ public class GameSetupActivity extends AppCompatActivity {
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
+        private GameSetupDetailFragment detailFrag;
+        private GameSetupTeamFragment teamFrag;
+
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
@@ -170,9 +177,15 @@ public class GameSetupActivity extends AppCompatActivity {
 //            // getItem is called to instantiate the fragment for the given page.
             switch (position) {
                 case 0:
-                    return new GameSetupDetailFragment();
+                    if (detailFrag == null) {
+                        detailFrag = new GameSetupDetailFragment();
+                    }
+                    return detailFrag;
                 case 1:
-                    return new GameSetupTeamFragment();
+                    if (teamFrag == null) {
+                        teamFrag = new GameSetupTeamFragment();
+                    }
+                    return teamFrag;
             }
             return null;
         }
@@ -181,17 +194,6 @@ public class GameSetupActivity extends AppCompatActivity {
         public int getCount() {
             // Show 2 total pages.
             return NUM_PAGES;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            switch (position) {
-                case 0:
-                    return "SECTION 1";
-                case 1:
-                    return "SECTION 2";
-            }
-            return null;
         }
     }
 }
