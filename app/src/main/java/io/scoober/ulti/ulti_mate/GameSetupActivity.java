@@ -147,7 +147,6 @@ public class GameSetupActivity extends AppCompatActivity {
         String team1Name = team1NameField.getText().toString();
         String team2Name = team2NameField.getText().toString();
 
-        // TODO think of a better way to get the fragment or store this data
         GameSetupTeamFragment teamSetupFrag = (GameSetupTeamFragment) mSectionsPagerAdapter.getItem(1);
         int team1Color = teamSetupFrag.getTeamColor(1);
         int team2Color = teamSetupFrag.getTeamColor(2);

@@ -103,6 +103,7 @@ public class GameSetupTeamFragment extends Fragment {
                 }).build().show(getFragmentManager(),"COLOR_PICKER_DIALOG");
     }
 
+    // TODO replace with a custom component that can handle this
     private void setTeamImage(int team, int color) {
 
         if (team == 1) {

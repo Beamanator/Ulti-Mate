@@ -2,15 +2,20 @@ package io.scoober.ulti.ulti_mate;
 
 
 import android.content.Intent;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.support.annotation.ColorInt;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
+
+import com.thebluealliance.spectrum.SpectrumDialog;
 
 
 /**
@@ -20,6 +25,7 @@ public class GameDisplayEditFragment extends Fragment {
 
     private Button editButton, saveButton, leftTeamAddButton;
     private Button leftTeamSubtractButton, rightTeamAddButton, rightTeamSubtractButton;
+    private ImageButton leftTeamColorButton, rightTeamColorButton;
 
     private ViewSwitcher gameTitleSwitcher, team1NameSwitcher, team2NameSwitcher;
     private ViewSwitcher viewEditButtonSwitcher;
@@ -30,6 +36,9 @@ public class GameDisplayEditFragment extends Fragment {
     private EditText gameTitleEdit, leftTeamNameEdit, rightTeamNameEdit;
 
     private Game game;
+    private @ColorInt int rightTeamColor;
+    private @ColorInt int leftTeamColor;
+
     private MainMenuActivity.DisplayToLaunch displayToLaunch;
 
     public GameDisplayEditFragment() {
@@ -57,15 +66,7 @@ public class GameDisplayEditFragment extends Fragment {
 
         switch (displayToLaunch) {
             case EDIT:
-                setupSaveButtonListener();
-                enableScoreButtons(game.getTeam1Score(), game.getTeam2Score());
-
-                // set up score button listeners:
-                setupScoreButtonListeners(game.getTeam1Name(), leftTeamScore,
-                        leftTeamAddButton, leftTeamSubtractButton);
-                setupScoreButtonListeners(game.getTeam2Name(), rightTeamScore,
-                        rightTeamAddButton, rightTeamSubtractButton);
-
+                setupAndEnableButtons();
                 break;
             case VIEW:
                 setupEditButtonListener();
@@ -124,11 +125,52 @@ public class GameDisplayEditFragment extends Fragment {
         });
     }
 
-    private void enableScoreButtons(int t1, int t2) {
+    /**
+     * Sets listeners and enables buttons
+     */
+    private void setupAndEnableButtons() {
+
+        // save Button
+        setupSaveButtonListener();
+
+        // color button
+        setupColorButtonListeners();
+
+        // set up score button listeners:
+        setupScoreButtonListeners(game.getTeam1Name(), leftTeamScore,
+                leftTeamAddButton, leftTeamSubtractButton);
+        setupScoreButtonListeners(game.getTeam2Name(), rightTeamScore,
+                rightTeamAddButton, rightTeamSubtractButton);
+
+        // Enable Color Buttons
+        leftTeamColorButton.setClickable(true);
+        rightTeamColorButton.setClickable(true);
+
+        // Enable Score Buttons
+        int t1 = game.getTeam1Score();
+        int t2 = game.getTeam2Score();
         if (t1 != 99) { leftTeamAddButton.setEnabled(true); }
         if (t1 != 0) { leftTeamSubtractButton.setEnabled(true); }
         if (t2 != 99) { rightTeamAddButton.setEnabled(true); }
         if (t2 != 0) { rightTeamSubtractButton.setEnabled(true); }
+    }
+
+    private void setupColorButtonListeners() {
+        leftTeamColorButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //start color picker
+                showColorPicker(1,leftTeamColor);
+            }
+        });
+
+        rightTeamColorButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //start color picker
+                showColorPicker(2,rightTeamColor);
+            }
+        });
     }
 
     /**
@@ -165,8 +207,8 @@ public class GameDisplayEditFragment extends Fragment {
                 game.setTeam2Name(team2Name);
                 game.setTeam1Score(team1Score);
                 game.setTeam2Score(team2Score);
-
-                // TODO: get new colors as well
+                game.setTeam1Color(leftTeamColor);
+                game.setTeam2Color(rightTeamColor);
 
                 Utils.saveGameDetails(v.getContext(), game);
 
@@ -190,6 +232,9 @@ public class GameDisplayEditFragment extends Fragment {
         leftTeamSubtractButton = (Button) v.findViewById(R.id.leftTeamSubtractEdit);
         rightTeamAddButton = (Button) v.findViewById(R.id.rightTeamAddEdit);
         rightTeamSubtractButton = (Button) v.findViewById(R.id.rightTeamSubtractEdit);
+
+        leftTeamColorButton = (ImageButton) v.findViewById(R.id.leftTeamColorButton);
+        rightTeamColorButton = (ImageButton) v.findViewById(R.id.rightTeamColorButton);
 
         gameTitleEdit = (EditText) v.findViewById(R.id.gameTitleEdit);
         leftTeamNameEdit = (EditText) v.findViewById(R.id.leftTeamNameEdit);
@@ -231,11 +276,48 @@ public class GameDisplayEditFragment extends Fragment {
         leftTeamScore.setText(Integer.toString(game.getTeam1Score()));
         rightTeamScore.setText(Integer.toString(game.getTeam2Score()));
 
-        int t1Color = game.getTeam1Color();
-        int t2Color = game.getTeam2Color();
+        leftTeamColor = game.getTeam1Color();
+        rightTeamColor = game.getTeam2Color();
+
+        leftTeamColorButton.setImageDrawable(getTeamGradientDrawable(leftTeamColor));
+        rightTeamColorButton.setImageDrawable(getTeamGradientDrawable(rightTeamColor));
         // TODO: maybe add color to team text / background
 
         // Game length bar information:
         // TODO: add game start / end data to database, then add to bar here
+    }
+
+    private void showColorPicker(final int team, int initialColor) {
+        new SpectrumDialog.Builder(getContext())
+                .setColors(R.array.team_colors)
+                .setSelectedColor(initialColor)
+                .setDismissOnColorSelected(true)
+                .setTitle(R.string.dialog_color_picker)
+                .setNegativeButtonText(R.string.cancel_button)
+                .setOnColorSelectedListener(new SpectrumDialog.OnColorSelectedListener() {
+                    @Override
+                    public void onColorSelected(boolean positiveResult, @ColorInt int color) {
+                        if (positiveResult) {
+                            setTeamImage(team, color);
+                        }
+                    }
+                }).build().show(getFragmentManager(),"COLOR_PICKER_DIALOG");
+    }
+
+    // TODO replace with a custom component that can handle this
+    private void setTeamImage(int team, int color) {
+
+        if (team == 1) {
+            leftTeamColor = color;
+            leftTeamColorButton.setImageDrawable(getTeamGradientDrawable(leftTeamColor));
+        } else if (team == 2) {
+            rightTeamColor = color;
+            rightTeamColorButton.setImageDrawable(getTeamGradientDrawable(rightTeamColor));
+        }
+
+    }
+
+    private GradientDrawable getTeamGradientDrawable(int color) {
+        return Utils.createGradientDrawableCircle(150, color, 0, 0);
     }
 }

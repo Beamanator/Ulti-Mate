@@ -1,6 +1,7 @@
 package io.scoober.ulti.ulti_mate;
 
 import android.content.Context;
+import android.support.annotation.ColorInt;
 
 /**
  * Created by Navin on 6/24/2016.
@@ -21,11 +22,11 @@ public class Game {
 
     // Team 1 information
     private String team1Name; // Team Name
-    private int team1Color; // Team Color
+    private @ColorInt int team1Color; // Team Color
 
     // Team 2 information
     private String team2Name; // Team Name
-    private int team2Color; // Team Color
+    private @ColorInt int team2Color; // Team Color
 
     private GameStatus gameStatus;
     public enum GameStatus { NOT_STARTED, PAUSED, FIRST_HALF, HALFTIME, SECOND_HALF,
@@ -87,6 +88,10 @@ public class Game {
         return team1Color;
     }
 
+    public void setTeam1Color(int team1Color) {
+        this.team1Color = team1Color;
+    }
+
     public GameStatus getGameStatus() { return gameStatus; }
 
     public void setGameStatus(GameStatus status) { this.gameStatus = status; }
@@ -99,6 +104,10 @@ public class Game {
 
     public int getTeam2Color() {
         return team2Color;
+    }
+
+    public void setTeam2Color(int team2Color) {
+        this.team2Color = team2Color;
     }
 
     public void setInitPullingTeam(String initPullingTeam) {

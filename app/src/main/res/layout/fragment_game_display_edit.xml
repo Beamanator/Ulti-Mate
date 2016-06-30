@@ -54,6 +54,16 @@
                 android:layout_weight="0.5"
                 android:orientation="vertical">
 
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/text_margin"
+                    android:layout_gravity="center"
+                    android:clickable="false"
+                    android:background="@android:color/transparent"
+                    android:src="@drawable/sample50dp"
+                    android:id="@+id/leftTeamColorButton" />
+
                 <!--Team 1 name-->
                 <ViewSwitcher
                     android:layout_width="wrap_content"
@@ -134,6 +144,16 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="0.5"
                 android:orientation="vertical">
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/text_margin"
+                    android:layout_gravity="center"
+                    android:clickable="false"
+                    android:background="@android:color/transparent"
+                    android:src="@drawable/sample50dp"
+                    android:id="@+id/rightTeamColorButton" />
 
                 <!--Team 2 name-->
                 <ViewSwitcher
