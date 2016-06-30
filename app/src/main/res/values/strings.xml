@@ -54,6 +54,11 @@
     <string name="team_2_name_hint">Team 2</string>
     <string name="dialog_color_picker">Pick a team color</string>
 
+    <!--Game Defaults-->
+    <string name="default_game_name">Ultimate!</string>
+    <string name="default_team_1_name">Home</string>
+    <string name="default_team_2_name">Away</string>
+
     <!--My Games Activity-->
     <string name="title_activity_my_games">My Games</string>
     <string name="edit_button">Edit</string>

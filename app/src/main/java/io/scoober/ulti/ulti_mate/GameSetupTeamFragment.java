@@ -38,6 +38,8 @@ public class GameSetupTeamFragment extends Fragment {
 
         //Set to correct image
         initializeImageButtons();
+        //TODO Modify focus behavior of the game title (should collapse keyboard when not selected)
+        //TODO Add onClick/onFocus listener or attribute to select all text for team names when selected
 
         return gameDetailSetupView;
     }

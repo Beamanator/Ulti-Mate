@@ -1,6 +1,7 @@
 package io.scoober.ulti.ulti_mate;
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -134,9 +135,10 @@ public class GameSetupActivity extends AppCompatActivity {
         if (!winningScoreField.getText().toString().isEmpty()) {
             winningScore = Integer.valueOf(winningScoreField.getText().toString());
         }
-        boolean timeCaps = timeCapsBox.isChecked();
+
         long softCap = 0;
         long hardCap = 0;
+        boolean timeCaps = timeCapsBox.isChecked();
         if (timeCaps) {
             // Currently stored as milliseconds without date
             softCap = Utils.getMilliFrom12HrString(softCapTimeButton.getText().toString());
@@ -151,8 +153,7 @@ public class GameSetupActivity extends AppCompatActivity {
         int team1Color = teamSetupFrag.getTeamColor(1);
         int team2Color = teamSetupFrag.getTeamColor(2);
 
-        Game newGame = new Game(gameName,winningScore,team1Name,team1Color,team2Name,team2Color,softCap,hardCap);
-        return newGame;
+        return new Game(gameName,winningScore,team1Name,team1Color,team2Name,team2Color,softCap,hardCap);
     }
 
 
