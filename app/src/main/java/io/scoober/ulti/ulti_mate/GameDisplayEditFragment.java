@@ -17,6 +17,8 @@ import android.widget.ViewSwitcher;
 
 import com.thebluealliance.spectrum.SpectrumDialog;
 
+import io.scoober.ulti.ulti_mate.CustomViews.TeamImageButton;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -25,7 +27,7 @@ public class GameDisplayEditFragment extends Fragment {
 
     private Button editButton, saveButton, leftTeamAddButton;
     private Button leftTeamSubtractButton, rightTeamAddButton, rightTeamSubtractButton;
-    private ImageButton leftTeamColorButton, rightTeamColorButton;
+    private TeamImageButton leftTeamColorButton, rightTeamColorButton;
 
     private ViewSwitcher gameTitleSwitcher, team1NameSwitcher, team2NameSwitcher;
     private ViewSwitcher viewEditButtonSwitcher;
@@ -36,8 +38,6 @@ public class GameDisplayEditFragment extends Fragment {
     private EditText gameTitleEdit, leftTeamNameEdit, rightTeamNameEdit;
 
     private Game game;
-    private @ColorInt int rightTeamColor;
-    private @ColorInt int leftTeamColor;
 
     private MainMenuActivity.DisplayToLaunch displayToLaunch;
 
@@ -160,7 +160,7 @@ public class GameDisplayEditFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 //start color picker
-                showColorPicker(1,leftTeamColor);
+                showColorPicker(leftTeamColorButton);
             }
         });
 
@@ -168,7 +168,7 @@ public class GameDisplayEditFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 //start color picker
-                showColorPicker(2,rightTeamColor);
+                showColorPicker(rightTeamColorButton);
             }
         });
     }
@@ -201,6 +201,8 @@ public class GameDisplayEditFragment extends Fragment {
                 String team2Name = rightTeamNameEdit.getText().toString();
                 int team1Score = Integer.parseInt(leftTeamScore.getText().toString());
                 int team2Score = Integer.parseInt(rightTeamScore.getText().toString());
+                @ColorInt int leftTeamColor = leftTeamColorButton.getColor();
+                @ColorInt int rightTeamColor = rightTeamColorButton.getColor();
 
                 game.setGameName(gameName);
                 game.setTeam1Name(team1Name);
@@ -233,8 +235,8 @@ public class GameDisplayEditFragment extends Fragment {
         rightTeamAddButton = (Button) v.findViewById(R.id.rightTeamAddEdit);
         rightTeamSubtractButton = (Button) v.findViewById(R.id.rightTeamSubtractEdit);
 
-        leftTeamColorButton = (ImageButton) v.findViewById(R.id.leftTeamColorButton);
-        rightTeamColorButton = (ImageButton) v.findViewById(R.id.rightTeamColorButton);
+        leftTeamColorButton = (TeamImageButton) v.findViewById(R.id.leftTeamColorButton);
+        rightTeamColorButton = (TeamImageButton) v.findViewById(R.id.rightTeamColorButton);
 
         gameTitleEdit = (EditText) v.findViewById(R.id.gameTitleEdit);
         leftTeamNameEdit = (EditText) v.findViewById(R.id.leftTeamNameEdit);
@@ -276,21 +278,21 @@ public class GameDisplayEditFragment extends Fragment {
         leftTeamScore.setText(Integer.toString(game.getTeam1Score()));
         rightTeamScore.setText(Integer.toString(game.getTeam2Score()));
 
-        leftTeamColor = game.getTeam1Color();
-        rightTeamColor = game.getTeam2Color();
+        @ColorInt int leftTeamColor = game.getTeam1Color();
+        @ColorInt int rightTeamColor = game.getTeam2Color();
 
-        leftTeamColorButton.setImageDrawable(getTeamGradientDrawable(leftTeamColor));
-        rightTeamColorButton.setImageDrawable(getTeamGradientDrawable(rightTeamColor));
+        leftTeamColorButton.build(150, leftTeamColor);
+        rightTeamColorButton.build(150, rightTeamColor);
         // TODO: maybe add color to team text / background
 
         // Game length bar information:
         // TODO: add game start / end data to database, then add to bar here
     }
 
-    private void showColorPicker(final int team, int initialColor) {
+    private void showColorPicker(final TeamImageButton imageButton) {
         new SpectrumDialog.Builder(getContext())
                 .setColors(R.array.team_colors)
-                .setSelectedColor(initialColor)
+                .setSelectedColor(imageButton.getColor())
                 .setDismissOnColorSelected(true)
                 .setTitle(R.string.dialog_color_picker)
                 .setNegativeButtonText(R.string.cancel_button)
@@ -298,26 +300,9 @@ public class GameDisplayEditFragment extends Fragment {
                     @Override
                     public void onColorSelected(boolean positiveResult, @ColorInt int color) {
                         if (positiveResult) {
-                            setTeamImage(team, color);
+                            imageButton.setColor(color);
                         }
                     }
                 }).build().show(getFragmentManager(),"COLOR_PICKER_DIALOG");
-    }
-
-    // TODO replace with a custom component that can handle this
-    private void setTeamImage(int team, int color) {
-
-        if (team == 1) {
-            leftTeamColor = color;
-            leftTeamColorButton.setImageDrawable(getTeamGradientDrawable(leftTeamColor));
-        } else if (team == 2) {
-            rightTeamColor = color;
-            rightTeamColorButton.setImageDrawable(getTeamGradientDrawable(rightTeamColor));
-        }
-
-    }
-
-    private GradientDrawable getTeamGradientDrawable(int color) {
-        return Utils.createGradientDrawableCircle(150, color, 0, 0);
     }
 }

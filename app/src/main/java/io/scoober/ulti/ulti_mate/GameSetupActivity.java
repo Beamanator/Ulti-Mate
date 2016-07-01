@@ -19,6 +19,8 @@ import android.widget.EditText;
 
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 
+import io.scoober.ulti.ulti_mate.CustomViews.TeamImageButton;
+
 public class GameSetupActivity extends AppCompatActivity {
 
     /**
@@ -128,6 +130,8 @@ public class GameSetupActivity extends AppCompatActivity {
         CheckBox timeCapsBox = (CheckBox) findViewById(R.id.timeCapsCheckbox);
         Button softCapTimeButton = (Button) findViewById(R.id.softCapInput);
         Button hardCapTimeButton = (Button) findViewById(R.id.hardCapInput);
+        TeamImageButton team1ImageButton = (TeamImageButton) findViewById(R.id.team1ImageButton);
+        TeamImageButton team2ImageButton = (TeamImageButton) findViewById(R.id.team2ImageButton);
 
         // Get game data from widgets
         String gameName = gameNameField.getText().toString();
@@ -149,9 +153,8 @@ public class GameSetupActivity extends AppCompatActivity {
         String team1Name = team1NameField.getText().toString();
         String team2Name = team2NameField.getText().toString();
 
-        GameSetupTeamFragment teamSetupFrag = (GameSetupTeamFragment) mSectionsPagerAdapter.getItem(1);
-        int team1Color = teamSetupFrag.getTeamColor(1);
-        int team2Color = teamSetupFrag.getTeamColor(2);
+        int team1Color = team1ImageButton.getColor();
+        int team2Color = team2ImageButton.getColor();
 
         return new Game(gameName,winningScore,team1Name,team1Color,team2Name,team2Color,softCap,hardCap);
     }

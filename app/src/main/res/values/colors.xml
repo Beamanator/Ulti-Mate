@@ -5,8 +5,8 @@
     <color name="colorAccent">#FF4081</color>
 
     <!--Colors for teams-->
-    <color name="team1default">@color/md_red_500</color>
-    <color name="team2default">@color/md_blue_500</color>
+    <color name="default_team_1">@color/md_red_500</color>
+    <color name="default_team_2">@color/md_blue_500</color>
     <array name="team_colors">
         <item>@color/md_red_500</item>
         <item>@color/md_pink_500</item>
