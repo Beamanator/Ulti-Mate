@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Ulti-Mate</string>
     <string name="action_settings">Settings</string>
+    <string name="action_share">Share</string>
+    <string name="action_game_settings">Game Settings</string>
 
     <!--Main Menu Activity Strings-->
     <string name="resume_button">Resume</string>

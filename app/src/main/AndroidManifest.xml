@@ -30,7 +30,8 @@
         <activity
             android:name=".GameDisplayActivity"
             android:label="@string/title_activity_game_display"
-            android:parentActivityName=".MainMenuActivity" />
+            android:parentActivityName=".MainMenuActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".MyGamesActivity"
             android:label="@string/title_activity_my_games"
