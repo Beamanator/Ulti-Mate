@@ -11,8 +11,7 @@ import android.widget.ImageButton;
  */
 public class TeamImageButton extends ImageButton{
     private GradientDrawable gd;
-    private @ColorInt int color;
-    private int size;
+    private @ColorInt int color; // using @ColorInt to denote that this integer is a color (AARRGGBB)
 
     public TeamImageButton(Context context) {
         super(context);
@@ -58,7 +57,6 @@ public class TeamImageButton extends ImageButton{
     }
 
     public void setSize(int size) {
-        this.size = size;
         gd.setSize(size, size);
     }
 
