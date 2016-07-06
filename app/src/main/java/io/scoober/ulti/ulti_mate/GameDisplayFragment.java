@@ -244,7 +244,17 @@ public class GameDisplayFragment extends Fragment {
         });
     }
 
+    /**
+     * Function that handles the end game sequence. Actions taken by this function:
+     * 1. Sends user back to GameDisplayActivity to deal with VIEW case
+     * 2. Tells Game that game status = GAME_OVER
+     * @param v     view used to get Context for saving game + creating a new Intent
+     */
     private void endGame(View v) {
+        // set new game status:
+        game.setGameStatus(Game.GameStatus.GAME_OVER);
+        Utils.saveGameDetails(v.getContext(), game);
+
         Intent intent = new Intent(v.getContext(),GameDisplayActivity.class);
         intent.putExtra(MainMenuActivity.GAME_ID_EXTRA, game.getId());
         intent.putExtra(MainMenuActivity.GAME_DISPLAY_ARG_EXTRA,

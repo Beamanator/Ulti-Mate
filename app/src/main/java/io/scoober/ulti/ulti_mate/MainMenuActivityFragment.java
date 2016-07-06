@@ -29,7 +29,15 @@ public class MainMenuActivityFragment extends Fragment {
 
         getLastGameId(); // get last game ID to activate buttons
         if (lastGameId != -1) {
-            resume.setEnabled(true);
+            // get last game details
+            Game g = Utils.getGameDetails(getActivity().getBaseContext(), lastGameId);
+
+            // if game is over, don't allow user to resume.
+            if (g.getGameStatus() != Game.GameStatus.GAME_OVER) {
+                resume.setEnabled(true);
+            }
+
+            // there is at least 1 existing game, so enable myGameButton
             myGamesButton.setEnabled(true);
         }
 
@@ -73,6 +81,9 @@ public class MainMenuActivityFragment extends Fragment {
         return mainMenuLayout;
     }
 
+    /**
+     * stores latest game Id in Database to variable lastGameId
+     */
     private void getLastGameId() {
         GameDbAdapter gameDbAdapter = new GameDbAdapter(getActivity().getBaseContext());
         gameDbAdapter.open();
