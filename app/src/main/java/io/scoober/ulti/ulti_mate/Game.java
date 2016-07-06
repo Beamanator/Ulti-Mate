@@ -1,6 +1,7 @@
 package io.scoober.ulti.ulti_mate;
 
 import android.content.Context;
+import android.support.annotation.ColorInt;
 
 /**
  * Created by Navin on 6/24/2016.
@@ -21,11 +22,11 @@ public class Game {
 
     // Team 1 information
     private String team1Name; // Team Name
-    private int team1Color; // Team Color
+    private @ColorInt int team1Color; // Team Color
 
     // Team 2 information
     private String team2Name; // Team Name
-    private int team2Color; // Team Color
+    private @ColorInt int team2Color; // Team Color
 
     private GameStatus gameStatus;
     public enum GameStatus { NOT_STARTED, PAUSED, FIRST_HALF, HALFTIME, SECOND_HALF,
@@ -49,6 +50,8 @@ public class Game {
         return gameName;
     }
 
+    public void setGameName(String name) { this.gameName = name; }
+
     public int getWinningScore() {
         return winningScore;
     }
@@ -65,9 +68,13 @@ public class Game {
         return team1Score;
     }
 
+    public void setTeam1Score(int score) { this.team1Score = score; }
+
     public int getTeam2Score() {
         return team2Score;
     }
+
+    public void setTeam2Score(int score) {this.team2Score = score; }
 
     public String getInitPullingTeam() {
         return initPullingTeam;
@@ -81,8 +88,14 @@ public class Game {
         return team1Name;
     }
 
+    public void setTeam1Name(String name) { this.team1Name = name; }
+
     public int getTeam1Color() {
         return team1Color;
+    }
+
+    public void setTeam1Color(int team1Color) {
+        this.team1Color = team1Color;
     }
 
     public GameStatus getGameStatus() { return gameStatus; }
@@ -93,8 +106,14 @@ public class Game {
         return team2Name;
     }
 
+    public void setTeam2Name(String name) { this.team2Name = name; }
+
     public int getTeam2Color() {
         return team2Color;
+    }
+
+    public void setTeam2Color(int team2Color) {
+        this.team2Color = team2Color;
     }
 
     public void setInitPullingTeam(String initPullingTeam) {

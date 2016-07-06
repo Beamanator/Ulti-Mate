@@ -30,7 +30,9 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:hint="@string/game_name_hint"
         android:id="@+id/gameTitleEditor"
-        android:layout_gravity="center_horizontal" />
+        android:layout_gravity="center_horizontal"
+        android:text="@string/default_game_name"
+        android:gravity="center" />
 
     <RelativeLayout
         android:layout_width="match_parent"

@@ -1,6 +1,7 @@
 package io.scoober.ulti.ulti_mate;
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -8,6 +9,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,6 +18,8 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
+
+import io.scoober.ulti.ulti_mate.CustomViews.TeamImageButton;
 
 public class GameSetupActivity extends AppCompatActivity {
 
@@ -126,13 +130,19 @@ public class GameSetupActivity extends AppCompatActivity {
         CheckBox timeCapsBox = (CheckBox) findViewById(R.id.timeCapsCheckbox);
         Button softCapTimeButton = (Button) findViewById(R.id.softCapInput);
         Button hardCapTimeButton = (Button) findViewById(R.id.hardCapInput);
+        TeamImageButton team1ImageButton = (TeamImageButton) findViewById(R.id.team1ImageButton);
+        TeamImageButton team2ImageButton = (TeamImageButton) findViewById(R.id.team2ImageButton);
 
         // Get game data from widgets
         String gameName = gameNameField.getText().toString();
-        int winningScore = Integer.valueOf(winningScoreField.getText().toString());
-        boolean timeCaps = timeCapsBox.isChecked();
+        int winningScore = 0;
+        if (!winningScoreField.getText().toString().isEmpty()) {
+            winningScore = Integer.valueOf(winningScoreField.getText().toString());
+        }
+
         long softCap = 0;
         long hardCap = 0;
+        boolean timeCaps = timeCapsBox.isChecked();
         if (timeCaps) {
             // Currently stored as milliseconds without date
             softCap = Utils.getMilliFrom12HrString(softCapTimeButton.getText().toString());
@@ -143,13 +153,10 @@ public class GameSetupActivity extends AppCompatActivity {
         String team1Name = team1NameField.getText().toString();
         String team2Name = team2NameField.getText().toString();
 
-        // TODO think of a better way to get the fragment or store this data
-        GameSetupTeamFragment teamSetupFrag = (GameSetupTeamFragment) mSectionsPagerAdapter.getItem(1);
-        int team1Color = teamSetupFrag.getTeamColor(1);
-        int team2Color = teamSetupFrag.getTeamColor(2);
+        int team1Color = team1ImageButton.getColor();
+        int team2Color = team2ImageButton.getColor();
 
-        Game newGame = new Game(gameName,winningScore,team1Name,team1Color,team2Name,team2Color,softCap,hardCap);
-        return newGame;
+        return new Game(gameName,winningScore,team1Name,team1Color,team2Name,team2Color,softCap,hardCap);
     }
 
 
@@ -161,6 +168,9 @@ public class GameSetupActivity extends AppCompatActivity {
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
+        private GameSetupDetailFragment detailFrag;
+        private GameSetupTeamFragment teamFrag;
+
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
@@ -170,9 +180,15 @@ public class GameSetupActivity extends AppCompatActivity {
 //            // getItem is called to instantiate the fragment for the given page.
             switch (position) {
                 case 0:
-                    return new GameSetupDetailFragment();
+                    if (detailFrag == null) {
+                        detailFrag = new GameSetupDetailFragment();
+                    }
+                    return detailFrag;
                 case 1:
-                    return new GameSetupTeamFragment();
+                    if (teamFrag == null) {
+                        teamFrag = new GameSetupTeamFragment();
+                    }
+                    return teamFrag;
             }
             return null;
         }
@@ -181,17 +197,6 @@ public class GameSetupActivity extends AppCompatActivity {
         public int getCount() {
             // Show 2 total pages.
             return NUM_PAGES;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            switch (position) {
-                case 0:
-                    return "SECTION 1";
-                case 1:
-                    return "SECTION 2";
-            }
-            return null;
         }
     }
 }

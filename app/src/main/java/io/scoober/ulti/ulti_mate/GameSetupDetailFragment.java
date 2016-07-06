@@ -37,6 +37,8 @@ public class GameSetupDetailFragment extends Fragment {
         final Button softCapButton = (Button) gameDetailView.findViewById(R.id.softCapInput);
         final Button hardCapButton = (Button) gameDetailView.findViewById(R.id.hardCapInput);
 
+        //TODO Add onClick/onFocus listener or attribute to select all text when selected
+
         // Hide the soft/hard caps if the time caps is unchecked.
         timeCapsBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override

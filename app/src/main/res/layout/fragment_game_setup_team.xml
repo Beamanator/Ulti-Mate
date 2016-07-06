@@ -42,9 +42,10 @@
             android:singleLine="true"
             android:ellipsize="end"
             android:id="@+id/team1Name"
-            android:hint="@string/team_1_name_hint" />
+            android:hint="@string/team_1_name_hint"
+            android:text="@string/default_team_1_name" />
 
-        <ImageButton
+        <io.scoober.ulti.ulti_mate.CustomViews.TeamImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
@@ -70,9 +71,10 @@
             android:singleLine="true"
             android:ellipsize="end"
             android:id="@+id/team2Name"
-            android:hint="@string/team_2_name_hint" />
+            android:hint="@string/team_2_name_hint"
+            android:text="@string/default_team_2_name" />
 
-        <ImageButton
+        <io.scoober.ulti.ulti_mate.CustomViews.TeamImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
