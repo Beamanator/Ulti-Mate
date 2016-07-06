@@ -26,6 +26,16 @@ public class Utils {
     }
 
     /**
+     * Function returns a h:mm a date string from time in milliseconds
+     * @param milli Time in milliseconds
+     * @return      MM/dd/yyyy formatted date string
+     */
+    public static String getTimeString(long milli) {
+        SimpleDateFormat sdf12 = new SimpleDateFormat("h:mm a", Locale.getDefault());
+        return sdf12.format(new Date(milli));
+    }
+
+    /**
      * Function to get date in milliseconds from a 12 hr formatted time. For example, 12:15 AM
      * @param timeString    Time as a string formatted h:mm a
      * @return              Time in milliseconds

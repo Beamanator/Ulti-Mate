@@ -2,13 +2,13 @@ package io.scoober.ulti.ulti_mate;
 
 
 import android.content.res.Resources;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
 import com.thebluealliance.spectrum.SpectrumDialog;
 
@@ -19,8 +19,10 @@ import io.scoober.ulti.ulti_mate.CustomViews.TeamImageButton;
  */
 public class GameSetupTeamFragment extends Fragment {
 
-    private TeamImageButton team1Image;
-    private TeamImageButton team2Image;
+    private TeamImageButton team1Image, team2Image;
+    private EditText team1NameText, team2NameText;
+
+    private Game game;
 
     public GameSetupTeamFragment() {
         // Required empty public constructor
@@ -32,19 +34,33 @@ public class GameSetupTeamFragment extends Fragment {
                              Bundle savedInstanceState) {
         View gameDetailSetupView = inflater.inflate(R.layout.fragment_game_setup_team, container, false);
 
-        team1Image = (TeamImageButton) gameDetailSetupView.findViewById(R.id.team1ImageButton);
-        team2Image = (TeamImageButton) gameDetailSetupView.findViewById(R.id.team2ImageButton);
+        Bundle bundle = this.getArguments();
+        if (bundle != null) {
+            game = GameSetupActivity.getGameFromBundle(bundle, getActivity().getBaseContext());
+        }
+
+        getWidgetReferences(gameDetailSetupView);
 
         //Set to correct image
         initializeImageButtons();
-        //TODO Modify focus behavior of the game title (should collapse keyboard when not selected)
-        //TODO Add onClick/onFocus listener or attribute to select all text for team names when selected
+        setListeners();
 
         return gameDetailSetupView;
     }
 
     /**
-     * This function intializes the image buttons by setting the default color and creating
+     * This function gets references to widgets on this fragment
+     */
+    private void getWidgetReferences(View v) {
+        team1Image = (TeamImageButton) v.findViewById(R.id.team1ImageButton);
+        team2Image = (TeamImageButton) v.findViewById(R.id.team2ImageButton);
+
+        team1NameText = (EditText) v.findViewById(R.id.team1Name);
+        team2NameText = (EditText) v.findViewById(R.id.team2Name);
+    }
+
+    /**
+     * This function initializes the image buttons by setting the default color and creating
      * a drawable with that color
      */
     private void initializeImageButtons() {
@@ -53,9 +69,22 @@ public class GameSetupTeamFragment extends Fragment {
         int team1Color = res.getColor(R.color.default_team_1);
         int team2Color = res.getColor(R.color.default_team_2);
 
+        if (game != null) {
+            team1Color = game.getTeam1Color();
+            team2Color = game.getTeam2Color();
+            team1NameText.setText(game.getTeam1Name());
+            team2NameText.setText(game.getTeam2Name());
+        }
+
         team1Image.build(150, team1Color);
         team2Image.build(150, team2Color);
 
+    }
+
+    /**
+     * This function sets the listeners for our view
+     */
+    private void setListeners() {
         //Add onClickListeners for the image buttons to invoke our color picker
         team1Image.setOnClickListener(new View.OnClickListener() {
             @Override

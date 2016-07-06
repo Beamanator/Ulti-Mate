@@ -43,7 +43,8 @@
 
     <!--Game Setup Activity-->
     <string name="title_activity_game_setup">Setup</string>
-    <string name="button_create_game">Create</string>
+    <string name="button_create_game">Create Game</string>
+    <string name="button_update_game">Update Game</string>
     <string name="team_setup_title">Team Setup</string>
     <string name="game_setup_title">Game Setup</string>
     <string name="game_name_hint">Game Name</string>

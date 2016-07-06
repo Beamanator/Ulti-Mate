@@ -88,7 +88,7 @@ public class GameDbAdapter {
         gameDbHelper.close();
     }
 
-    public Game createGame(Game game) {
+    public long createGame(Game game) {
         ContentValues values = new ContentValues();
         values.put(C_DATE_CREATED, Calendar.getInstance().getTimeInMillis());
         values.put(C_DATE_UPDATED, Calendar.getInstance().getTimeInMillis());
@@ -106,7 +106,7 @@ public class GameDbAdapter {
 
         long insertId = sqlDB.insert(GAMES_TABLE,null,values);
 
-        return getGame(insertId);
+        return insertId;
     }
 
     /*
