@@ -32,12 +32,6 @@ public class Game {
     public enum GameStatus { NOT_STARTED, PAUSED, FIRST_HALF, HALFTIME, SECOND_HALF,
         SOFT_CAP, HARD_CAP, GAME_OVER, IN_PROGRESS}
 
-    //DEFAULT VALUES
-    public static final String DEFAULT_GAME_NAME = "Ultimate Game";
-    public static final int DEFAULT_WINNING_SCORE = 13; // score needed to win
-    public static final String DEFAULT_TEAM_1_NAME = "Our Team"; // Team Name
-    public static final String DEFAULT_TEAM_2_NAME = "Their Team"; // Team Name
-
     public long getId() {
         return id;
     }
@@ -142,18 +136,6 @@ public class Game {
         // set defaults
         this.team1Score = 0;
         this.team2Score = 0;
-        if (gameName == null) {
-            this.gameName = DEFAULT_GAME_NAME;
-        }
-        if (winningScore == 0) {
-            this.winningScore = DEFAULT_WINNING_SCORE;
-        }
-        if (team1Name == null) {
-            this.team1Name = DEFAULT_TEAM_1_NAME;
-        }
-        if (team2Name == null) {
-            this.team2Name = DEFAULT_TEAM_2_NAME;
-        }
         this.gameStatus = GameStatus.NOT_STARTED;
     }
 
