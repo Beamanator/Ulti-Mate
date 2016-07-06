@@ -77,7 +77,7 @@ public class GameDisplayFragment extends Fragment {
         startGame(startButton, endButton);
 
         // Build listener & dialogs for field setup:
-        buildFieldSetupDialogListener(t1Name, t2Name);
+        buildFieldSetupDialogListener(fragmentLayout);
 
         //TODO: think about creating a "swapTeams" function in case user wants this
 
@@ -268,82 +268,20 @@ public class GameDisplayFragment extends Fragment {
         setGameStatusText(status);
     }
 
-    private void buildFieldSetupDialogListener(final String t1, final String t2) {
+    private void buildFieldSetupDialogListener(final View fl) {
         // Check if data has already been populated
         if (game.getInitPullingTeam() != null) {
             showFieldLayout();
             return;
         }
 
-        // else, set up listener & dialog boxes
-        // TODO: maybe create dialogs outside of this listener?
+        // else, set up listener
         setupFieldButton.setOnClickListener(new View.OnClickListener() {
-            AlertDialog pullDialog;
-
-            // Strings to show in Dialog with Radio Buttons:
-            final CharSequence[] items = {t1, t2};
-
             @Override
             public void onClick(final View v) {
-                AlertDialog.Builder dialogBox = new AlertDialog.Builder(v.getContext());
-
-                dialogBox.setTitle("Which Team Pulls First?");
-
-                // 2nd param = automatically checked item
-                dialogBox.setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int item) {
-                        switch (item) {
-                            case 0:
-                                game.setInitPullingTeam(t1);
-                                break;
-                            case 1:
-                                game.setInitPullingTeam(t2);
-                                break;
-                        }
-                        dialog.dismiss();
-                        buildTeamOrientationDialog(t1, t2, v);
-                    }
-                });
-
-                pullDialog = dialogBox.create();
-                pullDialog.show();
+                GameDisplayActivity.buildFieldSetupDialogs(game, fl);
             }
         });
-    }
-
-    private void buildTeamOrientationDialog(final String t1, final String t2, final View v) {
-
-        AlertDialog orientationDialog;
-
-        // Strings to show in Dialog with Radio Buttons:
-        final CharSequence[] items = {"Left", "Right"};
-
-        AlertDialog.Builder dialogBox = new AlertDialog.Builder(v.getContext());
-
-        dialogBox.setTitle("Which Side is " + t1 + " on?");
-
-        // 2nd param = automatically checked item
-        dialogBox.setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int item) {
-                switch (item) {
-                    case 0:
-                        game.setInitTeamLeft(t1);
-                        break;
-                    case 1:
-                        game.setInitTeamLeft(t2);
-                        break;
-                }
-                dialog.dismiss();
-
-                // At this point, both dialog boxes must have been hit & populated Game.
-                Utils.saveGameDetails(v.getContext(),game);
-
-                showFieldLayout();
-            }
-        });
-
-        orientationDialog = dialogBox.create();
-        orientationDialog.show();
     }
 
     private void getWidgetReferences(View v) {

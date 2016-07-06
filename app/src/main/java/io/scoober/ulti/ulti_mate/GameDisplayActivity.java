@@ -1,14 +1,22 @@
 package io.scoober.ulti.ulti_mate;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Layout;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
 
 public class GameDisplayActivity extends AppCompatActivity {
 
@@ -85,8 +93,89 @@ public class GameDisplayActivity extends AppCompatActivity {
                 intent.putExtra(MainMenuActivity.GAME_ID_EXTRA, gameId);
                 startActivity(intent);
                 return true;
+            case R.id.action_edit_field_setup:
+                View gameDisplayView = findViewById(R.id.game_container);
+                Game game = Utils.getGameDetails(gameDisplayView.getContext(), gameId);
+                buildFieldSetupDialogs(game, gameDisplayView);
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public static void buildFieldSetupDialogs(final Game g, final View v) {
+        AlertDialog pullDialog;
+
+        final String t1 = g.getTeam1Name();
+        final String t2 = g.getTeam2Name();
+
+        // items to display in dialog boxes:
+        final CharSequence[] items1 = {t1, t2};
+
+        // First dialog box gets initial pulling team:
+        AlertDialog.Builder dialogBox1 = new AlertDialog.Builder(v.getContext());
+        dialogBox1.setTitle("Which Team Pulls First?");
+        dialogBox1.setSingleChoiceItems(items1, -1, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case 0:
+                        g.setInitPullingTeam(t1);
+                        break;
+                    case 1:
+                        g.setInitPullingTeam(t2);
+                        break;
+                }
+                dialog.dismiss();
+                buildTeamOrientationDialog(g, t1, t2, v);
+            }
+        });
+
+        pullDialog = dialogBox1.create();
+        pullDialog.show();
+    }
+
+    private static void buildTeamOrientationDialog(final Game g, final String t1, final String t2,
+                                                   final View v) {
+
+        AlertDialog orientationDialog;
+
+        // Strings to show in Dialog with Radio Buttons:
+        final CharSequence[] items = {"Left", "Right"};
+
+        AlertDialog.Builder dialogBox = new AlertDialog.Builder(v.getContext());
+
+        dialogBox.setTitle("Which Side is " + t1 + " on?");
+
+        // 2nd param = automatically checked item
+        dialogBox.setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int item) {
+                switch (item) {
+                    case 0:
+                        g.setInitTeamLeft(t1);
+                        break;
+                    case 1:
+                        g.setInitTeamLeft(t2);
+                        break;
+                }
+                dialog.dismiss();
+
+                // At this point, both dialog boxes must have been hit & populated Game.
+                Utils.saveGameDetails(v.getContext(), g);
+
+                showFieldLayout(v);
+            }
+        });
+
+        orientationDialog = dialogBox.create();
+        orientationDialog.show();
+    }
+
+    public static void showFieldLayout(View v) {
+        Button setupFieldButton = (Button) v.findViewById(R.id.fieldSetup);
+        LinearLayout gameImagesLayout = (LinearLayout) v.findViewById(R.id.gameImagesLayout);
+
+        setupFieldButton.setVisibility(View.GONE);
+        gameImagesLayout.setVisibility(View.VISIBLE);
     }
 }
