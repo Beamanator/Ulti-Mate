@@ -23,9 +23,6 @@ public class MyGamesListFragment extends ListFragment {
     private List<Game> games;
     private MyGamesListAdapter gamesListAdapter;
 
-    private AlertDialog deleteConfirmDialogObject;
-    private boolean confirmDelete;
-
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
 
@@ -42,8 +39,6 @@ public class MyGamesListFragment extends ListFragment {
 
         registerForContextMenu(getListView());
 
-        // build dialog
-        deleteConfirmDialog();
         //TODO Add feature to get more than 10 games
     }
 
@@ -63,12 +58,7 @@ public class MyGamesListFragment extends ListFragment {
                 launchGameDisplay(MainMenuActivity.DisplayToLaunch.EDIT,rowPosition);
                 return true;
             case R.id.delete:
-                confirmDelete = false;
-                deleteConfirmDialogObject.show(); // sets confirmDelete if the user confirms deletion
-                if (confirmDelete) {
-                    deleteGame(game, rowPosition);
-                }
-
+                showDeleteConfirmDialog(game, rowPosition);
                 return true;
         }
 
@@ -110,23 +100,18 @@ public class MyGamesListFragment extends ListFragment {
         gamesListAdapter.notifyDataSetChanged();
     }
 
-    private void deleteConfirmDialog() {
-        AlertDialog.Builder confirmBuilder = new AlertDialog.Builder(getActivity());
-        confirmBuilder.setTitle(R.string.confirm_delete_title);
-        confirmBuilder.setMessage(R.string.confirm_delete_question);
-        confirmBuilder.setPositiveButton(R.string.confirm_button, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                confirmDelete=true;
-            }
-        });
-        confirmBuilder.setNegativeButton(R.string.cancel_button, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                confirmDelete=false;
-            }
-        });
-
-        deleteConfirmDialogObject = confirmBuilder.create();
+    private void showDeleteConfirmDialog(final Game game, final int rowPosition) {
+        new AlertDialog.Builder(getActivity())
+                .setTitle(R.string.confirm_delete_title)
+                .setMessage(R.string.confirm_delete_question)
+                .setPositiveButton(R.string.confirm_button, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        deleteGame(game, rowPosition);
+                    }
+                })
+                .setNegativeButton(R.string.cancel_button, null)
+                .create()
+                .show();
     }
 }
