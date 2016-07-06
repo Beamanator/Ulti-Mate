@@ -106,6 +106,7 @@ public class GameDisplayFragment extends Fragment {
         rightTeamScore.setText(Integer.toString(game.getTeam2Score()));
         //TODO: possibly set variables based on team orientation?
 
+        // populate team circles with colors from database and black stroke
         int mdBlack = getResources().getColor(R.color.md_black_1000);
         leftCircle = Utils.createGradientDrawableCircle(100, game.getTeam1Color(), 8, mdBlack);
         rightCircle = Utils.createGradientDrawableCircle(100, game.getTeam2Color(), 0, mdBlack);
@@ -268,7 +269,14 @@ public class GameDisplayFragment extends Fragment {
     }
 
     private void buildFieldSetupDialogListener(final String t1, final String t2) {
+        // Check if data has already been populated
+        if (game.getInitPullingTeam() != null) {
+            showFieldLayout();
+            return;
+        }
 
+        // else, set up listener & dialog boxes
+        // TODO: maybe create dialogs outside of this listener?
         setupFieldButton.setOnClickListener(new View.OnClickListener() {
             AlertDialog pullDialog;
 
@@ -303,7 +311,7 @@ public class GameDisplayFragment extends Fragment {
         });
     }
 
-    private void buildTeamOrientationDialog(final String t1, final String t2, View v) {
+    private void buildTeamOrientationDialog(final String t1, final String t2, final View v) {
 
         AlertDialog orientationDialog;
 
@@ -326,10 +334,11 @@ public class GameDisplayFragment extends Fragment {
                         break;
                 }
                 dialog.dismiss();
-                // At this point, both dialog boxes must have been hit & populated Game.
 
-                setupFieldButton.setVisibility(View.GONE);
-                gameImagesLayout.setVisibility(View.VISIBLE);
+                // At this point, both dialog boxes must have been hit & populated Game.
+                Utils.saveGameDetails(v.getContext(),game);
+
+                showFieldLayout();
             }
         });
 
@@ -365,15 +374,25 @@ public class GameDisplayFragment extends Fragment {
     }
 
     private void toggleTeamColors() {
-        // TODO: worry about score eventually [halfime n such]
+        // TODO: worry about score eventually [halfime n such] + initTeamLeft
         int totalScore = game.getTeam1Score() + game.getTeam2Score();
-        // TODO: use game.getColor() methods instead of defaults
+        int team1Color = game.getTeam1Color();
+        int team2Color = game.getTeam2Color();
+
         if (totalScore % 2 == 0) {
-            leftCircle.setColor(Color.RED);
-            rightCircle.setColor(Color.BLUE);
+            leftCircle.setColor(team1Color);
+            rightCircle.setColor(team2Color);
         } else {
-            leftCircle.setColor(Color.BLUE);
-            rightCircle.setColor(Color.RED);
+            leftCircle.setColor(team2Color);
+            rightCircle.setColor(team1Color);
         }
+    }
+
+    /**
+     * Function hides setupFieldButton and makes gameImagesLayout visible
+     */
+    private void showFieldLayout() {
+        setupFieldButton.setVisibility(View.GONE);
+        gameImagesLayout.setVisibility(View.VISIBLE);
     }
 }
