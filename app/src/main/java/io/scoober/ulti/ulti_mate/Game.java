@@ -50,12 +50,24 @@ public class Game {
         return winningScore;
     }
 
+    public void setWinningScore(int winningScore) {
+        this.winningScore = winningScore;
+    }
+
     public long getSoftCapTime() {
         return softCapTime;
     }
 
+    public void setSoftCapTime(long softCapTime) {
+        this.softCapTime = softCapTime;
+    }
+
     public long getHardCapTime() {
         return hardCapTime;
+    }
+
+    public void setHardCapTime(long hardCapTime) {
+        this.hardCapTime = hardCapTime;
     }
 
     public int getTeam1Score() {

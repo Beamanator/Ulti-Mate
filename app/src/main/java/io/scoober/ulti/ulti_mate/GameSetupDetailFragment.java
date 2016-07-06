@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TimePicker;
 
@@ -20,6 +21,18 @@ import java.util.Calendar;
  */
 public class GameSetupDetailFragment extends Fragment {
 
+    private Game game;
+
+    /*
+    Widgets
+     */
+
+    private CheckBox timeCapsBox;
+    private EditText gameTitleText;
+    private EditText winningScoreText;
+    private RelativeLayout timeCapsContainer;
+    private Button softCapButton;
+    private Button hardCapButton;
 
     public GameSetupDetailFragment() {
         // Required empty public constructor
@@ -32,11 +45,30 @@ public class GameSetupDetailFragment extends Fragment {
 
         View gameDetailView = inflater.inflate(R.layout.fragment_game_setup_detail, container, false);
 
-        CheckBox timeCapsBox = (CheckBox) gameDetailView.findViewById(R.id.timeCapsCheckbox);
-        final RelativeLayout timeCapsContainer = (RelativeLayout) gameDetailView.findViewById(R.id.timeCapsContainer);
-        final Button softCapButton = (Button) gameDetailView.findViewById(R.id.softCapInput);
-        final Button hardCapButton = (Button) gameDetailView.findViewById(R.id.hardCapInput);
+        Bundle bundle = this.getArguments();
+        if (bundle != null) {
+            game = GameSetupActivity.getGameFromBundle(bundle, getActivity().getBaseContext());
+        }
 
+        getWidgetReferences(gameDetailView);
+        if (game != null) {
+            initializeWidgets();
+        }
+        setListeners();
+
+        return gameDetailView;
+    }
+
+    private void getWidgetReferences(View v) {
+        timeCapsBox = (CheckBox) v.findViewById(R.id.timeCapsCheckbox);
+        gameTitleText = (EditText) v.findViewById(R.id.gameTitleEditor);
+        winningScoreText = (EditText) v.findViewById(R.id.winningScore);
+        timeCapsContainer = (RelativeLayout) v.findViewById(R.id.timeCapsContainer);
+        softCapButton = (Button) v.findViewById(R.id.softCapInput);
+        hardCapButton = (Button) v.findViewById(R.id.hardCapInput);
+    }
+
+    private void setListeners() {
         //TODO Add onClick/onFocus listener or attribute to select all text when selected
 
         // Hide the soft/hard caps if the time caps is unchecked.
@@ -59,12 +91,12 @@ public class GameSetupDetailFragment extends Fragment {
                 int minute = currentTime.get(Calendar.MINUTE);
                 TimePickerDialog softCapTimePicker = new TimePickerDialog(getActivity(),
                         new TimePickerDialog.OnTimeSetListener() {
-                    @Override
-                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                        //TODO Validation on date and time
-                        softCapButton.setText(Utils.to12Hr(hourOfDay, minute));
-                    }
-                },hour,minute,false);
+                            @Override
+                            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                                //TODO Validation on date and time
+                                softCapButton.setText(Utils.to12Hr(hourOfDay, minute));
+                            }
+                        },hour,minute,false);
                 softCapTimePicker.show();
             }
         });
@@ -86,8 +118,28 @@ public class GameSetupDetailFragment extends Fragment {
                 hardCapTimePicker.show();
             }
         });
+    }
 
-        return gameDetailView;
+    private void initializeWidgets() {
+        if (game!= null) {
+            gameTitleText.setText(game.getGameName());
+            winningScoreText.setText(Integer.toString(game.getWinningScore()));
+            long softCap = game.getSoftCapTime();
+            long hardCap = game.getHardCapTime();
+            if (softCap > 0 || hardCap > 0) {
+                timeCapsBox.setChecked(true);
+                timeCapsContainer.setVisibility(View.VISIBLE);
+
+                if (softCap > 0) {
+                    softCapButton.setText(Utils.getTimeString(softCap));
+                }
+
+                if (hardCap > 0) {
+                    hardCapButton.setText(Utils.getTimeString(hardCap));
+                }
+
+            }
+        }
     }
 
 

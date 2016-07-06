@@ -33,6 +33,9 @@ public class MainMenuActivityFragment extends Fragment {
             myGamesButton.setEnabled(true);
         }
 
+        /*
+        Resume Game
+         */
         resume.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -44,14 +47,21 @@ public class MainMenuActivityFragment extends Fragment {
             }
         });
 
+        /*
+        New Game
+         */
         newGameButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(),GameSetupActivity.class);
+                intent.putExtra(MainMenuActivity.GAME_ID_EXTRA, 0);
                 startActivity(intent);
             }
         });
 
+        /*
+        My Games
+         */
         myGamesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

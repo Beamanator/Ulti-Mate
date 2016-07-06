@@ -1,7 +1,7 @@
 package io.scoober.ulti.ulti_mate;
 
+import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -23,46 +23,44 @@ import io.scoober.ulti.ulti_mate.CustomViews.TeamImageButton;
 
 public class GameSetupActivity extends AppCompatActivity {
 
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-     */
-    private SectionsPagerAdapter mSectionsPagerAdapter;
     private static final int NUM_PAGES = 2;
 
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
-    private ViewPager mViewPager;
-    Button createGameDisplay;
+    private Button createGameDisplay;
+
+    // Game ID passed in via the intent
+    private long gameId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_game_setup);
 
+        /*
+        Setup the toolbar and define an up button
+        */
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
+        /*
+        From the intent, check to see if the game ID was passed in as a parameter. If so,
+        update the game instead of creating a new one.
+        TODO handle updating the game
+         */
+        Intent priorIntent = getIntent();
+        Bundle bundle = new Bundle();
+        gameId = priorIntent.getExtras().getLong(MainMenuActivity.GAME_ID_EXTRA);
+        bundle.putLong(MainMenuActivity.GAME_ID_EXTRA,gameId);
+        Log.d(this.getClass().getName(),Long.toString(gameId));
+
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-
-        createGameDisplay= (Button) findViewById(R.id.createGameDisplay);
-        createGameDisplay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                launchGameDisplay(view);
-            }
-        });
+        SectionsPagerAdapter mSectionsPagerAdapter =
+                new SectionsPagerAdapter(getSupportFragmentManager(), bundle);
 
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.setupViewPager);
+        ViewPager mViewPager = (ViewPager) findViewById(R.id.setupViewPager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
         mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
@@ -77,6 +75,16 @@ public class GameSetupActivity extends AppCompatActivity {
 
         SmartTabLayout viewPagerTab = (SmartTabLayout) findViewById(R.id.smartTab);
         viewPagerTab.setViewPager(mViewPager);
+
+        createGameDisplay= (Button) findViewById(R.id.createGameDisplay);
+        createGameDisplay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                storeGame();
+                launchGameDisplay();
+            }
+        });
+
 
     }
 
@@ -103,18 +111,47 @@ public class GameSetupActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void launchGameDisplay(View view) {
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (gameId > 0) {
+            createGameDisplay.setText(R.string.button_update_game);
+        }
+    }
+
+    public static Game getGameFromBundle(Bundle bundle, Context ctx) {
+        long gameId = bundle.getLong(MainMenuActivity.GAME_ID_EXTRA);
+        Game bundleGame = null;
+        if (gameId > 0) {
+            GameDbAdapter gameDbAdapter = new GameDbAdapter(ctx);
+            gameDbAdapter.open();
+            bundleGame = gameDbAdapter.getGame(gameId);
+            gameDbAdapter.close();
+        }
+
+        return bundleGame;
+    }
+
+    private void storeGame() {
         Game game = createGameFromSetup();
 
         // store game to database
         GameDbAdapter gameDbAdapter = new GameDbAdapter(getBaseContext());
         gameDbAdapter.open();
-        Game newGame = gameDbAdapter.createGame(game);
+        if (gameId > 0) {
+            gameDbAdapter.saveGame(game);
+        } else {
+            gameId = gameDbAdapter.createGame(game);
+        }
         gameDbAdapter.close();
 
+    }
+
+    private void launchGameDisplay() {
+
         // Start Game Display Activity
-        Intent intent = new Intent(view.getContext(), GameDisplayActivity.class);
-        intent.putExtra(MainMenuActivity.GAME_ID_EXTRA, newGame.getId());
+        Intent intent = new Intent(getBaseContext(), GameDisplayActivity.class);
+        intent.putExtra(MainMenuActivity.GAME_ID_EXTRA, gameId);
         intent.putExtra(MainMenuActivity.GAME_DISPLAY_ARG_EXTRA,
                 MainMenuActivity.DisplayToLaunch.NEW);
         startActivity(intent);
@@ -156,7 +193,33 @@ public class GameSetupActivity extends AppCompatActivity {
         int team1Color = team1ImageButton.getColor();
         int team2Color = team2ImageButton.getColor();
 
-        return new Game(gameName,winningScore,team1Name,team1Color,team2Name,team2Color,softCap,hardCap);
+        /*
+        If we already have a game ID, then a game should already exist. We should not create a new
+        game if the game ID already exists.
+         */
+        Game game;
+        if (gameId > 0) {
+            // Get game from the database
+            GameDbAdapter gameDbAdapter = new GameDbAdapter(getBaseContext());
+            gameDbAdapter.open();
+            game = gameDbAdapter.getGame(gameId);
+            gameDbAdapter.close();
+
+            // Set new items in the game
+            game.setGameName(gameName);
+            game.setWinningScore(winningScore);
+            game.setTeam1Name(team1Name);
+            game.setTeam1Color(team1Color);
+            game.setTeam2Name(team2Name);
+            game.setTeam2Color(team2Color);
+            game.setSoftCapTime(softCap);
+            game.setHardCapTime(hardCap);
+
+        } else {
+            game = new Game(gameName,winningScore,team1Name,team1Color,team2Name,team2Color,softCap,hardCap);
+        }
+
+        return game;
     }
 
 
@@ -171,8 +234,11 @@ public class GameSetupActivity extends AppCompatActivity {
         private GameSetupDetailFragment detailFrag;
         private GameSetupTeamFragment teamFrag;
 
-        public SectionsPagerAdapter(FragmentManager fm) {
+        private Bundle fragmentData;
+
+        public SectionsPagerAdapter(FragmentManager fm, Bundle fragmentData) {
             super(fm);
+            this.fragmentData = fragmentData;
         }
 
         @Override
@@ -182,11 +248,13 @@ public class GameSetupActivity extends AppCompatActivity {
                 case 0:
                     if (detailFrag == null) {
                         detailFrag = new GameSetupDetailFragment();
+                        detailFrag.setArguments(fragmentData);
                     }
                     return detailFrag;
                 case 1:
                     if (teamFrag == null) {
                         teamFrag = new GameSetupTeamFragment();
+                        teamFrag.setArguments(fragmentData);
                     }
                     return teamFrag;
             }
