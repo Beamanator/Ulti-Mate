@@ -69,6 +69,7 @@ public class GameDisplayEditFragment extends Fragment {
                 setupAndEnableButtons();
                 break;
             case VIEW:
+                // TODO: refactor to use setupAndEnableButtons?
                 setupEditButtonListener();
                 toggleViewTypes();
                 break;
