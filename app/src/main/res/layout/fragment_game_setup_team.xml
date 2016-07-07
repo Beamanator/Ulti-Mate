@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/gameTitleSetupLabel"
         android:layout_gravity="center"
-        android:text="@string/team_setup_title"
+        android:text="@string/title_team_setup"
         android:textAppearance="?android:attr/textAppearanceLarge"
         />
 
@@ -39,11 +39,12 @@
             android:layout_toStartOf="@+id/team1ImageButton"
             android:layout_alignParentStart="true"
             android:layout_alignBottom="@+id/team1ImageButton"
+            android:hint="@string/team_1_name_hint"
+            android:text="@string/default_team_1_name"
             android:singleLine="true"
             android:ellipsize="end"
-            android:id="@+id/team1Name"
-            android:hint="@string/team_1_name_hint"
-            android:text="@string/default_team_1_name" />
+            android:selectAllOnFocus="true"
+            android:id="@+id/team1Name"/>
 
         <io.scoober.ulti.ulti_mate.CustomViews.TeamImageButton
             android:layout_width="wrap_content"
@@ -68,11 +69,12 @@
             android:layout_toStartOf="@+id/team2ImageButton"
             android:layout_alignParentStart="true"
             android:layout_alignBottom="@+id/team2ImageButton"
+            android:hint="@string/team_2_name_hint"
+            android:text="@string/default_team_2_name"
             android:singleLine="true"
             android:ellipsize="end"
-            android:id="@+id/team2Name"
-            android:hint="@string/team_2_name_hint"
-            android:text="@string/default_team_2_name" />
+            android:selectAllOnFocus="true"
+            android:id="@+id/team2Name"/>
 
         <io.scoober.ulti.ulti_mate.CustomViews.TeamImageButton
             android:layout_width="wrap_content"

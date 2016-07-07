@@ -13,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="@string/game_setup_title"
+        android:text="@string/title_game_setup"
         android:id="@+id/textView"
         android:layout_gravity="center_horizontal" />
     <View
@@ -27,12 +27,14 @@
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:hint="@string/game_name_hint"
-        android:id="@+id/gameTitleEditor"
         android:layout_gravity="center_horizontal"
+        android:hint="@string/hint_game_name"
         android:text="@string/default_game_name"
-        android:gravity="center" />
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:gravity="center"
+        android:singleLine="true"
+        android:selectAllOnFocus="true"
+        android:id="@+id/gameTitleEditor"/>
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -47,7 +49,7 @@
             android:singleLine="true"
             android:ellipsize="end"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="@string/winning_score"
+            android:text="@string/label_winning_score"
             android:id="@+id/winningScoreLabel" />
 
         <EditText
@@ -55,10 +57,12 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:id="@+id/winningScore"
             android:inputType="number"
             android:maxLength="2"
-            android:hint="13"/>
+            android:hint="@string/hint_winning_score"
+            android:selectAllOnFocus="true"
+            android:id="@+id/winningScore"
+            />
     </RelativeLayout>
 
     <RelativeLayout

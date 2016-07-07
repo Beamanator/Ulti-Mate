@@ -23,11 +23,12 @@
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:hint="@string/game_title_hint_text"
-                android:id="@+id/gameTitleEdit"
                 android:textAlignment="center"
-                android:layout_gravity="center"/>
+                android:selectAllOnFocus="true"
+                android:hint="@string/game_title_hint_text"
+                android:id="@+id/gameTitleEdit"/>
 
             <TextView
                 android:layout_width="match_parent"
@@ -76,10 +77,11 @@
                     <EditText
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:id="@+id/leftTeamNameEdit"
                         android:layout_gravity="center"
                         android:textAlignment="center"
-                        android:hint="@string/team_1_hint_text" />
+                        android:selectAllOnFocus="true"
+                        android:hint="@string/team_1_hint_text"
+                        android:id="@+id/leftTeamNameEdit"/>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -167,10 +169,11 @@
                     <EditText
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:id="@+id/rightTeamNameEdit"
-                        android:hint="@string/team_2_hint_text"
                         android:layout_gravity="center"
-                        android:textAlignment="center"/>
+                        android:textAlignment="center"
+                        android:selectAllOnFocus="true"
+                        android:hint="@string/team_2_hint_text"
+                        android:id="@+id/rightTeamNameEdit" />
 
                     <TextView
                         android:layout_width="wrap_content"
