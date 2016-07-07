@@ -89,8 +89,12 @@ public class GameDisplayActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_game_display, menu);
-        return true;
+        if (displayToLaunch == MainMenuActivity.DisplayToLaunch.NEW ||
+                displayToLaunch == MainMenuActivity.DisplayToLaunch.RESUME) {
+            getMenuInflater().inflate(R.menu.menu_game_display, menu);
+            return true;
+        }
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
