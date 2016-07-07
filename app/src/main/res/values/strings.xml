@@ -42,6 +42,10 @@
     <string name="status_game_over">Game Over</string>
     <string name="status_in_progress">Game In Progress</string>
 
+    <!--New Game Activity-->
+    <string name="title_activity_new_game">New Game</string>
+    <string name="button_create_without_template">Start without Template</string>
+
     <!--Game Setup Activity-->
     <string name="title_activity_game_setup">Setup</string>
     <string name="button_create_game">Create Game</string>
