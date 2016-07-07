@@ -132,7 +132,7 @@ public class GameDisplayFragment extends Fragment {
                 int score = game.incrementScore(team);
                 teamViewHolder.scoreText.setText(Integer.toString(score));
                 Utils.saveGameDetails(getActivity().getBaseContext(), game);
-//                enableDisableScoreButtons();
+                enableDisableScoreButtons(team);
                 toggleTeamColors();
                 calculateGameStatus(1, team);
             }
@@ -144,6 +144,7 @@ public class GameDisplayFragment extends Fragment {
                 int score = game.decrementScore(team);
                 teamViewHolder.scoreText.setText(Integer.toString(score));
                 Utils.saveGameDetails(getActivity().getBaseContext(), game);
+                enableDisableScoreButtons(team);
                 toggleTeamColors();
                 calculateGameStatus(-1, team);
             }
@@ -160,16 +161,9 @@ public class GameDisplayFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                int t1score = game.getTeam1Score();
-                int t2score = game.getTeam2Score();
-
-                // TODO think of a modular way to handle the add/subtract button
-                TeamViewHolder team1View = teamViewMap.get(1);
-                TeamViewHolder team2View = teamViewMap.get(2);
-                if (t1score >= Game.MIN_SCORE) { team1View.addButton.setEnabled(true); }
-                if (t1score <= Game.MAX_SCORE) { team1View.subtractButton.setEnabled(true); }
-                if (t2score >= Game.MIN_SCORE) { team2View.addButton.setEnabled(true); }
-                if (t2score <= Game.MAX_SCORE) { team2View.subtractButton.setEnabled(true); }
+                // Enable or disable the score buttons, depending on the score
+                enableDisableScoreButtons(1);
+                enableDisableScoreButtons(2);
 
                 // Update status bar to reflect game status
                 calculateGameStatus(0, 0);
@@ -306,9 +300,34 @@ public class GameDisplayFragment extends Fragment {
         teamViewMap.put(2,team2ScoreView);
     }
 
-//    private void enableDisableScoreButtons(int team) {
-//        TeamViewHolder teamView = teamViewMap.get(team);
-//    }
+    /**
+     * This function handles enabling and disabling score buttons for the game displays
+     * @param team  Number corresponding to the team for which
+     */
+    private void enableDisableScoreButtons(int team) {
+        TeamViewHolder teamView = teamViewMap.get(team);
+
+        /*
+        If the score is equal to or greater than the max score, disable the add button
+        Otherwise enable it.
+        */
+        if(game.getScore(team) >= Game.MAX_SCORE) {
+            teamView.addButton.setEnabled(false);
+        } else {
+            teamView.addButton.setEnabled(true);
+        }
+
+        /*
+        If the score is equal to or less than the min score, disable the subtract button
+        Otherwise enable it.
+        */
+        if(game.getScore(team) <= Game.MIN_SCORE) {
+            teamView.subtractButton.setEnabled(false);
+        } else {
+            teamView.subtractButton.setEnabled(true);
+        }
+
+    }
 
     private void toggleTeamColors() {
         // TODO: worry about score eventually [halfime n such] + initTeamLeft

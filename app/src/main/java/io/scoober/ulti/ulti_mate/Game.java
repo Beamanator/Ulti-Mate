@@ -74,6 +74,16 @@ public class Game {
         this.hardCapTime = hardCapTime;
     }
 
+    public int getScore(int team) {
+        if (team == 1) {
+            return team1Score;
+        } else if (team == 2) {
+            return team2Score;
+        } else {
+            return -1;
+        }
+    }
+
     public int getTeam1Score() {
         return team1Score;
     }
