@@ -7,6 +7,10 @@ import android.support.annotation.ColorInt;
  * Created by Navin on 6/24/2016.
  */
 public class Game {
+
+    public static final int MAX_SCORE = 99;
+    public static final int MIN_SCORE = 0;
+
     private long id;
     private long date; // Date game was created
 
