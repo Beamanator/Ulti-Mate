@@ -18,10 +18,6 @@ import android.widget.TextView;
 import java.util.HashMap;
 import java.util.Map;
 
-
-/**
- * A simple {@link Fragment} subclass.
- */
 public class GameDisplayFragment extends Fragment {
 
     private Button setupFieldButton, startButton, endButton;
@@ -271,28 +267,19 @@ public class GameDisplayFragment extends Fragment {
      * @param v View that contains all of the buttons
      */
     private void getTeamViews(View v) {
-        TextView team1Text = (TextView) v.findViewById(R.id.leftTeam);
-        TextView team2Text = (TextView) v.findViewById(R.id.rightTeam);
-        TextView team1ScoreText = (TextView) v.findViewById(R.id.leftTeamScore);
-        Button team1AddButton = (Button) v.findViewById(R.id.leftTeamAdd);
-        Button team1SubtractButton = (Button) v.findViewById(R.id.leftTeamSubtract);
-        TextView team2ScoreText = (TextView) v.findViewById(R.id.rightTeamScore);
-        Button team2AddButton = (Button) v.findViewById(R.id.rightTeamAdd);
-        Button team2SubtractButton = (Button) v.findViewById(R.id.rightTeamSubtract);
-
         // Team 1
         TeamViewHolder team1ScoreView = new TeamViewHolder();
-        team1ScoreView.nameText = team1Text;
-        team1ScoreView.scoreText = team1ScoreText;
-        team1ScoreView.addButton = team1AddButton;
-        team1ScoreView.subtractButton = team1SubtractButton;
+        team1ScoreView.nameText = (TextView) v.findViewById(R.id.leftTeam);
+        team1ScoreView.scoreText = (TextView) v.findViewById(R.id.leftTeamScore);
+        team1ScoreView.addButton = (Button) v.findViewById(R.id.leftTeamAdd);
+        team1ScoreView.subtractButton = (Button) v.findViewById(R.id.leftTeamSubtract);
 
         // Team 2
         TeamViewHolder team2ScoreView = new TeamViewHolder();
-        team2ScoreView.nameText = team2Text;
-        team2ScoreView.scoreText = team2ScoreText;
-        team2ScoreView.addButton = team2AddButton;
-        team2ScoreView.subtractButton = team2SubtractButton;
+        team2ScoreView.nameText = (TextView) v.findViewById(R.id.rightTeam);
+        team2ScoreView.scoreText = (TextView) v.findViewById(R.id.rightTeamScore);
+        team2ScoreView.addButton = (Button) v.findViewById(R.id.rightTeamAdd);
+        team2ScoreView.subtractButton = (Button) v.findViewById(R.id.rightTeamSubtract);
 
         // Setup the view map
         teamViewMap = new HashMap<>();
