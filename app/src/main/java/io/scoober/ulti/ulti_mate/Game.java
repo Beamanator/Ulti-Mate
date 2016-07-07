@@ -7,6 +7,10 @@ import android.support.annotation.ColorInt;
  * Created by Navin on 6/24/2016.
  */
 public class Game {
+
+    public static final int MAX_SCORE = 99;
+    public static final int MIN_SCORE = 0;
+
     private long id;
     private long date; // Date game was created
 
@@ -68,6 +72,16 @@ public class Game {
 
     public void setHardCapTime(long hardCapTime) {
         this.hardCapTime = hardCapTime;
+    }
+
+    public int getScore(int team) {
+        if (team == 1) {
+            return team1Score;
+        } else if (team == 2) {
+            return team2Score;
+        } else {
+            return -1;
+        }
     }
 
     public int getTeam1Score() {
