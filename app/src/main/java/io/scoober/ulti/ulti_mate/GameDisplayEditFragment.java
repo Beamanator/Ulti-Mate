@@ -18,7 +18,7 @@ import com.thebluealliance.spectrum.SpectrumDialog;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.scoober.ulti.ulti_mate.CustomViews.TeamImageButton;
+import io.scoober.ulti.ulti_mate.widgets.TeamImageButton;
 
 
 /**

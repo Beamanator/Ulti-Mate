@@ -22,7 +22,7 @@ import android.widget.EditText;
 
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 
-import io.scoober.ulti.ulti_mate.CustomViews.TeamImageButton;
+import io.scoober.ulti.ulti_mate.widgets.TeamImageButton;
 
 public class GameSetupActivity extends AppCompatActivity {
 

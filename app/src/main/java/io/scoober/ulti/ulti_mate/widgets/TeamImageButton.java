@@ -1,4 +1,4 @@
-package io.scoober.ulti.ulti_mate.CustomViews;
+package io.scoober.ulti.ulti_mate.widgets;
 
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
