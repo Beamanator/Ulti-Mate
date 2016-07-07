@@ -47,7 +47,7 @@ public class GameDbAdapter {
     public static final String C_DATE_CREATED = "date_created"; // Date game was created
     public static final String C_DATE_UPDATED = "date_updated"; // Date game was last updated
 
-    String[] allColumns = {C_ID, C_GAME_NAME, C_GAME_STATUS, C_WINNING_SCORE, C_TEAM_1_NAME, C_TEAM_1_COLOR,
+    String[] allGameColumns = {C_ID, C_GAME_NAME, C_GAME_STATUS, C_WINNING_SCORE, C_TEAM_1_NAME, C_TEAM_1_COLOR,
             C_TEAM_1_SCORE, C_TEAM_2_NAME, C_TEAM_2_COLOR, C_TEAM_2_SCORE, C_SOFT_CAP_TIME, C_HARD_CAP_TIME,
             C_INIT_PULL_TEAM, C_INIT_TEAM_LEFT, C_DATE_CREATED, C_DATE_UPDATED};
 
@@ -113,7 +113,7 @@ public class GameDbAdapter {
     Performs a database call to get the game with the passed in gameId
      */
     public Game getGame(long gameId) {
-        Cursor cursor = sqlDB.query(GAMES_TABLE, allColumns,
+        Cursor cursor = sqlDB.query(GAMES_TABLE, allGameColumns,
                 C_ID + " = " + gameId, null, null, null, null);
         cursor.moveToFirst();
         Game newGame = cursorToGame(cursor);
@@ -136,7 +136,7 @@ public class GameDbAdapter {
         if (offset != 0) {
             limit = offset + "," + limit;
         }
-        Cursor cursor = sqlDB.query(GAMES_TABLE, allColumns, null, null, null, null, C_DATE_CREATED + " DESC", limit);
+        Cursor cursor = sqlDB.query(GAMES_TABLE, allGameColumns, null, null, null, null, C_DATE_CREATED + " DESC", limit);
 
         for(cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
             Game game = cursorToGame(cursor);

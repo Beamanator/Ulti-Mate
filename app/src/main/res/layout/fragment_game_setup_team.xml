@@ -46,7 +46,7 @@
             android:selectAllOnFocus="true"
             android:id="@+id/team1Name"/>
 
-        <io.scoober.ulti.ulti_mate.CustomViews.TeamImageButton
+        <io.scoober.ulti.ulti_mate.widgets.TeamImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
@@ -76,7 +76,7 @@
             android:selectAllOnFocus="true"
             android:id="@+id/team2Name"/>
 
-        <io.scoober.ulti.ulti_mate.CustomViews.TeamImageButton
+        <io.scoober.ulti.ulti_mate.widgets.TeamImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"

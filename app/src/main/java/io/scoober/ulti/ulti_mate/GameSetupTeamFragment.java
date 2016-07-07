@@ -12,7 +12,7 @@ import android.widget.EditText;
 
 import com.thebluealliance.spectrum.SpectrumDialog;
 
-import io.scoober.ulti.ulti_mate.CustomViews.TeamImageButton;
+import io.scoober.ulti.ulti_mate.widgets.TeamImageButton;
 
 /**
  * A simple {@link Fragment} subclass.

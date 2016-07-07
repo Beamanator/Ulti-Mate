@@ -3,14 +3,10 @@ package io.scoober.ulti.ulti_mate;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.PaintDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,25 +15,23 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.util.HashMap;
+import java.util.Map;
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class GameDisplayFragment extends Fragment {
 
     private Button setupFieldButton, startButton, endButton;
-    private Button leftTeamAddButton, leftTeamSubtractButton, rightTeamAddButton;
-    private Button rightTeamSubtractButton;
 
-    private TextView statusBar, leftTeam, rightTeam, leftTeamScore, rightTeamScore;
+    private TextView statusBar;
     private TextView timeCapType, timeCapTimer, gameTitleView, gameStatusText;
 
-    private int team1Score, team2Score;
     private GradientDrawable leftCircle, rightCircle;
     private LinearLayout timeCapBar, gameImagesLayout;
     private ImageView leftTeamCircle, rightTeamCircle;
     private Game game;
     private MainMenuActivity.DisplayToLaunch displayToLaunch;
+
+    private Map<Integer,GameDisplayActivity.TeamViewHolder> teamViewMap;
 
     public GameDisplayFragment() {
         // Required empty public constructor
@@ -63,15 +57,9 @@ public class GameDisplayFragment extends Fragment {
         // inflate team data and populate private variables
         inflateTeamData(fragmentLayout);
 
-        // create some local variables:
-        String t1Name = game.getTeam1Name();
-        String t2Name = game.getTeam2Name();
-
         // set up score button listeners:
-        setupScoreButtonListeners(t1Name, leftTeamScore,
-                leftTeamAddButton, leftTeamSubtractButton);
-        setupScoreButtonListeners(t2Name, rightTeamScore,
-                rightTeamAddButton, rightTeamSubtractButton);
+        setupScoreButtonListeners(1);
+        setupScoreButtonListeners(2);
 
         // build start / end button functionality:
         startGame(startButton, endButton);
@@ -100,10 +88,10 @@ public class GameDisplayFragment extends Fragment {
         gameTitleView.setText(game.getGameName());
 
         // set team details:
-        leftTeam.setText(game.getTeam1Name());
-        rightTeam.setText(game.getTeam2Name());
-        leftTeamScore.setText(Integer.toString(game.getTeam1Score()));
-        rightTeamScore.setText(Integer.toString(game.getTeam2Score()));
+        teamViewMap.get(1).nameView.setText(game.getTeam1Name());
+        teamViewMap.get(2).nameView.setText(game.getTeam2Name());
+        teamViewMap.get(1).scoreView.setText(Integer.toString(game.getTeam1Score()));
+        teamViewMap.get(2).scoreView.setText(Integer.toString(game.getTeam2Score()));
         //TODO: possibly set variables based on team orientation?
 
         // populate team circles with colors from database and black stroke
@@ -124,70 +112,30 @@ public class GameDisplayFragment extends Fragment {
         }
     }
 
-    private void setupScoreButtonListeners(final String team, final TextView score, final Button addButton, final Button subtractButton) {
-        final int finalScore = game.getWinningScore();
-        // TODO: fix bug where buttons link to same score when teams have same name
-        addButton.setOnClickListener(new View.OnClickListener() {
+    private void setupScoreButtonListeners(final int team) {
+
+        final GameDisplayActivity.TeamViewHolder teamViewHolder = teamViewMap.get(team);
+        teamViewHolder.addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int teamScored;
-
-                if (team.equals(game.getTeam1Name())) {
-                    teamScored = 1;
-                    team1Score = game.incrementScore(1);
-                    score.setText(Integer.toString(team1Score));
-                    if (team1Score == 99) {
-                        addButton.setEnabled(false);
-                    }
-                } else if (team.equals(game.getTeam2Name())) {
-                    teamScored = 2;
-                    team2Score = game.incrementScore(2);
-                    score.setText(Integer.toString(team2Score));
-                    if (team2Score == 99) {
-                        addButton.setEnabled(false);
-                    }
-                } else {
-                    return;
-                }
+                int score = game.incrementScore(team);
+                teamViewHolder.scoreView.setText(Integer.toString(score));
                 Utils.saveGameDetails(getActivity().getBaseContext(), game);
-                subtractButton.setEnabled(true);
-
+                GameDisplayActivity.enableDisableScoreButtons(team,game,teamViewMap);
                 toggleTeamColors();
-                calculateGameStatus(1, teamScored);
+                calculateGameStatus(1, team);
             }
         });
 
-        subtractButton.setOnClickListener(new View.OnClickListener() {
+        teamViewHolder.subtractButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int teamScored;
-                if (team.equals(game.getTeam1Name())) {
-                    teamScored = 1;
-                    team1Score = game.decrementScore(1);
-                    score.setText(Integer.toString(team1Score));
-
-                    if (team1Score == 0) { subtractButton.setEnabled(false); }
-                    if (team1Score == 98) {
-                        addButton.setEnabled(true);
-                    }
-                } else if (team.equals(game.getTeam2Name())){
-                    teamScored = 2;
-                    team2Score = game.decrementScore(2);
-                    score.setText(Integer.toString(team2Score));
-
-                    // Disable minus button if score is 0
-                    if (team2Score == 0) { subtractButton.setEnabled(false); }
-                    // Enable add button if score is less than 99 (so if it equals 98)
-                    if (team2Score == 98) {
-                        addButton.setEnabled(true);
-                    }
-                } else {
-                    return;
-                }
+                int score = game.decrementScore(team);
+                teamViewHolder.scoreView.setText(Integer.toString(score));
                 Utils.saveGameDetails(getActivity().getBaseContext(), game);
-
+                GameDisplayActivity.enableDisableScoreButtons(team,game,teamViewMap);
                 toggleTeamColors();
-                calculateGameStatus(-1, teamScored);
+                calculateGameStatus(-1, team);
             }
         });
     }
@@ -202,13 +150,9 @@ public class GameDisplayFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                int t1score = game.getTeam1Score();
-                int t2score = game.getTeam2Score();
-
-                if (t1score > 0) { leftTeamSubtractButton.setEnabled(true); }
-                if (t1score < 99) { leftTeamAddButton.setEnabled(true); }
-                if (t2score > 0) { rightTeamSubtractButton.setEnabled(true); }
-                if (t2score < 99) { rightTeamAddButton.setEnabled(true); }
+                // Enable or disable the score buttons, depending on the score
+                GameDisplayActivity.enableDisableScoreButtons(1,game,teamViewMap);;
+                GameDisplayActivity.enableDisableScoreButtons(2,game,teamViewMap);;
 
                 // Update status bar to reflect game status
                 calculateGameStatus(0, 0);
@@ -230,14 +174,7 @@ public class GameDisplayFragment extends Fragment {
                         endGame(v);
                     }
                 });
-                confirmBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // Do nothing?
-                        // TODO: remove this click listener?
-                    }
-                });
-
+                confirmBuilder.setNegativeButton("No", null);
                 confirmBuilder.create();
                 confirmBuilder.show();
             }
@@ -295,31 +232,55 @@ public class GameDisplayFragment extends Fragment {
     }
 
     private void getWidgetReferences(View v) {
+
         gameTitleView = (TextView) v.findViewById(R.id.gameTitle);
         setupFieldButton = (Button) v.findViewById(R.id.fieldSetup);
-        leftTeam = (TextView) v.findViewById(R.id.leftTeam);
-        rightTeam = (TextView) v.findViewById(R.id.rightTeam);
         startButton = (Button) v.findViewById(R.id.startButton);
         endButton = (Button) v.findViewById(R.id.endButton);
         gameStatusText = (TextView) v.findViewById(R.id.gameStatusText);
 
         gameImagesLayout = (LinearLayout) v.findViewById(R.id.gameImagesLayout);
 
-        leftTeamScore = (TextView) v.findViewById(R.id.leftTeamScore);
-        leftTeamAddButton = (Button) v.findViewById(R.id.leftTeamAdd);
-        leftTeamSubtractButton = (Button) v.findViewById(R.id.leftTeamSubtract);
-        rightTeamScore = (TextView) v.findViewById(R.id.rightTeamScore);
-        rightTeamAddButton = (Button) v.findViewById(R.id.rightTeamAdd);
-        rightTeamSubtractButton = (Button) v.findViewById(R.id.rightTeamSubtract);
-
         // Image Views
         leftTeamCircle = (ImageView) v.findViewById(R.id.leftTeamCircle);
         rightTeamCircle = (ImageView) v.findViewById(R.id.rightTeamCircle);
 
+        // Time Cap Views
         timeCapBar = (LinearLayout) v.findViewById(R.id.timeCapBar);
         timeCapType = (TextView) v.findViewById(R.id.capText);
         timeCapTimer = (TextView) v.findViewById(R.id.capTimer);
+
+        getTeamViews(v);
+
     }
+
+    /**
+     * This function initializes the teamViewMap, which maps team number to a TeamViewHolder,
+     * which contains all of the views related to that particular team.
+     * @param v View that contains all of the buttons
+     */
+    private void getTeamViews(View v) {
+        // Team 1
+        GameDisplayActivity.TeamViewHolder team1View = new GameDisplayActivity.TeamViewHolder();
+        team1View.nameView = (TextView) v.findViewById(R.id.leftTeam);
+        team1View.scoreView = (TextView) v.findViewById(R.id.leftTeamScore);
+        team1View.addButton = (Button) v.findViewById(R.id.leftTeamAdd);
+        team1View.subtractButton = (Button) v.findViewById(R.id.leftTeamSubtract);
+
+        // Team 2
+        GameDisplayActivity.TeamViewHolder team2View = new GameDisplayActivity.TeamViewHolder();
+        team2View.nameView = (TextView) v.findViewById(R.id.rightTeam);
+        team2View.scoreView = (TextView) v.findViewById(R.id.rightTeamScore);
+        team2View.addButton = (Button) v.findViewById(R.id.rightTeamAdd);
+        team2View.subtractButton = (Button) v.findViewById(R.id.rightTeamSubtract);
+
+        // Setup the view map
+        teamViewMap = new HashMap<>();
+        teamViewMap.put(1,team1View);
+        teamViewMap.put(2,team2View);
+    }
+
+
 
     private void toggleTeamColors() {
         // TODO: worry about score eventually [halfime n such] + initTeamLeft
