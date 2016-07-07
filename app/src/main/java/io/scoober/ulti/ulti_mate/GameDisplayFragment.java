@@ -31,14 +31,7 @@ public class GameDisplayFragment extends Fragment {
     private Game game;
     private MainMenuActivity.DisplayToLaunch displayToLaunch;
 
-    private class TeamViewHolder {
-        public Button addButton;
-        public Button subtractButton;
-        public TextView scoreText;
-        public TextView nameText;
-    }
-
-    private Map<Integer,TeamViewHolder> teamViewMap;
+    private Map<Integer,GameDisplayActivity.TeamViewHolder> teamViewMap;
 
     public GameDisplayFragment() {
         // Required empty public constructor
@@ -95,10 +88,10 @@ public class GameDisplayFragment extends Fragment {
         gameTitleView.setText(game.getGameName());
 
         // set team details:
-        teamViewMap.get(1).nameText.setText(game.getTeam1Name());
-        teamViewMap.get(2).nameText.setText(game.getTeam2Name());
-        teamViewMap.get(1).scoreText.setText(Integer.toString(game.getTeam1Score()));
-        teamViewMap.get(2).scoreText.setText(Integer.toString(game.getTeam2Score()));
+        teamViewMap.get(1).nameView.setText(game.getTeam1Name());
+        teamViewMap.get(2).nameView.setText(game.getTeam2Name());
+        teamViewMap.get(1).scoreView.setText(Integer.toString(game.getTeam1Score()));
+        teamViewMap.get(2).scoreView.setText(Integer.toString(game.getTeam2Score()));
         //TODO: possibly set variables based on team orientation?
 
         // populate team circles with colors from database and black stroke
@@ -121,14 +114,14 @@ public class GameDisplayFragment extends Fragment {
 
     private void setupScoreButtonListeners(final int team) {
 
-        final TeamViewHolder teamViewHolder = teamViewMap.get(team);
+        final GameDisplayActivity.TeamViewHolder teamViewHolder = teamViewMap.get(team);
         teamViewHolder.addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 int score = game.incrementScore(team);
-                teamViewHolder.scoreText.setText(Integer.toString(score));
+                teamViewHolder.scoreView.setText(Integer.toString(score));
                 Utils.saveGameDetails(getActivity().getBaseContext(), game);
-                enableDisableScoreButtons(team);
+                GameDisplayActivity.enableDisableScoreButtons(team,game,teamViewMap);
                 toggleTeamColors();
                 calculateGameStatus(1, team);
             }
@@ -138,9 +131,9 @@ public class GameDisplayFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 int score = game.decrementScore(team);
-                teamViewHolder.scoreText.setText(Integer.toString(score));
+                teamViewHolder.scoreView.setText(Integer.toString(score));
                 Utils.saveGameDetails(getActivity().getBaseContext(), game);
-                enableDisableScoreButtons(team);
+                GameDisplayActivity.enableDisableScoreButtons(team,game,teamViewMap);
                 toggleTeamColors();
                 calculateGameStatus(-1, team);
             }
@@ -158,8 +151,8 @@ public class GameDisplayFragment extends Fragment {
             public void onClick(View v) {
 
                 // Enable or disable the score buttons, depending on the score
-                enableDisableScoreButtons(1);
-                enableDisableScoreButtons(2);
+                GameDisplayActivity.enableDisableScoreButtons(1,game,teamViewMap);;
+                GameDisplayActivity.enableDisableScoreButtons(2,game,teamViewMap);;
 
                 // Update status bar to reflect game status
                 calculateGameStatus(0, 0);
@@ -268,53 +261,26 @@ public class GameDisplayFragment extends Fragment {
      */
     private void getTeamViews(View v) {
         // Team 1
-        TeamViewHolder team1ScoreView = new TeamViewHolder();
-        team1ScoreView.nameText = (TextView) v.findViewById(R.id.leftTeam);
-        team1ScoreView.scoreText = (TextView) v.findViewById(R.id.leftTeamScore);
-        team1ScoreView.addButton = (Button) v.findViewById(R.id.leftTeamAdd);
-        team1ScoreView.subtractButton = (Button) v.findViewById(R.id.leftTeamSubtract);
+        GameDisplayActivity.TeamViewHolder team1View = new GameDisplayActivity.TeamViewHolder();
+        team1View.nameView = (TextView) v.findViewById(R.id.leftTeam);
+        team1View.scoreView = (TextView) v.findViewById(R.id.leftTeamScore);
+        team1View.addButton = (Button) v.findViewById(R.id.leftTeamAdd);
+        team1View.subtractButton = (Button) v.findViewById(R.id.leftTeamSubtract);
 
         // Team 2
-        TeamViewHolder team2ScoreView = new TeamViewHolder();
-        team2ScoreView.nameText = (TextView) v.findViewById(R.id.rightTeam);
-        team2ScoreView.scoreText = (TextView) v.findViewById(R.id.rightTeamScore);
-        team2ScoreView.addButton = (Button) v.findViewById(R.id.rightTeamAdd);
-        team2ScoreView.subtractButton = (Button) v.findViewById(R.id.rightTeamSubtract);
+        GameDisplayActivity.TeamViewHolder team2View = new GameDisplayActivity.TeamViewHolder();
+        team2View.nameView = (TextView) v.findViewById(R.id.rightTeam);
+        team2View.scoreView = (TextView) v.findViewById(R.id.rightTeamScore);
+        team2View.addButton = (Button) v.findViewById(R.id.rightTeamAdd);
+        team2View.subtractButton = (Button) v.findViewById(R.id.rightTeamSubtract);
 
         // Setup the view map
         teamViewMap = new HashMap<>();
-        teamViewMap.put(1,team1ScoreView);
-        teamViewMap.put(2,team2ScoreView);
+        teamViewMap.put(1,team1View);
+        teamViewMap.put(2,team2View);
     }
 
-    /**
-     * This function handles enabling and disabling score buttons for the game displays
-     * @param team  Number corresponding to the team for which
-     */
-    private void enableDisableScoreButtons(int team) {
-        TeamViewHolder teamView = teamViewMap.get(team);
 
-        /*
-        If the score is equal to or greater than the max score, disable the add button
-        Otherwise enable it.
-        */
-        if(game.getScore(team) >= Game.MAX_SCORE) {
-            teamView.addButton.setEnabled(false);
-        } else {
-            teamView.addButton.setEnabled(true);
-        }
-
-        /*
-        If the score is equal to or less than the min score, disable the subtract button
-        Otherwise enable it.
-        */
-        if(game.getScore(team) <= Game.MIN_SCORE) {
-            teamView.subtractButton.setEnabled(false);
-        } else {
-            teamView.subtractButton.setEnabled(true);
-        }
-
-    }
 
     private void toggleTeamColors() {
         // TODO: worry about score eventually [halfime n such] + initTeamLeft
