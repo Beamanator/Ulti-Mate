@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -29,6 +31,7 @@ public class GameSetupActivity extends AppCompatActivity {
     private static final int NUM_PAGES = 2;
 
     private Button createGameDisplay;
+    private CoordinatorLayout cl;
 
     // Game ID passed in via the intent
     private long gameId;
@@ -45,6 +48,10 @@ public class GameSetupActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        /*
+        Get coordination for Snackbar function
+         */
+        cl = (CoordinatorLayout) findViewById(R.id.gameSetupCoordinatorLayout);
 
         /*
         From the intent, check to see if the game ID was passed in as a parameter. If so,
@@ -184,9 +191,11 @@ public class GameSetupActivity extends AppCompatActivity {
         long hardCap = 0;
         boolean timeCaps = timeCapsBox.isChecked();
         if (timeCaps) {
-            // Currently stored as milliseconds without date
-            softCap = Utils.getMilliFrom12HrString(softCapTimeButton.getText().toString());
-            hardCap = Utils.getMilliFrom12HrString(hardCapTimeButton.getText().toString());
+            // Currently stored as milliseconds with today's date
+            softCap = Utils.getTodayMilliFrom12HrString(softCapTimeButton.getText().toString());
+            hardCap = Utils.getTodayMilliFrom12HrString(hardCapTimeButton.getText().toString());
+
+            // New plan: Use current date [or next day] for date, plus milliseconds
         }
 
         // Get team data from widgets
@@ -224,9 +233,6 @@ public class GameSetupActivity extends AppCompatActivity {
 
         return game;
     }
-
-
-
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
