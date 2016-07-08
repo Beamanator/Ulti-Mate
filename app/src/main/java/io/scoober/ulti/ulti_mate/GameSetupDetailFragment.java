@@ -81,6 +81,7 @@ public class GameSetupDetailFragment extends Fragment {
         // Set default soft / hard cap times. These will be # of minutes + current time
         final int softCapMinuteOffset = 75;
         final int hardCapMinuteOffset = 90;
+        final Context c = getActivity().getBaseContext();
 
         // Hide the soft/hard caps if the time caps is unchecked.
         timeCapsBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -97,19 +98,27 @@ public class GameSetupDetailFragment extends Fragment {
         softCapButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Calendar capDefaultTime = Calendar.getInstance();
+                // get current softCapButton time
+                String prevTime = softCapButton.getText().toString();
+                final Calendar capTime = Calendar.getInstance();
+                final long buttonTimeMilli;
 
-                // add softCapOffset to current time
-                capDefaultTime.add(Calendar.MINUTE, softCapMinuteOffset);
+                if (prevTime.equals(c.getString(R.string.button_set_time))) {
+                    // add softCapOffset to current time
+                    capTime.add(Calendar.MINUTE, softCapMinuteOffset);
+                } else {
+                    // use button time
+                    buttonTimeMilli = Utils.getMilliFrom12HrString(prevTime);
+                    capTime.setTimeInMillis(buttonTimeMilli);
+                }
 
-                final int hour = capDefaultTime.get(Calendar.HOUR_OF_DAY);
-                int minute = capDefaultTime.get(Calendar.MINUTE);
+                int hour = capTime.get(Calendar.HOUR_OF_DAY);
+                int minute = capTime.get(Calendar.MINUTE);
 
                 TimePickerDialog softCapTimePicker = createTimePickerDialog(
                         hour, minute, softCapButton, "soft");
 
-                // TODO: add to strings.xml
-                softCapTimePicker.setTitle("Set Soft Cap");
+                softCapTimePicker.setTitle(c.getString(R.string.timepicker_soft_cap_title));
 
                 softCapTimePicker.show();
             }
@@ -118,18 +127,27 @@ public class GameSetupDetailFragment extends Fragment {
         hardCapButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Calendar currentTime = Calendar.getInstance();
+                // get current hardCapButton time
+                String prevTime = hardCapButton.getText().toString();
+                final Calendar capTime = Calendar.getInstance();
+                final long buttonTimeMilli;
 
-                // add hard cap minute offset to current time:
-                currentTime.add(Calendar.MINUTE, hardCapMinuteOffset);
+                if (prevTime.equals(c.getString(R.string.button_set_time))) {
+                    // add hard cap minute offset to current time:
+                    capTime.add(Calendar.MINUTE, hardCapMinuteOffset);
+                } else {
+                    // use button time
+                    buttonTimeMilli = Utils.getMilliFrom12HrString(prevTime);
+                    capTime.setTimeInMillis(buttonTimeMilli);
+                }
 
-                int hour = currentTime.get(Calendar.HOUR_OF_DAY);
-                int minute = currentTime.get(Calendar.MINUTE);
+                int hour = capTime.get(Calendar.HOUR_OF_DAY);
+                int minute = capTime.get(Calendar.MINUTE);
 
                 TimePickerDialog hardCapTimePicker = createTimePickerDialog(
                         hour, minute, hardCapButton, "hard");
 
-                hardCapTimePicker.setTitle("Set Hard Cap");
+                hardCapTimePicker.setTitle(c.getString(R.string.timepicker_hard_cap_title));
 
                 hardCapTimePicker.show();
             }

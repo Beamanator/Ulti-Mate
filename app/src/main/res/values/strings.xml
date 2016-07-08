@@ -82,6 +82,8 @@
     <string name="snackbar_message_time_cap">Time until %1$s cap: %2$s</string>
     <string name="title_dialog_name_template">Create Template</string>
     <string name="dialog_name_template">Template name</string>
+    <string name="timepicker_soft_cap_title">Set Soft Cap</string>
+    <string name="timepicker_hard_cap_title">Set Hard Cap</string>
 
     <!--Game Defaults-->
     <string name="default_game_name">Ultimate!</string>
