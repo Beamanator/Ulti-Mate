@@ -124,26 +124,43 @@ public class Utils {
      * Function gets hour and minute information and calculates if that time is in the future on
      * the same day.
      * NOTE:    This function returns false if passed time is exactly the same as the current time
-     * @param fHour         Hour of the time to check
-     * @param fMin          Minute of the time to check
-     * @param date   Creation date of game (in milliseconds)
-     * @return              True if passed time is in the future
+     * @param pHour         Int Hour of past time to check
+     * @param pMin          Int Minute of past time to check
+     * @param fHour         Int Hour of future time to check
+     * @param fMin          Int Minute of future time to check
+     * @return              True if past times are before future times
      */
-    public static boolean isFutureToday(int fHour, int fMin, long date) {
-        // create Calendar and set time to date instance
-        Calendar cTime = Calendar.getInstance();
-        cTime.setTimeInMillis(date);
-
-        // get hour of minute of time created
-        int cHour = cTime.get(Calendar.HOUR_OF_DAY);
-        int cMin = cTime.get(Calendar.MINUTE);
-
-        if (fHour > cHour) {
+    public static boolean isFutureToday(int pHour, int pMin, int fHour, int fMin) {
+        if (fHour > pHour) {
             return true;
-        } else if (fHour == cHour && fMin > cMin) {
+        } else if (fHour == pHour && fMin > pMin) {
             return true;
         } else {
             return false;
+        }
+    }
+
+    /**
+     * Function takes two calendar parameters (past and future) and confirms if the
+     * past is actually before the future Calendar date
+     * @param p     past Calendar date
+     * @param f     future Calendar date
+     * @return      returns Boolean (true) if passed Calendar date is before future Calendar date
+     */
+    public static boolean isFuture(Calendar p, Calendar f) {
+        // get day of the year for each date
+        int pDayOfYear = p.get(Calendar.DAY_OF_YEAR);
+        int fDayOfYear = f.get(Calendar.DAY_OF_YEAR);
+
+        if (fDayOfYear > pDayOfYear) {
+            return true;
+        } else {
+            return Utils.isFutureToday(
+                    p.get(Calendar.HOUR_OF_DAY),
+                    p.get(Calendar.MINUTE),
+                    f.get(Calendar.HOUR_OF_DAY),
+                    f.get(Calendar.MINUTE)
+            );
         }
     }
 

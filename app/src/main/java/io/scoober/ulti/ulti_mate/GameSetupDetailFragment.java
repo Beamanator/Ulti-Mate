@@ -7,7 +7,9 @@ import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.PagerAdapter;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -106,6 +108,9 @@ public class GameSetupDetailFragment extends Fragment {
                 TimePickerDialog softCapTimePicker = createTimePickerDialog(
                         hour, minute, softCapButton, "soft");
 
+                // TODO: add to strings.xml
+                softCapTimePicker.setTitle("Set Soft Cap");
+
                 softCapTimePicker.show();
             }
         });
@@ -123,6 +128,8 @@ public class GameSetupDetailFragment extends Fragment {
 
                 TimePickerDialog hardCapTimePicker = createTimePickerDialog(
                         hour, minute, hardCapButton, "hard");
+
+                hardCapTimePicker.setTitle("Set Hard Cap");
 
                 hardCapTimePicker.show();
             }
@@ -147,10 +154,8 @@ public class GameSetupDetailFragment extends Fragment {
                         String timePicked = Utils.to12Hr(hourOfDay, minute);
                         Calendar capTime = Calendar.getInstance();
                         Calendar currentTime = Calendar.getInstance();
+                        Calendar dateGameCreated = Calendar.getInstance();
                         final Context c = getActivity().getBaseContext();
-
-                        // Set button text to picked time (make string readable)
-                        button.setText(timePicked);
 
                         // Use Utils to set the time picked by picker to capTime
                         capTime.setTimeInMillis(
@@ -165,27 +170,81 @@ public class GameSetupDetailFragment extends Fragment {
                             // if game doesn't exist yet, get current date
                             dateCreated = currentTime.getTimeInMillis();
                         }
+                        dateGameCreated.setTimeInMillis(dateCreated);
 
                         // If time picked is before current time, set day + 1
-                        if (!Utils.isFutureToday(hourOfDay, minute, dateCreated)) {
+                        if (!Utils.isFutureToday(
+                                dateGameCreated.get(Calendar.HOUR_OF_DAY),
+                                dateGameCreated.get(Calendar.MINUTE),
+                                hourOfDay,
+                                minute)) {
                             capTime.add(Calendar.DAY_OF_YEAR, 1);
                         }
 
-                        String timeRemaining = Utils.timeFromNowHmm(capTime);
-                        String message = c.getString(R.string.snackbar_message_time_cap,
-                                capType.toLowerCase(), timeRemaining);
+                        // Set button text to picked time (make string readable)
+                        button.setText(timePicked);
 
-                        // Snackbar displays time till soft cap
-                        Snackbar sb = makeSnackbar(message, 3000);
-                        sb.setAction("UNDO", new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                button.setText(c.getString(R.string.button_cap_default_text));
-                            }
-                        });
+                        // add tag to be referenced in validation
+                        button.setTag(capTime.getTimeInMillis());
+
+                        String timeRemaining;
+                        String message;
+                        Snackbar sb;
+
+                        // validate time picked is allowed
+                        if (timePickedAllowed()) {
+                            timeRemaining = Utils.timeFromNowHmm(capTime);
+                            message = c.getString(R.string.snackbar_message_time_cap,
+                                    capType.toLowerCase(), timeRemaining);
+                            sb = makeSnackbar(message, 3000);
+                            sb.setAction("UNDO", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    // reset button data
+                                    button.setText(c.getString(R.string.button_cap_default_text));
+                                    button.setTag(null);
+                                }
+                            });
+                        } else {
+                            message = "Hard cap time must come before Soft cap time.";
+                            sb = makeSnackbar(message, Snackbar.LENGTH_INDEFINITE);
+
+                            // reset button data
+                            button.setText(c.getString(R.string.button_cap_default_text));
+                            button.setTag(null);
+                        }
+
                         sb.show();
                     }
                 }, hour, minute, false);
+    }
+
+    /**
+     * Function determines if time picked by recently-selected TimePickerDialog is allowed.
+     * Validates against:   1. soft cap comes before hard cap
+     *                      2. hard cap comes before soft cap
+     * // TODO: add more validation rules like time > 24 hours in future or < 1 minute in future
+     * @return      boolean - returns true if validation rules are not broken
+     */
+    private boolean timePickedAllowed() {
+        // get soft / hard cap times from button tags
+        Object softCapTime = softCapButton.getTag();
+        Object hardCapTime = hardCapButton.getTag();
+
+        // If either of the buttons is not populated, skip validation
+        if (softCapTime == null || hardCapTime == null) {
+            return true;
+        }
+
+        // create Calendars for each time
+        Calendar softDate = Calendar.getInstance();
+        Calendar hardDate = Calendar.getInstance();
+
+        // set each Calendar to correct time and cast Objects to Longs
+        softDate.setTimeInMillis((Long) softCapTime);
+        hardDate.setTimeInMillis((Long) hardCapTime);
+
+        return Utils.isFuture(softDate, hardDate);
     }
 
     /**
