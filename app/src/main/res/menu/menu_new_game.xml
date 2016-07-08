@@ -1,0 +1,11 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="io.scoober.ulti.ulti_mate.NewGameActivity">
+    <item
+        android:id="@+id/action_create_new_template"
+        android:orderInCategory="10"
+        android:title="@string/action_create_new_template"
+        android:icon="@drawable/ic_add_white_24dp"
+        app:showAsAction="ifRoom" />
+</menu>

@@ -2,7 +2,6 @@ package io.scoober.ulti.ulti_mate;
 
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
-import android.util.Log;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -218,6 +217,20 @@ public class Utils {
         long gameID = gameDbAdapter.saveGame(g);
         gameDbAdapter.close();
         return gameID;
+    }
+
+    /**
+     * Function deletes a game from the database
+     * @param c         Context to pass to GameDbAdapter
+     * @param g         Game object to delete
+     * @return          ID of the deleted game
+     */
+    public static long deleteGame(Context c, Game g) {
+        GameDbAdapter dbAdapter = new GameDbAdapter(c);
+        dbAdapter.open();
+        long gameId = dbAdapter.deleteGame(g.getId());
+        dbAdapter.close();
+        return gameId;
     }
 
     /*

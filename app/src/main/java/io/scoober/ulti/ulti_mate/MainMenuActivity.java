@@ -9,9 +9,13 @@ import android.view.MenuItem;
 public class MainMenuActivity extends AppCompatActivity {
 
     public static final String GAME_ID_EXTRA = "io.scoober.ulti.ulti_mate.Game_Id";
+    public static final String TEMPLATE_ID_EXTRA = "io.scoober.ulti.ulti_mate.Template_Id";
     public static final String GAME_DISPLAY_ARG_EXTRA = "io.scoober.ulti.ulti_mate.Game_Display_To_Launch";
+    public static final String GAME_SETUP_ARG_EXTRA = "io.scoober.ulti.ulti_mate.Game_Setup_To_Launch";
 
     public enum DisplayToLaunch {NEW, RESUME, VIEW, EDIT, UPDATE}
+    public enum SetupToLaunch {CREATE_GAME, UPDATE_GAME,
+        CREATE_TEMPLATE, EDIT_TEMPLATE}
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

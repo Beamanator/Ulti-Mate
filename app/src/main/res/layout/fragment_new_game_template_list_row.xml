@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingRight="10dp"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp">
+
+    <TextView
+        android:id="@+id/listItemTemplateTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="@dimen/text_margin"
+        android:layout_marginEnd="@dimen/text_margin"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textStyle="bold"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:text="Template Title"/>
+    <TextView
+        android:id="@+id/listItemGameTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/listItemTemplateTitle"
+        android:layout_alignStart="@+id/listItemTemplateTitle"
+        android:textAppearance="?android:attr/textAppearanceListItem"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:text="Game Title"/>
+
+    <TextView
+        android:id="@+id/listItemTeams"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/listItemGameTitle"
+        android:layout_alignStart="@+id/listItemGameTitle"
+        android:textAppearance="?android:attr/textAppearanceListItem"
+        android:text="TeamNumberOne vs. TeamNumberTwo" />
+
+</RelativeLayout>

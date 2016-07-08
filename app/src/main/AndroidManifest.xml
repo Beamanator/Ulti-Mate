@@ -31,10 +31,19 @@
             android:name=".GameDisplayActivity"
             android:label="@string/title_activity_game_display"
             android:parentActivityName=".MainMenuActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".MyGamesActivity"
             android:label="@string/title_activity_my_games"
+            android:parentActivityName=".MainMenuActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="io.scoober.ulti.ulti_mate.MainMenuActivity" />
+        </activity>
+        <activity
+            android:name=".NewGameActivity"
+            android:label="@string/title_activity_new_game"
             android:parentActivityName=".MainMenuActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
