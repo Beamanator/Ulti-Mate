@@ -34,7 +34,7 @@
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:text="@string/button_create_without_template"
-            android:id="@+id/button_create_without_template" />
+            android:id="@+id/button_no_template" />
     </RelativeLayout>
 
 
