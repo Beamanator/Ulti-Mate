@@ -8,7 +8,9 @@
     <string name="action_edit_field_setup">Change Field Setup</string>
     <string name="action_create_new_template">New Template</string>
 
-    <!--Common Dialog Strings-->
+    <!--Common-->
+    <string name="item_edit">Edit</string>
+    <string name="item_delete">Delete</string>
     <string name="dialog_confirm">Confirm</string>
     <string name="dialog_cancel">Cancel</string>
 
@@ -52,6 +54,11 @@
     <!--New Game Activity-->
     <string name="title_activity_new_game">New Game</string>
     <string name="button_create_without_template">Start without Template</string>
+    <string name="item_edit_template_name">Edit Template Name</string>
+    <string name="item_edit_template">Edit Template</string>
+    <string name="item_delete_template">Delete Template</string>
+    <string name="dialog_delete_template">Are you sure you want to delete this game?</string>
+    <string name="dialog_title_change_template_name">Change Template Name</string>
 
     <!--Game Setup Activity-->
     <string name="title_activity_game_setup">Setup</string>
@@ -82,10 +89,8 @@
 
     <!--My Games Activity-->
     <string name="title_activity_my_games">My Games</string>
-    <string name="edit_button">Edit</string>
-    <string name="delete_button">Delete</string>
-    <string name="confirm_delete_title">Confirm Delete</string>
-    <string name="confirm_delete_question">Are you sure you want to delete this game?</string>
+    <string name="dialog_title_confirm_delete">Confirm Delete</string>
+    <string name="dialog_delete_game">Are you sure you want to delete this game?</string>
     <string name="score_list_text">%1$d - %2$d</string>
     <string name="team_list_text">%1$s vs %2$s</string>
 </resources>

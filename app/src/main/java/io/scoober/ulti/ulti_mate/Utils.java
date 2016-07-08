@@ -100,6 +100,20 @@ public class Utils {
         return gameID;
     }
 
+    /**
+     * Function deletes a game from the database
+     * @param c         Context to pass to GameDbAdapter
+     * @param g         Game object to delete
+     * @return          ID of the deleted game
+     */
+    public static long deleteGame(Context c, Game g) {
+        GameDbAdapter dbAdapter = new GameDbAdapter(c);
+        dbAdapter.open();
+        long gameId = dbAdapter.deleteGame(g.getId());
+        dbAdapter.close();
+        return gameId;
+    }
+
     /*
     Drawable Utils
      */

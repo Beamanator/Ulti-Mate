@@ -91,19 +91,15 @@ public class MyGamesListFragment extends ListFragment {
     }
 
     private void deleteGame(Game game, int rowPosition) {
-        GameDbAdapter dbAdapter = new GameDbAdapter(getActivity().getBaseContext());
-        dbAdapter.open();
-        dbAdapter.deleteGame(game.getId());
-        dbAdapter.close();
-
+        Utils.deleteGame(getActivity().getBaseContext(), game);
         games.remove(rowPosition);
         gamesListAdapter.notifyDataSetChanged();
     }
 
     private void showDeleteConfirmDialog(final Game game, final int rowPosition) {
         new AlertDialog.Builder(getActivity())
-                .setTitle(R.string.confirm_delete_title)
-                .setMessage(R.string.confirm_delete_question)
+                .setTitle(R.string.dialog_title_confirm_delete)
+                .setMessage(R.string.dialog_delete_game)
                 .setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
