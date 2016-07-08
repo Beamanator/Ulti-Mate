@@ -28,6 +28,13 @@
             </android.support.v7.widget.Toolbar>
         </android.support.design.widget.AppBarLayout>
 
+        <fragment
+            android:id="@+id/newGameFragment"
+            android:name="io.scoober.ulti.ulti_mate.NewGameListFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/appbar"/>
+
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

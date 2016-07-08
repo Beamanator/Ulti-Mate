@@ -61,14 +61,14 @@ public class MyGamesListAdapter extends ArrayAdapter<Game> {
     }
 
 //    @Override
-//    public GameViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+//    public TemplateViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 //        View itemView = LayoutInflater.from(parent.getContext())
 //                .inflate(R.layout.fragment_my_games_list_row, parent, false);
-//        return new GameViewHolder(itemView);
+//        return new TemplateViewHolder(itemView);
 //    }
 //
 //    @Override
-//    public void onBindViewHolder(GameViewHolder holder, int position) {
+//    public void onBindViewHolder(TemplateViewHolder holder, int position) {
 //        Game game = games.get(position);
 //        holder.title.setText(game.getGameName());
 //        holder.date.setText(getDateString(game.getDate()));
