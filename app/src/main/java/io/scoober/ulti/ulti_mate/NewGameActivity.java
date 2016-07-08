@@ -29,7 +29,7 @@ public class NewGameActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getBaseContext(),GameSetupActivity.class);
-                intent.putExtra(MainMenuActivity.GAME_ID_EXTRA, 0);
+                intent.putExtra(MainMenuActivity.GAME_SETUP_ARG_EXTRA, MainMenuActivity.SetupToLaunch.CREATE_GAME);
                 startActivity(intent);
             }
         });
@@ -52,9 +52,8 @@ public class NewGameActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         switch(id) {
             case R.id.action_create_new_template:
-                // TODO
                 Intent intent = new Intent(getBaseContext(),GameSetupActivity.class);
-                intent.putExtra(MainMenuActivity.GAME_ID_EXTRA, 0);
+                intent.putExtra(MainMenuActivity.GAME_SETUP_ARG_EXTRA, MainMenuActivity.SetupToLaunch.CREATE_TEMPLATE);
                 startActivity(intent);
                 return true;
         }

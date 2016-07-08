@@ -53,6 +53,8 @@
     <string name="title_activity_game_setup">Setup</string>
     <string name="button_create_game">Create Game</string>
     <string name="button_update_game">Update Game</string>
+    <string name="button_create_template">Create Template</string>
+    <string name="button_update_template">Save Template</string>
     <string name="title_team_setup">Team Setup</string>
     <string name="title_game_setup">Game Setup</string>
     <string name="hint_game_name">Game Name</string>

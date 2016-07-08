@@ -54,14 +54,14 @@
             app:stl_indicatorThickness="20dp"
             app:stl_underlineColor="@color/transparent"
             app:stl_underlineThickness="0dp"
-            android:layout_above="@+id/createGameDisplay"
+            android:layout_above="@+id/createFromSetupButton"
             android:layout_centerHorizontal="true" />
 
         <!--Create Game-->
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/createGameDisplay"
+            android:id="@+id/createFromSetupButton"
             android:text="@string/button_create_game"
             android:layout_alignParentBottom="true"
             android:visibility="invisible"/>

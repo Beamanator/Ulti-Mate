@@ -10,7 +10,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -28,10 +27,12 @@ public class GameSetupActivity extends AppCompatActivity {
 
     private static final int NUM_PAGES = 2;
 
-    private Button createGameDisplay;
+    private Button createFromSetupButton;
 
-    // Game ID passed in via the intent
+    // Intent information
+    MainMenuActivity.SetupToLaunch setupToLaunch;
     private long gameId;
+    private long templateId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,16 +47,11 @@ public class GameSetupActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 
-        /*
-        From the intent, check to see if the game ID was passed in as a parameter. If so,
-        update the game instead of creating a new one.
-        TODO handle updating the game
-         */
-        Intent priorIntent = getIntent();
+        // Get data from the intent and bundle it for the fragments to use
+        getIntentData();
         Bundle bundle = new Bundle();
-        gameId = priorIntent.getExtras().getLong(MainMenuActivity.GAME_ID_EXTRA);
-        bundle.putLong(MainMenuActivity.GAME_ID_EXTRA,gameId);
-        Log.d(this.getClass().getName(),Long.toString(gameId));
+        bundle.putLong(MainMenuActivity.GAME_ID_EXTRA, gameId);
+        bundle.putLong(MainMenuActivity.TEMPLATE_ID_EXTRA, templateId);
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
@@ -70,8 +66,8 @@ public class GameSetupActivity extends AppCompatActivity {
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
-                if (position == 1 && createGameDisplay.getVisibility() != View.VISIBLE) {
-                    createGameDisplay.setVisibility(View.VISIBLE);
+                if (position == 1 && createFromSetupButton.getVisibility() != View.VISIBLE) {
+                    createFromSetupButton.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -79,12 +75,31 @@ public class GameSetupActivity extends AppCompatActivity {
         SmartTabLayout viewPagerTab = (SmartTabLayout) findViewById(R.id.smartTab);
         viewPagerTab.setViewPager(mViewPager);
 
-        createGameDisplay= (Button) findViewById(R.id.createGameDisplay);
-        createGameDisplay.setOnClickListener(new View.OnClickListener() {
+        createFromSetupButton = (Button) findViewById(R.id.createFromSetupButton);
+        createFromSetupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                storeGame();
-                launchGameDisplay();
+                Game game;
+                switch (setupToLaunch) {
+                    case CREATE_GAME:
+                        game = createGameFromSetup(0);
+                        gameId = storeGame(game); // set gameId in case the user presses back
+                        launchGameDisplay(); // TODO Add dialog that asks if this should be saved to template
+                        break;
+                    case UPDATE_GAME:
+                        game = createGameFromSetup(gameId);
+                        storeGame(game);
+                        launchGameDisplay();
+                        break;
+                    case CREATE_TEMPLATE:
+                        // TODO Add dialog that asks user to name the template
+                        // TODO Add intent that returns to NewGameActivity
+                        break;
+                    case EDIT_TEMPLATE:
+                        game = createGameFromSetup(templateId);
+                        templateId = storeGame(game); // set templateId in case the user presses back
+                        // TODO Add intent that returns to NewGameActivity
+                }
             }
         });
 
@@ -117,9 +132,38 @@ public class GameSetupActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        if (gameId > 0) {
-            createGameDisplay.setText(R.string.button_update_game);
+
+        /*
+        Change the setupToLaunch parameter depending on whether or not the game/template IDs
+        are populated, likely indicating that the user pressed the back button
+         */
+        if (setupToLaunch == MainMenuActivity.SetupToLaunch.CREATE_GAME &&
+                gameId > 0) {
+            setupToLaunch = MainMenuActivity.SetupToLaunch.UPDATE_GAME;
         }
+
+        if (setupToLaunch == MainMenuActivity.SetupToLaunch.CREATE_TEMPLATE &&
+                templateId > 0) {
+            setupToLaunch = MainMenuActivity.SetupToLaunch.EDIT_TEMPLATE;
+        }
+
+        setCreateButtonText();
+
+        // Make the button visible if we're updating a game or editing a template
+        if (setupToLaunch == MainMenuActivity.SetupToLaunch.EDIT_TEMPLATE ||
+                setupToLaunch == MainMenuActivity.SetupToLaunch.UPDATE_GAME) {
+            if (createFromSetupButton.getVisibility() != View.VISIBLE) {
+                createFromSetupButton.setVisibility(View.VISIBLE);
+            }
+        }
+    }
+
+    public static Game getGameFromId(long id, Context ctx) {
+        GameDbAdapter gameDbAdapter = new GameDbAdapter(ctx);
+        gameDbAdapter.open();
+        Game game = gameDbAdapter.getGame(id);
+        gameDbAdapter.close();
+        return game;
     }
 
     public static Game getGameFromBundle(Bundle bundle, Context ctx) {
@@ -135,18 +179,64 @@ public class GameSetupActivity extends AppCompatActivity {
         return bundleGame;
     }
 
-    private void storeGame() {
-        Game game = createGameFromSetup();
+    /**
+     * Get data from the intent, specifically
+     *      Which game setup to launch (GAME_SETUP_ARG_EXTRA)
+     *      Game ID (GAME_ID_EXTRA)
+     *      Template ID (TEMPLATE_ID_EXTRA)
+     */
+    private void getIntentData() {
+        Intent priorIntent = getIntent();
+        setupToLaunch = (MainMenuActivity.SetupToLaunch)
+                priorIntent.getSerializableExtra(MainMenuActivity.GAME_SETUP_ARG_EXTRA);
 
+        gameId = 0;
+        if (setupToLaunch == MainMenuActivity.SetupToLaunch.UPDATE_GAME) {
+            gameId = priorIntent.getExtras().getLong(MainMenuActivity.GAME_ID_EXTRA);
+        }
+
+        templateId = 0;
+        if (setupToLaunch == MainMenuActivity.SetupToLaunch.CREATE_GAME ||
+                setupToLaunch == MainMenuActivity.SetupToLaunch.EDIT_TEMPLATE) {
+            gameId = priorIntent.getExtras().getLong(MainMenuActivity.GAME_ID_EXTRA);
+        }
+    }
+
+    /**
+     * This function sets the text for the createFromSetupButton, depending on:
+     *      1. The setupToLaunch enum that was passed in from the intent
+     *      2. Whether the gameId or templateId is populated from database creation
+     */
+    private void setCreateButtonText() {
+        switch (setupToLaunch) {
+            case CREATE_GAME:
+                createFromSetupButton.setText(R.string.button_create_game);
+                break;
+            case UPDATE_GAME:
+                createFromSetupButton.setText(R.string.button_update_game);
+                break;
+            case CREATE_TEMPLATE:
+                createFromSetupButton.setText(R.string.button_create_template);
+                break;
+            case EDIT_TEMPLATE:
+                createFromSetupButton.setText(R.string.button_update_template);
+                break;
+        }
+    }
+
+    private long storeGame(Game game) {
         // store game to database
         GameDbAdapter gameDbAdapter = new GameDbAdapter(getBaseContext());
         gameDbAdapter.open();
-        if (gameId > 0) {
-            gameDbAdapter.saveGame(game);
+        long newId;
+        if (game.getId() > 0) {
+            newId = gameDbAdapter.saveGame(game);
         } else {
-            gameId = gameDbAdapter.createGame(game);
+            newId = gameDbAdapter.createGame(game);
         }
         gameDbAdapter.close();
+
+        return newId;
 
     }
 
@@ -160,7 +250,7 @@ public class GameSetupActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private Game createGameFromSetup() {
+    private Game createGameFromSetup(long gameId) {
 
         // Get required widgets
         EditText gameNameField = (EditText) findViewById(R.id.gameTitleEditor);
@@ -202,12 +292,7 @@ public class GameSetupActivity extends AppCompatActivity {
          */
         Game game;
         if (gameId > 0) {
-            // Get game from the database
-            GameDbAdapter gameDbAdapter = new GameDbAdapter(getBaseContext());
-            gameDbAdapter.open();
-            game = gameDbAdapter.getGame(gameId);
-            gameDbAdapter.close();
-
+            game = Utils.getGameDetails(getBaseContext(), gameId);
             // Set new items in the game
             game.setGameName(gameName);
             game.setWinningScore(winningScore);
@@ -217,9 +302,9 @@ public class GameSetupActivity extends AppCompatActivity {
             game.setTeam2Color(team2Color);
             game.setSoftCapTime(softCap);
             game.setHardCapTime(hardCap);
-
         } else {
-            game = new Game(gameName,winningScore,team1Name,team1Color,team2Name,team2Color,softCap,hardCap);
+            game = new Game(gameName,winningScore,team1Name,team1Color,team2Name,team2Color,
+                    softCap,hardCap);
         }
 
         return game;
