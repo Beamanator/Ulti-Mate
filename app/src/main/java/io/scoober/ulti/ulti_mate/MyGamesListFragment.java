@@ -80,7 +80,7 @@ public class MyGamesListFragment extends ListFragment {
         menuInflater.inflate(R.menu.my_games_list_long_press_menu, menu);
     }
 
-    public void launchGameDisplay(MainMenuActivity.DisplayToLaunch dtl, int position) {
+    private void launchGameDisplay(MainMenuActivity.DisplayToLaunch dtl, int position) {
 
         Game game = (Game) getListAdapter().getItem(position);
         Intent intent = new Intent(getActivity(), GameDisplayActivity.class);

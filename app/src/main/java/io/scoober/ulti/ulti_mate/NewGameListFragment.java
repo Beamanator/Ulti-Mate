@@ -1,6 +1,7 @@
 package io.scoober.ulti.ulti_mate;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
@@ -56,7 +57,19 @@ public class NewGameListFragment extends ListFragment{
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
+        launchGameSetup(MainMenuActivity.SetupToLaunch.CREATE_GAME, position);
+    }
 
-        //TODO
+    /**
+     * Launch the game setup activity from the new game activity
+     * @param stl       Enum describing which setup to launch
+     * @param position  Position of the row of the template on the list
+     */
+    private void launchGameSetup(MainMenuActivity.SetupToLaunch stl, int position) {
+        Game template = (Game) getListAdapter().getItem(position);
+        Intent intent = new Intent(getActivity(), GameSetupActivity.class);
+        intent.putExtra(MainMenuActivity.TEMPLATE_ID_EXTRA, template.getId());
+        intent.putExtra(MainMenuActivity.GAME_SETUP_ARG_EXTRA, stl);
+        startActivity(intent);
     }
 }

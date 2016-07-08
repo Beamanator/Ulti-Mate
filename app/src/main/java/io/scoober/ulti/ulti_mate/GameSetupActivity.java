@@ -160,22 +160,15 @@ public class GameSetupActivity extends AppCompatActivity {
         }
     }
 
-    public static Game getGameFromId(long id, Context ctx) {
-        GameDbAdapter gameDbAdapter = new GameDbAdapter(ctx);
-        gameDbAdapter.open();
-        Game game = gameDbAdapter.getGame(id);
-        gameDbAdapter.close();
-        return game;
-    }
-
     public static Game getGameFromBundle(Bundle bundle, Context ctx) {
         long gameId = bundle.getLong(MainMenuActivity.GAME_ID_EXTRA);
+        if (gameId == 0) {
+            gameId = bundle.getLong(MainMenuActivity.TEMPLATE_ID_EXTRA);
+        }
+
         Game bundleGame = null;
         if (gameId > 0) {
-            GameDbAdapter gameDbAdapter = new GameDbAdapter(ctx);
-            gameDbAdapter.open();
-            bundleGame = gameDbAdapter.getGame(gameId);
-            gameDbAdapter.close();
+            bundleGame = Utils.getGameDetails(ctx, gameId);
         }
 
         return bundleGame;
@@ -200,7 +193,7 @@ public class GameSetupActivity extends AppCompatActivity {
         templateId = 0;
         if (setupToLaunch == MainMenuActivity.SetupToLaunch.CREATE_GAME ||
                 setupToLaunch == MainMenuActivity.SetupToLaunch.EDIT_TEMPLATE) {
-            gameId = priorIntent.getExtras().getLong(MainMenuActivity.GAME_ID_EXTRA);
+            templateId = priorIntent.getExtras().getLong(MainMenuActivity.TEMPLATE_ID_EXTRA);
         }
     }
 
