@@ -142,16 +142,20 @@ public class GameSetupActivity extends AppCompatActivity {
         gameDbAdapter.open();
         if (gameId > 0) {
             gameDbAdapter.saveGame(game);
-            displayToLaunch = MainMenuActivity.DisplayToLaunch.UPDATE;
         } else {
             gameId = gameDbAdapter.createGame(game);
-            displayToLaunch = MainMenuActivity.DisplayToLaunch.NEW;
         }
         gameDbAdapter.close();
 
     }
 
     private void launchGameDisplay() {
+
+        if (gameId > 0) {
+            displayToLaunch = MainMenuActivity.DisplayToLaunch.UPDATE;
+        } else {
+            displayToLaunch = MainMenuActivity.DisplayToLaunch.NEW;
+        }
 
         // Start Game Display Activity
         Intent intent = new Intent(getBaseContext(), GameDisplayActivity.class);
