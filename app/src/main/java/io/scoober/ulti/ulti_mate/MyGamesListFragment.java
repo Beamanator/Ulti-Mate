@@ -80,7 +80,7 @@ public class MyGamesListFragment extends ListFragment {
         menuInflater.inflate(R.menu.my_games_list_long_press_menu, menu);
     }
 
-    public void launchGameDisplay(MainMenuActivity.DisplayToLaunch dtl, int position) {
+    private void launchGameDisplay(MainMenuActivity.DisplayToLaunch dtl, int position) {
 
         Game game = (Game) getListAdapter().getItem(position);
         Intent intent = new Intent(getActivity(), GameDisplayActivity.class);
@@ -91,26 +91,22 @@ public class MyGamesListFragment extends ListFragment {
     }
 
     private void deleteGame(Game game, int rowPosition) {
-        GameDbAdapter dbAdapter = new GameDbAdapter(getActivity().getBaseContext());
-        dbAdapter.open();
-        dbAdapter.deleteGame(game.getId());
-        dbAdapter.close();
-
+        Utils.deleteGame(getActivity().getBaseContext(), game);
         games.remove(rowPosition);
         gamesListAdapter.notifyDataSetChanged();
     }
 
     private void showDeleteConfirmDialog(final Game game, final int rowPosition) {
         new AlertDialog.Builder(getActivity())
-                .setTitle(R.string.confirm_delete_title)
-                .setMessage(R.string.confirm_delete_question)
-                .setPositiveButton(R.string.confirm_button, new DialogInterface.OnClickListener() {
+                .setTitle(R.string.dialog_title_confirm_delete)
+                .setMessage(R.string.dialog_delete_game)
+                .setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         deleteGame(game, rowPosition);
                     }
                 })
-                .setNegativeButton(R.string.cancel_button, null)
+                .setNegativeButton(R.string.dialog_cancel, null)
                 .create()
                 .show();
     }

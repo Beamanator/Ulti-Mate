@@ -105,6 +105,7 @@ public class GameDisplayActivity extends AppCompatActivity {
                 return true;
             case R.id.action_game_settings:
                 Intent intent = new Intent(getBaseContext(), GameSetupActivity.class);
+                intent.putExtra(MainMenuActivity.GAME_SETUP_ARG_EXTRA, MainMenuActivity.SetupToLaunch.UPDATE_GAME);
                 intent.putExtra(MainMenuActivity.GAME_ID_EXTRA, gameId);
                 startActivity(intent);
                 return true;
