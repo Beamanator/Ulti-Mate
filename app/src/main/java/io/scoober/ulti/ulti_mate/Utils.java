@@ -56,7 +56,7 @@ public class Utils {
 
     /**
      * Function to get today's date in milliseconds from a 12 hour formatted time.
-     * Assumes the timeString is for today's date
+     * Assumes the timeString is in format 'h:mm a' and is for today's date
      * @param timeString    Time as a string formatted h:mm a
      * @return              Time in milliseconds
      */
@@ -151,9 +151,9 @@ public class Utils {
      * Function returns the absolute value of the difference in time between now and passed
      * time in the String format h:mm
      * @param time   Calendar of specific cap time
-     * @return          long of time difference in milliseconds
+     * @return       String format of time difference in H:mm format
      */
-    public static String timeFromNowMilli(Calendar time) {
+    public static String timeFromNowHmm(Calendar time) {
         Calendar now = Calendar.getInstance();
 
         int timeDay = time.get(Calendar.DAY_OF_YEAR);

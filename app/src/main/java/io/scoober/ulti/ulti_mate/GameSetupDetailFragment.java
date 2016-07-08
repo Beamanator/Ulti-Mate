@@ -2,6 +2,7 @@ package io.scoober.ulti.ulti_mate;
 
 
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
@@ -101,51 +102,10 @@ public class GameSetupDetailFragment extends Fragment {
 
                 final int hour = capDefaultTime.get(Calendar.HOUR_OF_DAY);
                 int minute = capDefaultTime.get(Calendar.MINUTE);
-                TimePickerDialog softCapTimePicker = new TimePickerDialog(getActivity(),
-                        new TimePickerDialog.OnTimeSetListener() {
-                            @Override
-                            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                                // Set button text to picked time
-                                String timePicked = Utils.to12Hr(hourOfDay, minute);
-                                softCapButton.setText(timePicked);
-                                Calendar capTime = Calendar.getInstance();
-                                Calendar currentTime = Calendar.getInstance();
-                                capTime.setTimeInMillis(
-                                        Utils.getTodayMilliFrom12HrString(timePicked)
-                                );
 
-                                // get date game was created
-                                long dateCreated;
-                                if (game != null) {
-                                    Calendar date = Calendar.getInstance();
-                                    date.setTimeInMillis(game.getDate());
-                                    dateCreated = date.getTimeInMillis();
-                                } else {
-                                    // if game doesn't exist yet, get current date
-                                    dateCreated = currentTime.getTimeInMillis();
-                                }
+                TimePickerDialog softCapTimePicker = createTimePickerDialog(
+                        hour, minute, softCapButton, "soft");
 
-                                if (!Utils.isFutureToday(hourOfDay, minute, dateCreated)) {
-                                    // If time picked is before current time, set day + 1
-                                    capTime.add(Calendar.DAY_OF_YEAR, 1);
-                                }
-
-                                String timeRemaining = Utils.timeFromNowMilli(capTime);
-
-                                // Snackbar displays time till soft cap
-                                // TODO: get string from xml
-                                Snackbar sb = makeSnackbar("Time until soft cap:  " +
-                                                timeRemaining,
-                                        Snackbar.LENGTH_INDEFINITE);
-                                sb.setAction("UNDO", new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        softCapButton.setText("Set Time");
-                                    }
-                                });
-                                sb.show();
-                            }
-                        },hour,minute,false);
                 softCapTimePicker.show();
             }
         });
@@ -160,17 +120,72 @@ public class GameSetupDetailFragment extends Fragment {
 
                 int hour = currentTime.get(Calendar.HOUR_OF_DAY);
                 int minute = currentTime.get(Calendar.MINUTE);
-                TimePickerDialog hardCapTimePicker = new TimePickerDialog(getActivity(),
-                        new TimePickerDialog.OnTimeSetListener() {
-                            @Override
-                            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                                //TODO Validation on date and time (must be greater than current)
-                                hardCapButton.setText(Utils.to12Hr(hourOfDay, minute));
-                            }
-                        },hour,minute,false);
+
+                TimePickerDialog hardCapTimePicker = createTimePickerDialog(
+                        hour, minute, hardCapButton, "hard");
+
                 hardCapTimePicker.show();
             }
         });
+    }
+
+    /**
+     * Function creates a TimePickerDialog object for setting soft and hard caps.
+     * @param hour      int Hour for TimePickerDialog to default to
+     * @param minute    int Minute for TimePickerDialog to default to
+     * @param button    Button to store time picked by dialog
+     * @param capType   String Cap type ("soft" or "hard")
+     * @return          Returns the new TimePickerDialog
+     */
+    private TimePickerDialog createTimePickerDialog(int hour, int minute, final Button button,
+                                                    final String capType) {
+        return new TimePickerDialog(getActivity(),
+                new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                        // set up initial variables
+                        String timePicked = Utils.to12Hr(hourOfDay, minute);
+                        Calendar capTime = Calendar.getInstance();
+                        Calendar currentTime = Calendar.getInstance();
+                        final Context c = getActivity().getBaseContext();
+
+                        // Set button text to picked time (make string readable)
+                        button.setText(timePicked);
+
+                        // Use Utils to set the time picked by picker to capTime
+                        capTime.setTimeInMillis(
+                                Utils.getTodayMilliFrom12HrString(timePicked)
+                        );
+
+                        // get date game was created
+                        long dateCreated;
+                        if (game != null) {
+                            dateCreated = game.getDate();
+                        } else {
+                            // if game doesn't exist yet, get current date
+                            dateCreated = currentTime.getTimeInMillis();
+                        }
+
+                        // If time picked is before current time, set day + 1
+                        if (!Utils.isFutureToday(hourOfDay, minute, dateCreated)) {
+                            capTime.add(Calendar.DAY_OF_YEAR, 1);
+                        }
+
+                        String timeRemaining = Utils.timeFromNowHmm(capTime);
+                        String message = c.getString(R.string.snackbar_message_time_cap,
+                                capType.toLowerCase(), timeRemaining);
+
+                        // Snackbar displays time till soft cap
+                        Snackbar sb = makeSnackbar(message, 3000);
+                        sb.setAction("UNDO", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                button.setText(c.getString(R.string.button_cap_default_text));
+                            }
+                        });
+                        sb.show();
+                    }
+                }, hour, minute, false);
     }
 
     /**

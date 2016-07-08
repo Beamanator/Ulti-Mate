@@ -4,8 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -31,7 +29,6 @@ public class GameSetupActivity extends AppCompatActivity {
     private static final int NUM_PAGES = 2;
 
     private Button createGameDisplay;
-    private CoordinatorLayout cl;
 
     // Game ID passed in via the intent
     private long gameId;
@@ -47,11 +44,6 @@ public class GameSetupActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        /*
-        Get coordination for Snackbar function
-         */
-        cl = (CoordinatorLayout) findViewById(R.id.gameSetupCoordinatorLayout);
 
         /*
         From the intent, check to see if the game ID was passed in as a parameter. If so,
