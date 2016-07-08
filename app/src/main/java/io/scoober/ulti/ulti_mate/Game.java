@@ -36,6 +36,10 @@ public class Game {
     public enum GameStatus { NOT_STARTED, PAUSED, FIRST_HALF, HALFTIME, SECOND_HALF,
         SOFT_CAP, HARD_CAP, GAME_OVER, IN_PROGRESS}
 
+    // Template info
+    private boolean isTemplate;
+    private String templateName;
+
     public long getId() {
         return id;
     }
@@ -144,10 +148,18 @@ public class Game {
         this.initTeamLeft = initTeamLeft;
     }
 
+    public String getTemplateName() {
+        return templateName;
+    }
+
+    public void setTemplateName(String templateName) {
+        this.templateName = templateName;
+    }
+
     /*
-    Constructor for building the game from the Game Setup Activity. Defaults are set here
-    and will not need to be reset again, as this will populate them in the database.
-    */
+        Constructor for building the game from the Game Setup Activity. Defaults are set here
+        and will not need to be reset again, as this will populate them in the database.
+        */
     public Game(String gameName, int winningScore, String team1Name, int team1Color,
                 String team2Name, int team2Color, long softCapTime, long hardCapTime) {
         this.gameName = gameName;
@@ -171,7 +183,7 @@ public class Game {
     public Game(long id, String gameName, GameStatus status, int winningScore, int team1Score, int team2Score,
                 String team1Name, int team1Color, String team2Name, int team2Color,
                 long softCapTime, long hardCapTime, String initPullingTeam, String initTeamLeft,
-                long date) {
+                boolean isTemplate, String templateName, long date) {
         this.id = id;
         this.gameName = gameName;
         this.winningScore = winningScore;
@@ -185,6 +197,8 @@ public class Game {
         this.hardCapTime = hardCapTime;
         this.initPullingTeam = initPullingTeam;
         this.initTeamLeft = initTeamLeft;
+        this.isTemplate = isTemplate;
+        this.templateName = templateName;
         this.date = date;
         this.gameStatus = status;
     }
@@ -316,5 +330,9 @@ public class Game {
         }
 
         return status;
+    }
+
+    public boolean isTemplate() {
+        return this.isTemplate;
     }
 }
