@@ -65,20 +65,15 @@ public class GameDisplayActivity extends AppCompatActivity {
         // handle different cases for where Activity is called from
         switch (displayToLaunch) {
             case NEW:
-                GameDisplayFragment gameFrag1 = new GameDisplayFragment();
-                fragmentTransaction.add(R.id.game_container, gameFrag1, "GAME_DISPLAY_FRAGMENT");
-                break;
             case RESUME:
-                GameDisplayFragment gameFrag2 = new GameDisplayFragment();
-                fragmentTransaction.add(R.id.game_container, gameFrag2, "GAME_DISPLAY_FRAGMENT");
+            case UPDATE:
+                GameDisplayFragment gameFrag = new GameDisplayFragment();
+                fragmentTransaction.add(R.id.game_container, gameFrag, "GAME_DISPLAY_FRAGMENT");
                 break;
             case EDIT:
-                GameDisplayEditFragment gameEditFrag1 = new GameDisplayEditFragment();
-                fragmentTransaction.add(R.id.game_container, gameEditFrag1, "GAME_DISPLAY_EDIT_FRAGMENT");
-                break;
             case VIEW:
-                GameDisplayEditFragment gameEditFrag2 = new GameDisplayEditFragment();
-                fragmentTransaction.add(R.id.game_container, gameEditFrag2, "GAME_DISPLAY_EDIT_FRAGMENT");
+                GameDisplayEditFragment gameEditFrag = new GameDisplayEditFragment();
+                fragmentTransaction.add(R.id.game_container, gameEditFrag, "GAME_DISPLAY_EDIT_FRAGMENT");
                 break;
         }
 

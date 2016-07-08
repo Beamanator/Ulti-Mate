@@ -27,7 +27,7 @@ import io.scoober.ulti.ulti_mate.widgets.TeamImageButton;
 public class GameSetupActivity extends AppCompatActivity {
 
     private static final int NUM_PAGES = 2;
-
+    private MainMenuActivity.DisplayToLaunch displayToLaunch;
     private Button createGameDisplay;
 
     // Game ID passed in via the intent
@@ -142,8 +142,10 @@ public class GameSetupActivity extends AppCompatActivity {
         gameDbAdapter.open();
         if (gameId > 0) {
             gameDbAdapter.saveGame(game);
+            displayToLaunch = MainMenuActivity.DisplayToLaunch.UPDATE;
         } else {
             gameId = gameDbAdapter.createGame(game);
+            displayToLaunch = MainMenuActivity.DisplayToLaunch.NEW;
         }
         gameDbAdapter.close();
 
@@ -154,8 +156,7 @@ public class GameSetupActivity extends AppCompatActivity {
         // Start Game Display Activity
         Intent intent = new Intent(getBaseContext(), GameDisplayActivity.class);
         intent.putExtra(MainMenuActivity.GAME_ID_EXTRA, gameId);
-        intent.putExtra(MainMenuActivity.GAME_DISPLAY_ARG_EXTRA,
-                MainMenuActivity.DisplayToLaunch.NEW);
+        intent.putExtra(MainMenuActivity.GAME_DISPLAY_ARG_EXTRA, displayToLaunch);
         startActivity(intent);
     }
 

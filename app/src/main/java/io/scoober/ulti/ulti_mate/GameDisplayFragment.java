@@ -74,6 +74,7 @@ public class GameDisplayFragment extends Fragment {
                 setGameStatusText(Game.GameStatus.NOT_STARTED);
                 break;
             case RESUME:
+            case UPDATE:
                 startButton.setText(R.string.start_resume_button);
                 setGameStatusText(Game.GameStatus.PAUSED);
                 break;
