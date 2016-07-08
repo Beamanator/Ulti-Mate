@@ -52,7 +52,7 @@
     <string name="status_in_progress">Game In Progress</string>
 
     <!--New Game Activity-->
-    <string name="title_activity_new_game">New Game</string>
+    <string name="title_activity_new_game">Templates</string>
     <string name="button_create_without_template">Start without Template</string>
     <string name="item_edit_template_name">Edit Template Name</string>
     <string name="item_edit_template">Edit Template</string>

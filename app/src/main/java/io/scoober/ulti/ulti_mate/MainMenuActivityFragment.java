@@ -28,7 +28,7 @@ public class MainMenuActivityFragment extends Fragment {
         Button myGamesButton = (Button) mainMenuLayout.findViewById(R.id.my_games_button);
 
         getLastGameId(); // get last game ID to activate buttons
-        if (lastGameId != -1) {
+        if (lastGameId != 0) {
             // get last game details
             Game g = Utils.getGameDetails(getActivity().getBaseContext(), lastGameId);
 

@@ -159,20 +159,17 @@ public class GameDbAdapter {
         return games;
     }
 
+    /**
+     * Get the ID of the most recent (non-template) game
+     * @return  ID of the most recent game or 0 if there are no games
+     */
     public long getRecentGameId() {
-        String q = "select " + C_ID +
-                " from " + GAMES_TABLE +
-                " ORDER BY " + C_DATE_CREATED + " DESC " +
-                "LIMIT 1";
-        Cursor cursor = sqlDB.rawQuery(q,null);
-        if (cursor.getCount() == 0) {
-            return -1;
+        ArrayList<Game> games = getRecentGames(1,0);
+        if(games.isEmpty()) {
+            return 0;
         }
 
-        cursor.moveToFirst();
-        long gameId = cursor.getLong(0);
-        cursor.close();
-        return gameId;
+        return games.get(0).getId();
     }
 
     /**
