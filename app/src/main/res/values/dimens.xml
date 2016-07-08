@@ -9,4 +9,10 @@
     <dimen name="appbar_padding_top">8dp</dimen>
     <dimen name="app_bar_height">180dp</dimen>
     <dimen name="text_margin">16dp</dimen>
+
+    <!-- Spacing for Dialogs-->
+    <dimen name="dialog_padding_start">22dp</dimen>
+    <dimen name="dialog_padding_end">16dp</dimen>
+    <dimen name="dialog_padding_top">5dp</dimen>
+    <dimen name="dialog_padding_bottom">5dp</dimen>
 </resources>

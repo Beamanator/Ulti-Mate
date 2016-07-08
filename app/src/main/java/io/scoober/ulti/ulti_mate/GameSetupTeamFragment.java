@@ -109,7 +109,7 @@ public class GameSetupTeamFragment extends Fragment {
                 .setSelectedColor(imageButton.getColor())
                 .setDismissOnColorSelected(true)
                 .setTitle(R.string.dialog_color_picker)
-                .setNegativeButtonText(R.string.cancel_button)
+                .setNegativeButtonText(R.string.dialog_cancel)
                 .setOnColorSelectedListener(new SpectrumDialog.OnColorSelectedListener() {
                     @Override
                     public void onColorSelected(boolean positiveResult, @ColorInt int color) {

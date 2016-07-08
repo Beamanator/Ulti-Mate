@@ -104,13 +104,13 @@ public class MyGamesListFragment extends ListFragment {
         new AlertDialog.Builder(getActivity())
                 .setTitle(R.string.confirm_delete_title)
                 .setMessage(R.string.confirm_delete_question)
-                .setPositiveButton(R.string.confirm_button, new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         deleteGame(game, rowPosition);
                     }
                 })
-                .setNegativeButton(R.string.cancel_button, null)
+                .setNegativeButton(R.string.dialog_cancel, null)
                 .create()
                 .show();
     }

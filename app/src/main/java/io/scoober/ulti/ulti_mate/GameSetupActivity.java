@@ -1,6 +1,7 @@
 package io.scoober.ulti.ulti_mate;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
@@ -8,8 +9,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -92,12 +95,11 @@ public class GameSetupActivity extends AppCompatActivity {
                         launchGameDisplay();
                         break;
                     case CREATE_TEMPLATE:
-                        // TODO Add dialog that asks user to name the template
-                        // TODO Add intent that returns to NewGameActivity
+                        showTemplateNameDialog();
                         break;
                     case EDIT_TEMPLATE:
-                        game = createGameFromSetup(templateId);
-                        templateId = storeGame(game); // set templateId in case the user presses back
+                        game = createGameFromSetup(templateId); // returns a template game
+                        storeGame(game); // set templateId in case the user presses back
                         // TODO Add intent that returns to NewGameActivity
                 }
             }
@@ -250,6 +252,11 @@ public class GameSetupActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    private void launchNewGameActivity() {
+        Intent intent = new Intent(getBaseContext(), NewGameActivity.class);
+        startActivity(intent);
+    }
+
     private Game createGameFromSetup(long gameId) {
 
         // Get required widgets
@@ -310,14 +317,35 @@ public class GameSetupActivity extends AppCompatActivity {
         return game;
     }
 
+    private void showTemplateNameDialog() {
 
+        LayoutInflater inflater = this.getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.dialog_edit_text, null);
+        final EditText nameEdit = (EditText) dialogView.findViewById(R.id.templateNameEdit);
+
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.title_dialog_name_template)
+                .setView(dialogView)
+                .setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Game game = createGameFromSetup(0);
+                        game.convertToTemplate(nameEdit.getText().toString());
+                        templateId = storeGame(game);
+                        launchNewGameActivity();
+                    }
+                })
+                .setNegativeButton(R.string.dialog_cancel, null)
+                .create()
+                .show();
+    }
 
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
      */
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
+    private class SectionsPagerAdapter extends FragmentPagerAdapter {
 
         private GameSetupDetailFragment detailFrag;
         private GameSetupTeamFragment teamFrag;

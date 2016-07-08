@@ -335,4 +335,10 @@ public class Game {
     public boolean isTemplate() {
         return this.isTemplate;
     }
+
+    public void convertToTemplate(String templateName) {
+        // TODO Soft/Hard Cap times
+        this.isTemplate = true;
+        this.templateName = templateName;
+    }
 }
