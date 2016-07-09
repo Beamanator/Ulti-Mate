@@ -5,6 +5,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -88,7 +90,7 @@ public class GameSetupActivity extends AppCompatActivity {
                     case CREATE_GAME:
                         game = createGameFromSetup(0);
                         gameId = storeGame(game); // set gameId in case the user presses back
-                        launchGameDisplay(); // TODO Add dialog that asks if this should be saved to template
+                        launchGameDisplay();
                         break;
                     case UPDATE_GAME:
                         game = createGameFromSetup(gameId);
@@ -96,12 +98,11 @@ public class GameSetupActivity extends AppCompatActivity {
                         launchGameDisplay();
                         break;
                     case CREATE_TEMPLATE:
-                        showTemplateNameDialog();
+                        createTemplate(true);
                         break;
                     case EDIT_TEMPLATE:
-                        game = createGameFromSetup(templateId); // returns a template game
-                        storeGame(game); // set templateId in case the user presses back
-                        // TODO Add intent that returns to NewGameActivity
+                        editTemplate(true);
+                        break;
                 }
             }
         });
@@ -124,9 +125,17 @@ public class GameSetupActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (id) {
+            case R.id.action_template_save:
+                if (templateId > 0) {
+                    editTemplate(false);
+                } else {
+                    createTemplate(false);
+                }
+                return true;
+            case R.id.action_template_save_as:
+                createTemplate(false);
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -256,6 +265,28 @@ public class GameSetupActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    /**
+     * Creates templates from user populated fields in the game setup activity
+     * @param launchActivity    boolean to determine whether the NewGameActivity should be launched
+     */
+    private void createTemplate(boolean launchActivity) {
+        showTemplateNameDialog(launchActivity);
+    }
+
+    /**
+     * Edits templates from user populated fields in the game setup activity
+     * @param launchActivity    boolean to determine whether the NewGameActivity should be launched
+     */
+    private void editTemplate(boolean launchActivity) {
+        Game template = createGameFromSetup(templateId); // returns a template game
+        storeGame(template); // set templateId in case the user presses back
+        if (launchActivity) {
+            launchNewGameActivity();
+        } else {
+            showSaveTemplateSnackbar(template.getTemplateName());
+        }
+    }
+
     private Game createGameFromSetup(long gameId) {
 
         // Get required widgets
@@ -318,7 +349,7 @@ public class GameSetupActivity extends AppCompatActivity {
         return game;
     }
 
-    private void showTemplateNameDialog() {
+    private void showTemplateNameDialog(final boolean launchActivity) {
 
         LayoutInflater inflater = this.getLayoutInflater();
         final View dialogView = inflater.inflate(R.layout.dialog_edit_text, null);
@@ -331,14 +362,26 @@ public class GameSetupActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Game game = createGameFromSetup(0);
-                        game.convertToTemplate(nameEdit.getText().toString());
+                        String templateName = nameEdit.getText().toString();
+                        game.convertToTemplate(templateName);
                         templateId = storeGame(game);
-                        launchNewGameActivity();
+                        if (launchActivity) {
+                            launchNewGameActivity();
+                        } else {
+                            showSaveTemplateSnackbar(templateName);
+                        }
                     }
                 })
                 .setNegativeButton(R.string.dialog_cancel, null)
                 .create()
                 .show();
+    }
+
+    private void showSaveTemplateSnackbar(String templateName) {
+        CoordinatorLayout cl = (CoordinatorLayout) findViewById(R.id.gameSetupCoordinatorLayout);
+        String message = getResources().getString(R.string.snackbar_template_save_successful, templateName);
+        Snackbar.make(cl,message,Snackbar.LENGTH_LONG).show();
+
     }
 
     /**

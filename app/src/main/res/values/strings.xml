@@ -7,6 +7,8 @@
     <string name="action_game_settings">Edit Game Settings</string>
     <string name="action_edit_field_setup">Change Field Setup</string>
     <string name="action_create_new_template">New Template</string>
+    <string name="action_template_save">Save</string>
+    <string name="action_template_save_as">Save As</string>
 
     <!--Common-->
     <string name="item_edit">Edit</string>
@@ -80,6 +82,7 @@
     <string name="team_2_name_hint">Team 2</string>
     <string name="dialog_color_picker">Pick a team color</string>
     <string name="snackbar_message_time_cap">Time until %1$s cap: %2$s</string>
+    <string name="snackbar_template_save_successful">Saved template %1$s.</string>
     <string name="title_dialog_name_template">Create Template</string>
     <string name="dialog_name_template">Template name</string>
     <string name="timepicker_soft_cap_title">Set Soft Cap</string>
