@@ -39,6 +39,7 @@ public class Game {
     // Template info
     private boolean isTemplate;
     private String templateName;
+    // TODO Consider adding a source template ID so saving templates is smoother
 
     public long getId() {
         return id;
@@ -337,7 +338,6 @@ public class Game {
     }
 
     public void convertToTemplate(String templateName) {
-        // TODO Soft/Hard Cap times
         this.isTemplate = true;
         this.templateName = templateName;
     }
