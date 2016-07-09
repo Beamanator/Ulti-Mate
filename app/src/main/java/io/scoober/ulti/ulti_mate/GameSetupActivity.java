@@ -88,7 +88,7 @@ public class GameSetupActivity extends AppCompatActivity {
                     case CREATE_GAME:
                         game = createGameFromSetup(0);
                         gameId = storeGame(game); // set gameId in case the user presses back
-                        launchGameDisplay(); // TODO Add dialog that asks if this should be saved to template
+                        launchGameDisplay();
                         break;
                     case UPDATE_GAME:
                         game = createGameFromSetup(gameId);
@@ -101,7 +101,7 @@ public class GameSetupActivity extends AppCompatActivity {
                     case EDIT_TEMPLATE:
                         game = createGameFromSetup(templateId); // returns a template game
                         storeGame(game); // set templateId in case the user presses back
-                        // TODO Add intent that returns to NewGameActivity
+                        launchNewGameActivity();
                 }
             }
         });
