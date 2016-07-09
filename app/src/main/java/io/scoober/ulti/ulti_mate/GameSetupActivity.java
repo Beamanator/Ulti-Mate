@@ -14,6 +14,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -90,12 +91,12 @@ public class GameSetupActivity extends AppCompatActivity {
                     case CREATE_GAME:
                         game = createGameFromSetup(0);
                         gameId = storeGame(game); // set gameId in case the user presses back
-                        launchGameDisplay();
+                        launchGameDisplay(0);
                         break;
                     case UPDATE_GAME:
                         game = createGameFromSetup(gameId);
                         storeGame(game);
-                        launchGameDisplay();
+                        launchGameDisplay(gameId);
                         break;
                     case CREATE_TEMPLATE:
                         createTemplate(true);
@@ -245,13 +246,15 @@ public class GameSetupActivity extends AppCompatActivity {
 
     }
 
-    private void launchGameDisplay() {
+    private void launchGameDisplay(long id) {
 
-        if (gameId > 0) {
+        if (id > 0) {
             displayToLaunch = MainMenuActivity.DisplayToLaunch.UPDATE;
         } else {
             displayToLaunch = MainMenuActivity.DisplayToLaunch.NEW;
         }
+
+        Log.d("SetupActi", displayToLaunch.name());
 
         // Start Game Display Activity
         Intent intent = new Intent(getBaseContext(), GameDisplayActivity.class);

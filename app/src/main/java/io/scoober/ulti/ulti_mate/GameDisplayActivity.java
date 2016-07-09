@@ -11,6 +11,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -61,6 +62,8 @@ public class GameDisplayActivity extends AppCompatActivity {
         // Manage all fragments -> so we can add our display / edit display fragments:
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        Log.d("DisplayActi", displayToLaunch.name());
 
         // handle different cases for where Activity is called from
         switch (displayToLaunch) {
