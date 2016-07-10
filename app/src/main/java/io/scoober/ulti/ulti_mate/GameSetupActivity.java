@@ -254,8 +254,6 @@ public class GameSetupActivity extends AppCompatActivity {
             displayToLaunch = MainMenuActivity.DisplayToLaunch.NEW;
         }
 
-        Log.d("SetupActi", displayToLaunch.name());
-
         // Start Game Display Activity
         Intent intent = new Intent(getBaseContext(), GameDisplayActivity.class);
         intent.putExtra(MainMenuActivity.GAME_ID_EXTRA, gameId);

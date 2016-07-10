@@ -1,6 +1,7 @@
 package io.scoober.ulti.ulti_mate;
 
 
+import android.app.AlertDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.os.Bundle;
@@ -19,6 +20,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.TimePicker;
 
 import java.util.Calendar;
@@ -118,7 +120,12 @@ public class GameSetupDetailFragment extends Fragment {
                 TimePickerDialog softCapTimePicker = createTimePickerDialog(
                         hour, minute, softCapButton, "soft");
 
-                softCapTimePicker.setTitle(c.getString(R.string.timepicker_soft_cap_title));
+                LayoutInflater inflater = getActivity().getLayoutInflater();
+                View tpdTitleView = inflater.inflate(R.layout.custom_view_tpd_title, null);
+                TextView title = (TextView) tpdTitleView.findViewById(R.id.tpdTitle);
+                title.setText(c.getString(R.string.timepicker_soft_cap_title));
+
+                softCapTimePicker.setCustomTitle(tpdTitleView);
 
                 softCapTimePicker.show();
             }
@@ -147,7 +154,12 @@ public class GameSetupDetailFragment extends Fragment {
                 TimePickerDialog hardCapTimePicker = createTimePickerDialog(
                         hour, minute, hardCapButton, "hard");
 
-                hardCapTimePicker.setTitle(c.getString(R.string.timepicker_hard_cap_title));
+                LayoutInflater inflater = getActivity().getLayoutInflater();
+                View tpdTitleView = inflater.inflate(R.layout.custom_view_tpd_title, null);
+                TextView title = (TextView) tpdTitleView.findViewById(R.id.tpdTitle);
+                title.setText(c.getString(R.string.timepicker_hard_cap_title));
+
+                hardCapTimePicker.setCustomTitle(tpdTitleView);
 
                 hardCapTimePicker.show();
             }

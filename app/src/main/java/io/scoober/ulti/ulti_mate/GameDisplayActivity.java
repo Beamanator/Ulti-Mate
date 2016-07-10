@@ -63,8 +63,6 @@ public class GameDisplayActivity extends AppCompatActivity {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-        Log.d("DisplayActi", displayToLaunch.name());
-
         // handle different cases for where Activity is called from
         switch (displayToLaunch) {
             case NEW:
