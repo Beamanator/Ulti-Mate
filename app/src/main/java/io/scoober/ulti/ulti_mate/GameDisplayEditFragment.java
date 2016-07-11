@@ -246,10 +246,10 @@ public class GameDisplayEditFragment extends Fragment {
         team2NameSwitcher = (ViewSwitcher) v.findViewById(R.id.team2NameSwitcher);
         viewEditButtonSwitcher = (ViewSwitcher) v.findViewById(R.id.viewEditButtonSwitcher);
 
-        getTeamViews(v);
+        setupTeamViews(v);
     }
 
-    private void getTeamViews(View v) {
+    private void setupTeamViews(View v) {
         // Team 1
         GameDisplayActivity.TeamViewHolder team1View = new GameDisplayActivity.TeamViewHolder();
         team1View.nameView = (TextView) v.findViewById(R.id.leftTeamNameView);
