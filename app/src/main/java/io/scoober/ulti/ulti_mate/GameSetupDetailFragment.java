@@ -7,9 +7,6 @@ import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.PagerAdapter;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,12 +14,11 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.TimePicker;
 
 import java.util.Calendar;
-import java.util.Date;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -150,6 +146,16 @@ public class GameSetupDetailFragment extends Fragment {
                 hardCapTimePicker.setTitle(c.getString(R.string.timepicker_hard_cap_title));
 
                 hardCapTimePicker.show();
+            }
+        });
+
+        /*
+        Set text validation listener
+         */
+        gameTitleText.addTextChangedListener(new TextValidator(gameTitleText) {
+            @Override
+            public void validate(TextView textView, String text) {
+                Utils.validateTextNotEmpty(text, textView, getResources(), R.string.hint_game_name);
             }
         });
     }

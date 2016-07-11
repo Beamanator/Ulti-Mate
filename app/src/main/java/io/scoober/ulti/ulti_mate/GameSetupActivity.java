@@ -23,6 +23,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 
@@ -34,7 +35,10 @@ public class GameSetupActivity extends AppCompatActivity {
 
     private MainMenuActivity.DisplayToLaunch displayToLaunch;
 
-    private Button createFromSetupButton;
+    private Button createFromSetupButton, softCapTimeButton, hardCapTimeButton;
+    private CheckBox timeCapsBox;
+    private EditText gameNameField, team1NameField, team2NameField, winningScoreField;
+    private TeamImageButton team1ImageButton, team2ImageButton;
 
     // Intent information
     MainMenuActivity.SetupToLaunch setupToLaunch;
@@ -85,6 +89,19 @@ public class GameSetupActivity extends AppCompatActivity {
         createFromSetupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                /*
+                Validate the setup. If the setup is not valid, alert the user and stop
+                further processing.
+                 */
+                getWidgetReferences();
+                boolean valid = validateSetup();
+                if (!valid) {
+                    showValidationFailedDialog();
+                    return;
+                }
+
+                // Store the game depending on which setup was launched
                 Game game;
                 switch (setupToLaunch) {
                     case CREATE_GAME:
@@ -170,6 +187,12 @@ public class GameSetupActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Returns a game from a bundle passed to the fragment
+     * @param bundle    fragment bundle
+     * @param ctx       context of the fragment
+     * @return          Game object with requested ID.
+     */
     public static Game getGameFromBundle(Bundle bundle, Context ctx) {
         long gameId = bundle.getLong(MainMenuActivity.GAME_ID_EXTRA);
         if (gameId == 0) {
@@ -208,6 +231,21 @@ public class GameSetupActivity extends AppCompatActivity {
     }
 
     /**
+     * Gets references to widgets and stores them in class variables from the fragments
+     */
+    private void getWidgetReferences() {
+        gameNameField = (EditText) findViewById(R.id.gameTitleEditor);
+        team1NameField = (EditText) findViewById(R.id.team1Name);
+        team2NameField = (EditText) findViewById(R.id.team2Name);
+        winningScoreField = (EditText) findViewById(R.id.winningScore);
+        timeCapsBox = (CheckBox) findViewById(R.id.timeCapsCheckbox);
+        softCapTimeButton = (Button) findViewById(R.id.softCapInput);
+        hardCapTimeButton = (Button) findViewById(R.id.hardCapInput);
+        team1ImageButton = (TeamImageButton) findViewById(R.id.team1ImageButton);
+        team2ImageButton = (TeamImageButton) findViewById(R.id.team2ImageButton);
+    }
+
+    /**
      * This function sets the text for the createFromSetupButton, depending on:
      *      1. The setupToLaunch enum that was passed in from the intent
      *      2. Whether the gameId or templateId is populated from database creation
@@ -229,6 +267,28 @@ public class GameSetupActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Validates the setup for the game setup activity. If any of the required EditTexts are not
+     * populated, then return false.
+     * @return  Whether validation passed.
+     */
+    private boolean validateSetup() {
+        EditText requiredFields[] = {gameNameField, team1NameField, team2NameField};
+        boolean isValid = true;
+        for (int i = 0; i < requiredFields.length; i++) {
+            if (requiredFields[i].getText().toString().isEmpty()) {
+                isValid = false;
+                break;
+            }
+        }
+        return isValid;
+    }
+
+    /**
+     * Stores the game to the database, returning the database ID
+     * @param game      Game object to store
+     * @return          ID generated from the SQL database
+     */
     private long storeGame(Game game) {
         // store game to database
         GameDbAdapter gameDbAdapter = new GameDbAdapter(getBaseContext());
@@ -245,6 +305,9 @@ public class GameSetupActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Launches the game display activity
+     */
     private void launchGameDisplay() {
 
         if (gameId > 0) {
@@ -260,6 +323,9 @@ public class GameSetupActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    /**
+     * Launches the new game activity
+     */
     private void launchNewGameActivity() {
         Intent intent = new Intent(getBaseContext(), NewGameActivity.class);
         startActivity(intent);
@@ -288,17 +354,6 @@ public class GameSetupActivity extends AppCompatActivity {
     }
 
     private Game createGameFromSetup(long gameId) {
-
-        // Get required widgets
-        EditText gameNameField = (EditText) findViewById(R.id.gameTitleEditor);
-        EditText team1NameField = (EditText) findViewById(R.id.team1Name);
-        EditText team2NameField = (EditText) findViewById(R.id.team2Name);
-        EditText winningScoreField = (EditText) findViewById(R.id.winningScore);
-        CheckBox timeCapsBox = (CheckBox) findViewById(R.id.timeCapsCheckbox);
-        Button softCapTimeButton = (Button) findViewById(R.id.softCapInput);
-        Button hardCapTimeButton = (Button) findViewById(R.id.hardCapInput);
-        TeamImageButton team1ImageButton = (TeamImageButton) findViewById(R.id.team1ImageButton);
-        TeamImageButton team2ImageButton = (TeamImageButton) findViewById(R.id.team2ImageButton);
 
         // Get game data from widgets
         String gameName = gameNameField.getText().toString();
@@ -355,14 +410,14 @@ public class GameSetupActivity extends AppCompatActivity {
         final View dialogView = inflater.inflate(R.layout.dialog_edit_text, null);
         final EditText nameEdit = (EditText) dialogView.findViewById(R.id.templateNameEdit);
 
-        new AlertDialog.Builder(this)
+        AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle(R.string.title_dialog_name_template)
                 .setView(dialogView)
                 .setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Game game = createGameFromSetup(0);
                         String templateName = nameEdit.getText().toString();
+                        Game game = createGameFromSetup(0);
                         game.convertToTemplate(templateName);
                         templateId = storeGame(game);
                         if (launchActivity) {
@@ -373,6 +428,31 @@ public class GameSetupActivity extends AppCompatActivity {
                     }
                 })
                 .setNegativeButton(R.string.dialog_cancel, null)
+                .create();
+
+        dialog.show();
+
+        /*
+        Add listener to the editText and disable positive button if validation fails
+         */
+        final Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+        nameEdit.addTextChangedListener(new TextValidator(nameEdit) {
+            @Override
+            public void validate(TextView textView, String text) {
+                boolean valid = Utils.validateTextNotEmpty(text, textView,
+                        getResources(), R.string.dialog_name_template);
+                positiveButton.setEnabled(valid);
+            }
+        });
+    }
+
+    /**
+     * Show a dialog that alerts the user that required fields must be populated.
+     */
+    private void showValidationFailedDialog() {
+        new AlertDialog.Builder(this)
+                .setMessage(R.string.dialog_validation_failed)
+                .setPositiveButton(R.string.dialog_confirm, null)
                 .create()
                 .show();
     }

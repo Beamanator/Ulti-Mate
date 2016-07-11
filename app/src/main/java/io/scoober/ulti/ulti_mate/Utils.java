@@ -1,7 +1,10 @@
 package io.scoober.ulti.ulti_mate;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.drawable.GradientDrawable;
+import android.support.annotation.StringRes;
+import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -262,5 +265,30 @@ public class Utils {
         gd.setStroke(strokeSize, strokeColor);
         gd.setSize(size,size);
         return gd;
+    }
+
+    /*
+    Validation Utils
+     */
+
+    /**
+     * Validates that a TextView is not empty and throws an error if it is
+     * @param text          Text contained within the textView
+     * @param textView      TextView to modify with error
+     * @param res           Resources from the context
+     * @param fieldNameRes  Field name resource to convert to string
+     * @return              True if the text is not empty, false otherwise
+     */
+    public static boolean validateTextNotEmpty(String text, TextView textView,
+                                            Resources res, @StringRes int fieldNameRes) {
+        // if the text is not empty, return true
+        if (!text.isEmpty()) {
+            return true;
+        }
+
+        String textViewName = res.getString(fieldNameRes);
+        String errorText = res.getString(R.string.error_text_empty, textViewName);
+        textView.setError(errorText);
+        return false;
     }
 }

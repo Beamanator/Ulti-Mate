@@ -15,6 +15,7 @@
     <string name="item_delete">Delete</string>
     <string name="dialog_confirm">Confirm</string>
     <string name="dialog_cancel">Cancel</string>
+    <string name="error_text_empty">%1$s is a required field.</string>
 
     <!--Main Menu Activity Strings-->
     <string name="resume_button">Resume</string>
@@ -84,9 +85,10 @@
     <string name="snackbar_message_time_cap">Time until %1$s cap: %2$s</string>
     <string name="snackbar_template_save_successful">Saved template %1$s.</string>
     <string name="title_dialog_name_template">Create Template</string>
-    <string name="dialog_name_template">Template name</string>
+    <string name="dialog_name_template">Template Name</string>
     <string name="timepicker_soft_cap_title">Set Soft Cap</string>
     <string name="timepicker_hard_cap_title">Set Hard Cap</string>
+    <string name="dialog_validation_failed">Please enter all required fields.</string>
 
     <!--Game Defaults-->
     <string name="default_game_name">Ultimate!</string>

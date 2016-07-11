@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.thebluealliance.spectrum.SpectrumDialog;
 
@@ -99,6 +100,23 @@ public class GameSetupTeamFragment extends Fragment {
             public void onClick(View v) {
                 // start color picker
                 showColorPicker(team2Image);
+            }
+        });
+
+        /*
+        Text validators to ensure that team names are not empty
+         */
+        team1NameText.addTextChangedListener(new TextValidator(team1NameText) {
+            @Override
+            public void validate(TextView textView, String text) {
+                Utils.validateTextNotEmpty(text, textView, getResources(), R.string.team_1_name_hint);
+            }
+        });
+
+        team2NameText.addTextChangedListener(new TextValidator(team2NameText) {
+            @Override
+            public void validate(TextView textView, String text) {
+                Utils.validateTextNotEmpty(text, textView, getResources(), R.string.team_2_name_hint);
             }
         });
     }

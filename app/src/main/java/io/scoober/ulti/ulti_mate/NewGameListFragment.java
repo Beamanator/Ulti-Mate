@@ -13,8 +13,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.util.List;
 
@@ -130,8 +132,15 @@ public class NewGameListFragment extends ListFragment{
         final View dialogView = inflater.inflate(R.layout.dialog_edit_text, null);
         final EditText nameEdit = (EditText) dialogView.findViewById(R.id.templateNameEdit);
         nameEdit.setText(template.getTemplateName());
+        nameEdit.addTextChangedListener(new TextValidator(nameEdit) {
+            @Override
+            public void validate(TextView textView, String text) {
+                boolean valid = Utils.validateTextNotEmpty(text, textView,
+                        getResources(), R.string.dialog_name_template);
+            }
+        });
 
-        new AlertDialog.Builder(getActivity())
+        AlertDialog dialog = new AlertDialog.Builder(getActivity())
                 .setTitle(R.string.title_dialog_name_template)
                 .setView(dialogView)
                 .setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
@@ -141,7 +150,20 @@ public class NewGameListFragment extends ListFragment{
                     }
                 })
                 .setNegativeButton(R.string.dialog_cancel, null)
-                .create()
-                .show();
+                .create();
+
+        dialog.show();
+        /*
+        Add listener to the editText and disable positive button if validation fails
+         */
+        final Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+        nameEdit.addTextChangedListener(new TextValidator(nameEdit) {
+            @Override
+            public void validate(TextView textView, String text) {
+                boolean valid = Utils.validateTextNotEmpty(text, textView,
+                        getResources(), R.string.dialog_name_template);
+                positiveButton.setEnabled(valid);
+            }
+        });
     }
 }
