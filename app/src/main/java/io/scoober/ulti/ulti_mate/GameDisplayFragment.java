@@ -7,6 +7,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -67,7 +68,7 @@ public class GameDisplayFragment extends Fragment {
         // Build listener & dialogs for field setup:
         buildFieldSetupDialogListener(fragmentLayout);
 
-        //TODO: think about creating a "swapTeams" function in case user wants this
+        Log.d("DisplayFrag", displayToLaunch.name());
 
         switch (displayToLaunch) {
             case NEW:

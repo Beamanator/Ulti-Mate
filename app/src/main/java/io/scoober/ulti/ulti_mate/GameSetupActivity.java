@@ -310,7 +310,7 @@ public class GameSetupActivity extends AppCompatActivity {
      */
     private void launchGameDisplay() {
 
-        if (gameId > 0) {
+        if (setupToLaunch == MainMenuActivity.SetupToLaunch.UPDATE_GAME) {
             displayToLaunch = MainMenuActivity.DisplayToLaunch.UPDATE;
         } else {
             displayToLaunch = MainMenuActivity.DisplayToLaunch.NEW;
