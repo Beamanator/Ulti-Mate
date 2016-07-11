@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -65,10 +66,10 @@ public class GameDisplayEditFragment extends Fragment {
 
         switch (displayToLaunch) {
             case EDIT:
-                setupAndEnableButtons();
+                setupAndEnableWidgets();
                 break;
             case VIEW:
-                // TODO: refactor to use setupAndEnableButtons?
+                // TODO: refactor to use setupAndEnableWidgets?
                 setupEditButtonListener();
                 toggleViewTypes();
                 break;
@@ -104,7 +105,7 @@ public class GameDisplayEditFragment extends Fragment {
     /**
      * Sets listeners and enables buttons
      */
-    private void setupAndEnableButtons() {
+    private void setupAndEnableWidgets() {
 
         // save Button
         setupSaveButtonListener();
@@ -123,6 +124,28 @@ public class GameDisplayEditFragment extends Fragment {
         // Enable Score Buttons
         GameDisplayActivity.enableDisableScoreButtons(1, game, teamViewMap);
         GameDisplayActivity.enableDisableScoreButtons(2, game, teamViewMap);
+
+        //Add listeners to text buttons
+        gameTitleEdit.addTextChangedListener(new TextValidator(gameTitleEdit) {
+            @Override
+            public void validate(TextView textView, String text) {
+                Utils.validateTextNotEmpty(text, textView, getResources(), R.string.hint_game_name);
+            }
+        });
+        EditText team1Edit = teamViewMap.get(1).nameEdit;
+        team1Edit.addTextChangedListener(new TextValidator(team1Edit) {
+            @Override
+            public void validate(TextView textView, String text) {
+                Utils.validateTextNotEmpty(text, textView, getResources(), R.string.team_1_name_hint);
+            }
+        });
+        EditText team2Edit = teamViewMap.get(2).nameEdit;
+        team2Edit.addTextChangedListener(new TextValidator(team2Edit) {
+            @Override
+            public void validate(TextView textView, String text) {
+                Utils.validateTextNotEmpty(text, textView, getResources(), R.string.team_2_name_hint);
+            }
+        });
     }
 
     private void setupColorButtonListeners() {
@@ -168,6 +191,12 @@ public class GameDisplayEditFragment extends Fragment {
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if (!validateFields()) {
+                    showValidationFailedDialog();
+                    return;
+                }
+
                 // Get the TeamViewHolder
                 GameDisplayActivity.TeamViewHolder team1View = teamViewMap.get(1);
                 GameDisplayActivity.TeamViewHolder team2View = teamViewMap.get(2);
@@ -280,6 +309,28 @@ public class GameDisplayEditFragment extends Fragment {
 
         // Game length bar information:
         // TODO: add game start / end data to database, then add to bar here
+    }
+
+    /**
+     * Validates the setup for the game display edit. If any of the required EditTexts are not
+     * populated, then return false.
+     * @return  Whether validation passed.
+     */
+    private boolean validateFields() {
+        EditText requiredFields[] = {gameTitleEdit, teamViewMap.get(1).nameEdit,
+                teamViewMap.get(2).nameEdit};
+        return Utils.validateFieldsNotEmpty(requiredFields);
+    }
+
+    /**
+     * Show a dialog that alerts the user that required fields must be populated.
+     */
+    private void showValidationFailedDialog() {
+        new AlertDialog.Builder(getActivity())
+                .setMessage(R.string.dialog_validation_failed)
+                .setPositiveButton(R.string.dialog_confirm, null)
+                .create()
+                .show();
     }
 
     private void showColorPicker(final TeamImageButton imageButton) {

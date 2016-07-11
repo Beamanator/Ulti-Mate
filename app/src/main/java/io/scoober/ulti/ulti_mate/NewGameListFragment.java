@@ -135,8 +135,7 @@ public class NewGameListFragment extends ListFragment{
         nameEdit.addTextChangedListener(new TextValidator(nameEdit) {
             @Override
             public void validate(TextView textView, String text) {
-                boolean valid = Utils.validateTextNotEmpty(text, textView,
-                        getResources(), R.string.dialog_name_template);
+                Utils.validateTextNotEmpty(text, textView, getResources(), R.string.dialog_name_template);
             }
         });
 

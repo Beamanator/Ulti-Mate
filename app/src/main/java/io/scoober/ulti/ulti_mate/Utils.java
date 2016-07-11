@@ -291,4 +291,15 @@ public class Utils {
         textView.setError(errorText);
         return false;
     }
+
+    public static boolean validateFieldsNotEmpty(TextView[] fields) {
+        boolean isValid = true;
+        for (int i = 0; i < fields.length; i++) {
+            if (fields[i].getText().toString().isEmpty()) {
+                isValid = false;
+                break;
+            }
+        }
+        return isValid;
+    }
 }

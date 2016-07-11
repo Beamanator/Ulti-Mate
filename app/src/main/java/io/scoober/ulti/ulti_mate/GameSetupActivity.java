@@ -274,14 +274,7 @@ public class GameSetupActivity extends AppCompatActivity {
      */
     private boolean validateSetup() {
         EditText requiredFields[] = {gameNameField, team1NameField, team2NameField};
-        boolean isValid = true;
-        for (int i = 0; i < requiredFields.length; i++) {
-            if (requiredFields[i].getText().toString().isEmpty()) {
-                isValid = false;
-                break;
-            }
-        }
-        return isValid;
+        return Utils.validateFieldsNotEmpty(requiredFields);
     }
 
     /**
