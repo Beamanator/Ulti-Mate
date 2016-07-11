@@ -292,14 +292,17 @@ public class Utils {
         return false;
     }
 
+    /**
+     * Validates that fields aren't empty and notifies caller if they are.
+     * @param fields    Fields to validate
+     * @return          true if fields are populated, false otherwise
+     */
     public static boolean validateFieldsNotEmpty(TextView[] fields) {
-        boolean isValid = true;
-        for (int i = 0; i < fields.length; i++) {
-            if (fields[i].getText().toString().isEmpty()) {
-                isValid = false;
-                break;
+        for (TextView field : fields) {
+            if (field.getText().toString().isEmpty()) {
+                return false;
             }
         }
-        return isValid;
+        return true;
     }
 }
