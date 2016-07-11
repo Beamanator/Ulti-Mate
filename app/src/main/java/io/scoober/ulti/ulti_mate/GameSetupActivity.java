@@ -132,6 +132,7 @@ public class GameSetupActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_game_setup, menu);
+
         return true;
     }
 
@@ -161,7 +162,6 @@ public class GameSetupActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-
         /*
         Change the setupToLaunch parameter depending on whether or not the game/template IDs
         are populated, likely indicating that the user pressed the back button
@@ -329,6 +329,12 @@ public class GameSetupActivity extends AppCompatActivity {
      * @param launchActivity    boolean to determine whether the NewGameActivity should be launched
      */
     private void createTemplate(boolean launchActivity) {
+        getWidgetReferences();
+        boolean valid = validateSetup();
+        if (!valid) {
+            showValidationFailedDialog();
+            return;
+        }
         showTemplateNameDialog(launchActivity);
     }
 
@@ -337,6 +343,12 @@ public class GameSetupActivity extends AppCompatActivity {
      * @param launchActivity    boolean to determine whether the NewGameActivity should be launched
      */
     private void editTemplate(boolean launchActivity) {
+        getWidgetReferences();
+        boolean valid = validateSetup();
+        if (!valid) {
+            showValidationFailedDialog();
+            return;
+        }
         Game template = createGameFromSetup(templateId); // returns a template game
         storeGame(template); // set templateId in case the user presses back
         if (launchActivity) {
