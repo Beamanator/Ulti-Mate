@@ -42,7 +42,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/vertical_menu_spacing"
         android:id="@+id/my_games_button"
-        android:text="@string/my_games_button"
+        android:text="@string/past_games_button"
         android:layout_gravity="center"
         android:enabled="false" />
 

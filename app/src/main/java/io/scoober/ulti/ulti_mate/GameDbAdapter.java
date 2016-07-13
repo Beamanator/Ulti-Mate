@@ -150,7 +150,8 @@ public class GameDbAdapter {
 
         String selection = C_IS_TEMPLATE + " = 0";
         if(statuses != null) {
-            selection = selection + " AND " + C_GAME_STATUS + " IN " + TextUtils.join(", ", statuses);
+            selection = selection + " AND " + C_GAME_STATUS + " IN ( \"" +
+                    TextUtils.join("\", \"", statuses)+"\" )" ;
         }
 
         Cursor cursor = sqlDB.query(GAMES_TABLE, allGameColumns, selection, null, null, null, C_DATE_CREATED + " DESC", limit);
