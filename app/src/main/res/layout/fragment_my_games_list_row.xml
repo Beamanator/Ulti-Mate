@@ -5,6 +5,8 @@
     android:paddingTop="10dp"
     android:paddingBottom="10dp"
     android:descendantFocusability="blocksDescendants">
+    <!--descendantFocusability is set to allow the user to click on the list row, as the
+    ImageButton would otherwise take priority-->
 
     <TextView
         android:id="@+id/listItemGameTitle"

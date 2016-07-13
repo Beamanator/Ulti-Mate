@@ -2,9 +2,11 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingRight="10dp"
     android:paddingTop="10dp"
-    android:paddingBottom="10dp">
+    android:paddingBottom="10dp"
+    android:descendantFocusability="blocksDescendants">
+    <!--descendantFocusability is set to allow the user to click on the list row, as the
+    ImageButton would otherwise take priority-->
 
     <TextView
         android:id="@+id/listItemTemplateTitle"
@@ -38,5 +40,14 @@
         android:layout_alignStart="@+id/listItemGameTitle"
         android:textAppearance="?android:attr/textAppearanceListItem"
         android:text="TeamNumberOne vs. TeamNumberTwo" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_more_vert_black_24dp"
+        android:id="@+id/contextMenuButton"/>
 
 </RelativeLayout>

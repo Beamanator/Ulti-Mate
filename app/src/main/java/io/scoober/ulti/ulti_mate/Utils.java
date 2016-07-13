@@ -1,9 +1,11 @@
 package io.scoober.ulti.ulti_mate;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.StringRes;
+import android.view.View;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
@@ -304,5 +306,53 @@ public class Utils {
             }
         }
         return true;
+    }
+
+    /*
+    Listener Utilities
+     */
+
+    /**
+     * Sets a listener for a view to open the context menu of a specified activity
+     * @param clickable     View that is enabled for clicking
+     * @param contextView   View to show the context menu for
+     * @param ctx           Context
+     */
+    public static void setContextMenuListener(final View clickable,
+                                       final View contextView, final Context ctx) {
+
+
+        clickable.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                registerAndOpenContextMenu(clickable, contextView, ctx);
+            }
+        });
+
+        /*
+        Override the onLongClickListener, such that we don't also open the
+        list item's LongClickListener.
+        */
+
+        clickable.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                registerAndOpenContextMenu(clickable, contextView, ctx);
+                return true;
+            }
+        });
+    }
+
+    /**
+     * Helper function that registers the clickable view for the context menu and opens the
+     * context menu
+     * @param clickable     View that is enabled for clicking
+     * @param contextView   View to show the context menu for
+     * @param ctx           Context
+     */
+    private static void registerAndOpenContextMenu(View clickable, View contextView, Context ctx) {
+        Activity activity = (Activity) ctx;
+        activity.registerForContextMenu(clickable);
+        activity.openContextMenu(contextView);
     }
 }
