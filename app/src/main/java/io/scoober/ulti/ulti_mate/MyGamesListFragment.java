@@ -30,7 +30,7 @@ public class MyGamesListFragment extends ListFragment {
 
         GameDbAdapter gameDbAdapter = new GameDbAdapter(getActivity().getBaseContext());
         gameDbAdapter.open();
-        games = gameDbAdapter.getRecentGames(10,0);
+        games = gameDbAdapter.getEndedGames(10,0);
         gameDbAdapter.close();
 
         gamesListAdapter = new MyGamesListAdapter(getActivity(),games);

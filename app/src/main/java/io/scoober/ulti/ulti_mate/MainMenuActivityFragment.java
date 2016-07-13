@@ -13,8 +13,6 @@ import android.widget.Button;
  */
 public class MainMenuActivityFragment extends Fragment {
 
-    long lastGameId;
-
     public MainMenuActivityFragment() {
     }
 
@@ -27,7 +25,7 @@ public class MainMenuActivityFragment extends Fragment {
         Button newGameButton = (Button) mainMenuLayout.findViewById(R.id.new_game_button);
         Button myGamesButton = (Button) mainMenuLayout.findViewById(R.id.my_games_button);
 
-        getLastGameId(); // get last game ID to activate buttons
+        final long lastGameId = getLastGameId(); // get last game ID to activate buttons
         if (lastGameId != 0) {
             // get last game details
             Game g = Utils.getGameDetails(getActivity().getBaseContext(), lastGameId);
@@ -73,6 +71,8 @@ public class MainMenuActivityFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(),MyGamesActivity.class);
+                intent.putExtra(MainMenuActivity.GAMES_TO_SHOW_EXTRA,
+                        MainMenuActivity.GamesToShow.ENDED);
                 startActivity(intent);
             }
         });
@@ -83,10 +83,12 @@ public class MainMenuActivityFragment extends Fragment {
     /**
      * stores latest game Id in Database to variable lastGameId
      */
-    private void getLastGameId() {
+    private long getLastGameId() {
         GameDbAdapter gameDbAdapter = new GameDbAdapter(getActivity().getBaseContext());
         gameDbAdapter.open();
-        lastGameId= gameDbAdapter.getRecentGameId();
+        long id = gameDbAdapter.getRecentGameId();
         gameDbAdapter.close();
+
+        return id;
     }
 }
