@@ -7,12 +7,7 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="io.scoober.ulti.ulti_mate.MyGamesActivity"
     tools:showIn="@layout/activity_my_games"
-    android:orientation="vertical">
-
-    <fragment
-        android:id="@+id/myGamesFragment"
-        android:name="io.scoober.ulti.ulti_mate.MyGamesListFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+    android:orientation="vertical"
+    android:id = "@+id/myGamesContainer">
 
 </LinearLayout>

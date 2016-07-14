@@ -7,7 +7,7 @@
     tools:showIn="@layout/activity_main_menu">
 
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/vertical_menu_spacing"
         android:id="@+id/resumeButton"
@@ -16,14 +16,14 @@
         android:enabled="false" />
 
     <View
-        android:layout_width="20dp"
+        android:layout_width="50dp"
         android:layout_height="2dp"
         android:layout_marginTop="@dimen/vertical_menu_spacing"
         android:background="#000000"
         android:layout_gravity="center" />
 
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/vertical_menu_spacing"
         android:id="@+id/new_game_button"
@@ -31,17 +31,17 @@
         android:layout_gravity="center" />
 
     <View
-        android:layout_width="20dp"
+        android:layout_width="50dp"
         android:layout_height="2dp"
         android:layout_marginTop="@dimen/vertical_menu_spacing"
         android:background="#000000"
         android:layout_gravity="center" />
 
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/vertical_menu_spacing"
-        android:id="@+id/my_games_button"
+        android:id="@+id/past_games_button"
         android:text="@string/past_games_button"
         android:layout_gravity="center"
         android:enabled="false" />

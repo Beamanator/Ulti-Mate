@@ -17,7 +17,7 @@ public class MainMenuActivity extends AppCompatActivity {
     public enum DisplayToLaunch {NEW, RESUME, VIEW, EDIT, UPDATE}
     public enum SetupToLaunch {CREATE_GAME, UPDATE_GAME,
         CREATE_TEMPLATE, EDIT_TEMPLATE}
-    public enum GamesToShow {ENDED, UNENDED}
+    public enum GamesToShow {ACTIVE, ENDED}
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
