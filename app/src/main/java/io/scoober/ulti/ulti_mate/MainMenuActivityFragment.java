@@ -8,12 +8,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import java.util.ArrayList;
+
 /**
  * A placeholder fragment containing a simple view.
  */
 public class MainMenuActivityFragment extends Fragment {
-
-    long lastGameId;
 
     public MainMenuActivityFragment() {
     }
@@ -25,20 +25,30 @@ public class MainMenuActivityFragment extends Fragment {
         View mainMenuLayout = inflater.inflate(R.layout.fragment_main_menu, container, false);
         Button resume = (Button) mainMenuLayout.findViewById(R.id.resumeButton);
         Button newGameButton = (Button) mainMenuLayout.findViewById(R.id.new_game_button);
-        Button myGamesButton = (Button) mainMenuLayout.findViewById(R.id.my_games_button);
+        Button pastGamesButton = (Button) mainMenuLayout.findViewById(R.id.past_games_button);
 
-        getLastGameId(); // get last game ID to activate buttons
-        if (lastGameId != 0) {
-            // get last game details
-            Game g = Utils.getGameDetails(getActivity().getBaseContext(), lastGameId);
+        GameDbAdapter gameDbAdapter = new GameDbAdapter(getActivity().getBaseContext());
+        gameDbAdapter.open();
+        ArrayList<Game> activeGames = gameDbAdapter.getActiveGames(2,0);
+        ArrayList<Game> endedGames = gameDbAdapter.getEndedGames(1,0);
 
-            // if game is over, don't allow user to resume.
-            if (g.getGameStatus() != Game.GameStatus.GAME_OVER) {
-                resume.setEnabled(true);
-            }
+        //TODO improve the below with selectors
+        final int numActive = activeGames.size();
+        long gameId = 0;
+        if (numActive == 1) {
+            gameId = activeGames.get(0).getId();
+        }
+        final long lastGameId = gameId;
+        int numEnded = endedGames.size();
+        gameDbAdapter.close();
 
-            // there is at least 1 existing game, so enable myGameButton
-            myGamesButton.setEnabled(true);
+        // Activate Buttons
+        if (numActive > 0) {
+            resume.setEnabled(true);
+        }
+
+        if (numEnded > 0) {
+            pastGamesButton.setEnabled(true);
         }
 
         /*
@@ -47,11 +57,18 @@ public class MainMenuActivityFragment extends Fragment {
         resume.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(),GameDisplayActivity.class);
-                intent.putExtra(MainMenuActivity.GAME_ID_EXTRA, lastGameId);
-                intent.putExtra(MainMenuActivity.GAME_DISPLAY_ARG_EXTRA,
-                        MainMenuActivity.DisplayToLaunch.RESUME);
-                startActivity(intent);
+                if (numActive == 1) {
+                    Intent intent = new Intent(getActivity(), GameDisplayActivity.class);
+                    intent.putExtra(MainMenuActivity.GAME_ID_EXTRA, lastGameId);
+                    intent.putExtra(MainMenuActivity.GAME_DISPLAY_ARG_EXTRA,
+                            MainMenuActivity.DisplayToLaunch.RESUME);
+                    startActivity(intent);
+                } else if (numActive > 1) {
+                    Intent intent = new Intent(getActivity(), MyGamesActivity.class);
+                    intent.putExtra(MainMenuActivity.GAMES_TO_SHOW_EXTRA,
+                            MainMenuActivity.GamesToShow.ACTIVE);
+                    startActivity(intent);
+                }
             }
         });
 
@@ -69,10 +86,12 @@ public class MainMenuActivityFragment extends Fragment {
         /*
         My Games
          */
-        myGamesButton.setOnClickListener(new View.OnClickListener() {
+        pastGamesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(),MyGamesActivity.class);
+                intent.putExtra(MainMenuActivity.GAMES_TO_SHOW_EXTRA,
+                        MainMenuActivity.GamesToShow.ENDED);
                 startActivity(intent);
             }
         });
@@ -83,10 +102,12 @@ public class MainMenuActivityFragment extends Fragment {
     /**
      * stores latest game Id in Database to variable lastGameId
      */
-    private void getLastGameId() {
+    private long getLastGameId() {
         GameDbAdapter gameDbAdapter = new GameDbAdapter(getActivity().getBaseContext());
         gameDbAdapter.open();
-        lastGameId= gameDbAdapter.getRecentGameId();
+        long id = gameDbAdapter.getRecentGameId();
         gameDbAdapter.close();
+
+        return id;
     }
 }
