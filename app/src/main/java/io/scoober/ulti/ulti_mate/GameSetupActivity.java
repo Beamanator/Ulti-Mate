@@ -1,44 +1,21 @@
 package io.scoober.ulti.ulti_mate;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AlertDialog;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.TextView;
-
-import com.ogaclejapan.smarttablayout.SmartTabLayout;
-
-import io.scoober.ulti.ulti_mate.widgets.TeamImageButton;
 
 public class GameSetupActivity extends AppCompatActivity {
-
-    private static final int NUM_PAGES = 2;
-
-    private MainMenuActivity.DisplayToLaunch displayToLaunch;
-
-    private Button createFromSetupButton, softCapTimeButton, hardCapTimeButton;
-    private CheckBox timeCapsBox;
-    private EditText gameNameField, team1NameField, team2NameField, winningScoreField;
-    private TeamImageButton team1ImageButton, team2ImageButton;
 
     // Intent information
     MainMenuActivity.SetupToLaunch setupToLaunch;
@@ -62,69 +39,15 @@ public class GameSetupActivity extends AppCompatActivity {
         Bundle bundle = new Bundle();
         bundle.putLong(MainMenuActivity.GAME_ID_EXTRA, gameId);
         bundle.putLong(MainMenuActivity.TEMPLATE_ID_EXTRA, templateId);
+        bundle.putSerializable(MainMenuActivity.GAME_SETUP_ARG_EXTRA, setupToLaunch);
 
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
-        SectionsPagerAdapter mSectionsPagerAdapter =
-                new SectionsPagerAdapter(getSupportFragmentManager(), bundle);
-
-        // Set up the ViewPager with the sections adapter.
-        ViewPager mViewPager = (ViewPager) findViewById(R.id.setupViewPager);
-        mViewPager.setAdapter(mSectionsPagerAdapter);
-
-        mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-            @Override
-            public void onPageSelected(int position) {
-                super.onPageSelected(position);
-                if (position == 1 && createFromSetupButton.getVisibility() != View.VISIBLE) {
-                    createFromSetupButton.setVisibility(View.VISIBLE);
-                }
-            }
-        });
-
-        SmartTabLayout viewPagerTab = (SmartTabLayout) findViewById(R.id.smartTab);
-        viewPagerTab.setViewPager(mViewPager);
-
-        createFromSetupButton = (Button) findViewById(R.id.createFromSetupButton);
-        createFromSetupButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                /*
-                Validate the setup. If the setup is not valid, alert the user and stop
-                further processing.
-                 */
-                getWidgetReferences();
-                boolean valid = validateSetup();
-                if (!valid) {
-                    showValidationFailedDialog();
-                    return;
-                }
-
-                // Store the game depending on which setup was launched
-                Game game;
-                switch (setupToLaunch) {
-                    case CREATE_GAME:
-                        game = createGameFromSetup(0);
-                        gameId = storeGame(game); // set gameId in case the user presses back
-                        launchGameDisplay();
-                        break;
-                    case UPDATE_GAME:
-                        game = createGameFromSetup(gameId);
-                        storeGame(game);
-                        launchGameDisplay();
-                        break;
-                    case CREATE_TEMPLATE:
-                        createTemplate(true);
-                        break;
-                    case EDIT_TEMPLATE:
-                        editTemplate(true);
-                        break;
-                }
-            }
-        });
-
-
+        // Create fragment
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        GameSetupFragment setupFrag = new GameSetupFragment();
+        setupFrag.setArguments(bundle);
+        fragmentTransaction.add(R.id.setupContainer, setupFrag, "GAME_DISPLAY_FRAGMENT");
+        fragmentTransaction.commit();
     }
 
 
@@ -144,47 +67,12 @@ public class GameSetupActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         switch (id) {
-            case R.id.action_template_save:
-                if (templateId > 0) {
-                    editTemplate(false);
-                } else {
-                    createTemplate(false);
-                }
-                return true;
-            case R.id.action_template_save_as:
-                createTemplate(false);
+            case R.id.action_template_create:
+                //TODO action for template creation
                 return true;
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        /*
-        Change the setupToLaunch parameter depending on whether or not the game/template IDs
-        are populated, likely indicating that the user pressed the back button
-         */
-        if (setupToLaunch == MainMenuActivity.SetupToLaunch.CREATE_GAME &&
-                gameId > 0) {
-            setupToLaunch = MainMenuActivity.SetupToLaunch.UPDATE_GAME;
-        }
-
-        if (setupToLaunch == MainMenuActivity.SetupToLaunch.CREATE_TEMPLATE &&
-                templateId > 0) {
-            setupToLaunch = MainMenuActivity.SetupToLaunch.EDIT_TEMPLATE;
-        }
-
-        setCreateButtonText();
-
-        // Make the button visible if we're updating a game or editing a template
-        if (setupToLaunch == MainMenuActivity.SetupToLaunch.EDIT_TEMPLATE ||
-                setupToLaunch == MainMenuActivity.SetupToLaunch.UPDATE_GAME) {
-            if (createFromSetupButton.getVisibility() != View.VISIBLE) {
-                createFromSetupButton.setVisibility(View.VISIBLE);
-            }
-        }
     }
 
     /**
@@ -227,288 +115,6 @@ public class GameSetupActivity extends AppCompatActivity {
         if (setupToLaunch == MainMenuActivity.SetupToLaunch.CREATE_GAME ||
                 setupToLaunch == MainMenuActivity.SetupToLaunch.EDIT_TEMPLATE) {
             templateId = priorIntent.getExtras().getLong(MainMenuActivity.TEMPLATE_ID_EXTRA);
-        }
-    }
-
-    /**
-     * Gets references to widgets and stores them in class variables from the fragments
-     */
-    private void getWidgetReferences() {
-        gameNameField = (EditText) findViewById(R.id.gameTitleEditor);
-        team1NameField = (EditText) findViewById(R.id.team1Name);
-        team2NameField = (EditText) findViewById(R.id.team2Name);
-        winningScoreField = (EditText) findViewById(R.id.winningScore);
-        timeCapsBox = (CheckBox) findViewById(R.id.timeCapsCheckbox);
-        softCapTimeButton = (Button) findViewById(R.id.softCapInput);
-        hardCapTimeButton = (Button) findViewById(R.id.hardCapInput);
-        team1ImageButton = (TeamImageButton) findViewById(R.id.team1ImageButton);
-        team2ImageButton = (TeamImageButton) findViewById(R.id.team2ImageButton);
-    }
-
-    /**
-     * This function sets the text for the createFromSetupButton, depending on:
-     *      1. The setupToLaunch enum that was passed in from the intent
-     *      2. Whether the gameId or templateId is populated from database creation
-     */
-    private void setCreateButtonText() {
-        switch (setupToLaunch) {
-            case CREATE_GAME:
-                createFromSetupButton.setText(R.string.button_create_game);
-                break;
-            case UPDATE_GAME:
-                createFromSetupButton.setText(R.string.button_update_game);
-                break;
-            case CREATE_TEMPLATE:
-                createFromSetupButton.setText(R.string.button_create_template);
-                break;
-            case EDIT_TEMPLATE:
-                createFromSetupButton.setText(R.string.button_update_template);
-                break;
-        }
-    }
-
-    /**
-     * Validates the setup for the game setup activity. If any of the required EditTexts are not
-     * populated, then return false.
-     * @return  Whether validation passed.
-     */
-    private boolean validateSetup() {
-        EditText requiredFields[] = {gameNameField, team1NameField, team2NameField};
-        return Utils.validateFieldsNotEmpty(requiredFields);
-    }
-
-    /**
-     * Stores the game to the database, returning the database ID
-     * @param game      Game object to store
-     * @return          ID generated from the SQL database
-     */
-    private long storeGame(Game game) {
-        // store game to database
-        GameDbAdapter gameDbAdapter = new GameDbAdapter(getBaseContext());
-        gameDbAdapter.open();
-        long newId;
-        if (game.getId() > 0) {
-            newId = gameDbAdapter.saveGame(game);
-        } else {
-            newId = gameDbAdapter.createGame(game);
-        }
-        gameDbAdapter.close();
-
-        return newId;
-
-    }
-
-    /**
-     * Launches the game display activity
-     */
-    private void launchGameDisplay() {
-
-        if (setupToLaunch == MainMenuActivity.SetupToLaunch.UPDATE_GAME) {
-            displayToLaunch = MainMenuActivity.DisplayToLaunch.UPDATE;
-        } else {
-            displayToLaunch = MainMenuActivity.DisplayToLaunch.NEW;
-        }
-
-        // Start Game Display Activity
-        Intent intent = new Intent(getBaseContext(), GameDisplayActivity.class);
-        intent.putExtra(MainMenuActivity.GAME_ID_EXTRA, gameId);
-        intent.putExtra(MainMenuActivity.GAME_DISPLAY_ARG_EXTRA, displayToLaunch);
-        startActivity(intent);
-    }
-
-    /**
-     * Launches the new game activity
-     */
-    private void launchNewGameActivity() {
-        Intent intent = new Intent(getBaseContext(), NewGameActivity.class);
-        startActivity(intent);
-    }
-
-    /**
-     * Creates templates from user populated fields in the game setup activity
-     * @param launchActivity    boolean to determine whether the NewGameActivity should be launched
-     */
-    private void createTemplate(boolean launchActivity) {
-        getWidgetReferences();
-        boolean valid = validateSetup();
-        if (!valid) {
-            showValidationFailedDialog();
-            return;
-        }
-        showTemplateNameDialog(launchActivity);
-    }
-
-    /**
-     * Edits templates from user populated fields in the game setup activity
-     * @param launchActivity    boolean to determine whether the NewGameActivity should be launched
-     */
-    private void editTemplate(boolean launchActivity) {
-        getWidgetReferences();
-        boolean valid = validateSetup();
-        if (!valid) {
-            showValidationFailedDialog();
-            return;
-        }
-        Game template = createGameFromSetup(templateId); // returns a template game
-        storeGame(template); // set templateId in case the user presses back
-        if (launchActivity) {
-            launchNewGameActivity();
-        } else {
-            showSaveTemplateSnackbar(template.getTemplateName());
-        }
-    }
-
-    private Game createGameFromSetup(long gameId) {
-
-        // Get game data from widgets
-        String gameName = gameNameField.getText().toString();
-        int winningScore = 0;
-        if (!winningScoreField.getText().toString().isEmpty()) {
-            winningScore = Integer.valueOf(winningScoreField.getText().toString());
-        }
-
-        long softCap = 0;
-        long hardCap = 0;
-        boolean timeCaps = timeCapsBox.isChecked();
-        if (timeCaps) {
-            // Currently stored as milliseconds with today's date
-            softCap = Utils.getTodayMilliFrom12HrString(softCapTimeButton.getText().toString());
-            hardCap = Utils.getTodayMilliFrom12HrString(hardCapTimeButton.getText().toString());
-
-            // New plan: Use current date [or next day] for date, plus milliseconds
-        }
-
-        // Get team data from widgets
-        String team1Name = team1NameField.getText().toString();
-        String team2Name = team2NameField.getText().toString();
-
-        int team1Color = team1ImageButton.getColor();
-        int team2Color = team2ImageButton.getColor();
-
-        /*
-        If we already have a game ID, then a game should already exist. We should not create a new
-        game if the game ID already exists.
-         */
-        Game game;
-        if (gameId > 0) {
-            game = Utils.getGameDetails(getBaseContext(), gameId);
-            // Set new items in the game
-            game.setGameName(gameName);
-            game.setWinningScore(winningScore);
-            game.setTeam1Name(team1Name);
-            game.setTeam1Color(team1Color);
-            game.setTeam2Name(team2Name);
-            game.setTeam2Color(team2Color);
-            game.setSoftCapTime(softCap);
-            game.setHardCapTime(hardCap);
-        } else {
-            game = new Game(gameName,winningScore,team1Name,team1Color,team2Name,team2Color,
-                    softCap,hardCap);
-        }
-
-        return game;
-    }
-
-    private void showTemplateNameDialog(final boolean launchActivity) {
-
-        LayoutInflater inflater = this.getLayoutInflater();
-        final View dialogView = inflater.inflate(R.layout.dialog_edit_text, null);
-        final EditText nameEdit = (EditText) dialogView.findViewById(R.id.templateNameEdit);
-
-        AlertDialog dialog = new AlertDialog.Builder(this)
-                .setTitle(R.string.title_dialog_name_template)
-                .setView(dialogView)
-                .setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String templateName = nameEdit.getText().toString();
-                        Game game = createGameFromSetup(0);
-                        game.convertToTemplate(templateName);
-                        templateId = storeGame(game);
-                        if (launchActivity) {
-                            launchNewGameActivity();
-                        } else {
-                            showSaveTemplateSnackbar(templateName);
-                        }
-                    }
-                })
-                .setNegativeButton(R.string.dialog_cancel, null)
-                .create();
-
-        dialog.show();
-
-        /*
-        Add listener to the editText and disable positive button if validation fails
-         */
-        final Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-        nameEdit.addTextChangedListener(new TextValidator(nameEdit) {
-            @Override
-            public void validate(TextView textView, String text) {
-                boolean valid = Utils.validateTextNotEmpty(text, textView,
-                        getResources(), R.string.dialog_name_template);
-                positiveButton.setEnabled(valid);
-            }
-        });
-    }
-
-    /**
-     * Show a dialog that alerts the user that required fields must be populated.
-     */
-    private void showValidationFailedDialog() {
-        new AlertDialog.Builder(this)
-                .setMessage(R.string.dialog_validation_failed)
-                .setPositiveButton(R.string.dialog_confirm, null)
-                .create()
-                .show();
-    }
-
-    private void showSaveTemplateSnackbar(String templateName) {
-        CoordinatorLayout cl = (CoordinatorLayout) findViewById(R.id.gameSetupCoordinatorLayout);
-        String message = getResources().getString(R.string.snackbar_template_save_successful, templateName);
-        Snackbar.make(cl,message,Snackbar.LENGTH_LONG).show();
-
-    }
-
-    /**
-     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
-     * one of the sections/tabs/pages.
-     */
-    private class SectionsPagerAdapter extends FragmentPagerAdapter {
-
-        private GameSetupDetailFragment detailFrag;
-        private GameSetupTeamFragment teamFrag;
-
-        private Bundle fragmentData;
-
-        public SectionsPagerAdapter(FragmentManager fm, Bundle fragmentData) {
-            super(fm);
-            this.fragmentData = fragmentData;
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-//            // getItem is called to instantiate the fragment for the given page.
-            switch (position) {
-                case 0:
-                    if (detailFrag == null) {
-                        detailFrag = new GameSetupDetailFragment();
-                        detailFrag.setArguments(fragmentData);
-                    }
-                    return detailFrag;
-                case 1:
-                    if (teamFrag == null) {
-                        teamFrag = new GameSetupTeamFragment();
-                        teamFrag.setArguments(fragmentData);
-                    }
-                    return teamFrag;
-            }
-            return null;
-        }
-
-        @Override
-        public int getCount() {
-            // Show 2 total pages.
-            return NUM_PAGES;
         }
     }
 

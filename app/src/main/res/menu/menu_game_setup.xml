@@ -3,14 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".GameSetupActivity">
     <item
-        android:id="@+id/action_template_save"
-        android:orderInCategory="90"
-        android:title="@string/action_template_save"
-        android:icon="@drawable/ic_save_white_24dp"
-        app:showAsAction="ifRoom" />
-    <item
-        android:id="@+id/action_template_save_as"
+        android:id="@+id/action_template_create"
         android:orderInCategory="100"
-        android:title="@string/action_template_save_as"
+        android:title="@string/action_template_create"
         app:showAsAction="never" />
 </menu>
