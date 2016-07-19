@@ -181,14 +181,14 @@ public class GameSetupFragment extends Fragment {
         detailSetupCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                cardListener.onCardClicked(game, GameSetupActivity.Card.GAME_SETUP);
+                cardListener.onCardClicked(game, GameSetupActivity.Setup.GAME_SETUP);
             }
         });
 
         teamSetupCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                cardListener.onCardClicked(game, GameSetupActivity.Card.TEAM_SETUP);
+                cardListener.onCardClicked(game, GameSetupActivity.Setup.TEAM_SETUP);
             }
         });
 
@@ -381,7 +381,7 @@ public class GameSetupFragment extends Fragment {
     }
 
     public interface OnCardClickedListener {
-        public void onCardClicked(Game game, GameSetupActivity.Card card);
+        void onCardClicked(Game game, GameSetupActivity.Setup setupToLaunch);
     }
 
 }

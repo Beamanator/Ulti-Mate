@@ -4,9 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -16,13 +16,16 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
-import java.io.Serializable;
-
 public class GameSetupActivity extends AppCompatActivity
         implements GameSetupFragment.OnCardClickedListener {
 
     public static String GAME_EXTRA = "Game_Extra";
-    public enum Card {GAME_SETUP, TEAM_SETUP};
+    public enum Setup {GAME_SETUP, TEAM_SETUP, OVERVIEW_SETUP};
+
+    private Setup currentSetupFrag;
+
+    ActionBar actionBar;
+
     // Intent information
     MainMenuActivity.SetupToLaunch setupToLaunch;
     private long gameId;
@@ -38,7 +41,8 @@ public class GameSetupActivity extends AppCompatActivity
         */
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
         // Get data from the intent and bundle it for the fragments to use
         getIntentData();
@@ -57,6 +61,8 @@ public class GameSetupActivity extends AppCompatActivity
         // Add the fragment and commit changes
         fragmentTransaction.add(R.id.setupContainer, setupFrag, "GAME_SETUP_FRAGMENT");
         fragmentTransaction.commit();
+
+        currentSetupFrag = Setup.OVERVIEW_SETUP;
     }
 
 
@@ -79,18 +85,26 @@ public class GameSetupActivity extends AppCompatActivity
             case R.id.action_template_create:
                 //TODO action for template creation
                 return true;
+            case android.R.id.home:
+                if(currentSetupFrag == Setup.OVERVIEW_SETUP) {
+                    return false;
+                }
+                onBackPressed();
+                return true;
+
+
         }
 
         return super.onOptionsItemSelected(item);
     }
 
     @Override
-    public void onCardClicked(Game game, Card card) {
+    public void onCardClicked(Game game, Setup fragmentToLaunch) {
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
 
         // Go to game setup
-        if (card == Card.GAME_SETUP) {
+        if (fragmentToLaunch == Setup.GAME_SETUP) {
             GameSetupDetailFragment detailFragment =
                     (GameSetupDetailFragment) fm.findFragmentByTag("GAME_DETAIL_SETUP_FRAGMENT");
             if (detailFragment == null) {
@@ -101,7 +115,7 @@ public class GameSetupActivity extends AppCompatActivity
         }
 
         // Go to team setup
-        if (card == Card.TEAM_SETUP) {
+        if (fragmentToLaunch == Setup.TEAM_SETUP) {
             GameSetupTeamFragment teamFragment =
                     (GameSetupTeamFragment) fm.findFragmentByTag("GAME_TEAM_SETUP_FRAGMENT");
             if (teamFragment == null) {
@@ -115,6 +129,16 @@ public class GameSetupActivity extends AppCompatActivity
         ft.addToBackStack(null);
         ft.commit();
 
+        currentSetupFrag = fragmentToLaunch;
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (currentSetupFrag != Setup.OVERVIEW_SETUP) {
+            currentSetupFrag = Setup.OVERVIEW_SETUP;
+        }
+        super.onBackPressed();
     }
 
     /**
