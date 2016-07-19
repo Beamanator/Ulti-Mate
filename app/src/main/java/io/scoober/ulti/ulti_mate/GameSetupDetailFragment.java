@@ -184,6 +184,13 @@ public class GameSetupDetailFragment extends Fragment {
         completeSetupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                boolean valid = validateSetup();
+                if (!valid) {
+                    Utils.showValidationFailedDialog(getActivity());
+                    return;
+                }
+
                 String gameName = gameTitleText.getText().toString();
                 int winningScore = 0;
                 if (!winningScoreText.getText().toString().isEmpty()) {
@@ -223,6 +230,16 @@ public class GameSetupDetailFragment extends Fragment {
                 Utils.validateTextNotEmpty(text, textView, getResources(), R.string.hint_game_name);
             }
         });
+    }
+
+    /**
+     * Validates the setup for the game setup activity. If any of the required EditTexts are not
+     * populated, then return false.
+     * @return  Whether validation passed.
+     */
+    private boolean validateSetup() {
+        EditText requiredFields[] = {gameTitleText};
+        return Utils.validateFieldsNotEmpty(requiredFields);
     }
 
     /**

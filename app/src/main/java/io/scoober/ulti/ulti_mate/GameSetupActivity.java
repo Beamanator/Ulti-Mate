@@ -19,7 +19,8 @@ import android.widget.EditText;
 
 public class GameSetupActivity extends AppCompatActivity
         implements GameSetupFragment.OnCardClickedListener,
-        GameSetupDetailFragment.onCompleteDetailListener {
+        GameSetupDetailFragment.onCompleteDetailListener,
+        GameSetupTeamFragment.onCompleteTeamListener {
 
     public enum Setup {GAME_SETUP, TEAM_SETUP, OVERVIEW_SETUP}
 
@@ -140,6 +141,12 @@ public class GameSetupActivity extends AppCompatActivity
 
     @Override
     public void onDetailComplete() {
+        returnToOverview();
+        onReturnToOverview();
+    }
+
+    @Override
+    public void onTeamComplete() {
         returnToOverview();
         onReturnToOverview();
     }

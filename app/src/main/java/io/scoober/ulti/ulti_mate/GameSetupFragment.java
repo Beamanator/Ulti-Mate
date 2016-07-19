@@ -71,7 +71,7 @@ public class GameSetupFragment extends Fragment {
                  */
                 boolean valid = validateSetup();
                 if (!valid) {
-                    showValidationFailedDialog();
+                    Utils.showValidationFailedDialog(getActivity());
                     return;
                 }
 
@@ -252,7 +252,7 @@ public class GameSetupFragment extends Fragment {
     private void createTemplate(boolean launchActivity) {
         boolean valid = validateSetup();
         if (!valid) {
-            showValidationFailedDialog();
+            Utils.showValidationFailedDialog(getActivity());
             return;
         }
         showTemplateNameDialog(launchActivity);
@@ -265,7 +265,7 @@ public class GameSetupFragment extends Fragment {
     private void editTemplate(boolean launchActivity) {
         boolean valid = validateSetup();
         if (!valid) {
-            showValidationFailedDialog();
+            Utils.showValidationFailedDialog(getActivity());
             return;
         }
         //TODO consider if this has any issues now that we store the game as a class variable
@@ -311,9 +311,7 @@ public class GameSetupFragment extends Fragment {
      * @return  Whether validation passed.
      */
     private boolean validateSetup() {
-        if (game.getGameName().isEmpty() || game.getTeam1Name().isEmpty() || game.getTeam2Name().isEmpty()) {
-            return false;
-        }
+        //TODO handle for templates
         return true;
     }
 
@@ -367,17 +365,6 @@ public class GameSetupFragment extends Fragment {
         String message = getResources().getString(R.string.snackbar_template_save_successful, templateName);
         Snackbar.make(cl,message,Snackbar.LENGTH_LONG).show();
 
-    }
-
-    /**
-     * Show a dialog that alerts the user that required fields must be populated.
-     */
-    private void showValidationFailedDialog() {
-        new AlertDialog.Builder(getActivity())
-                .setMessage(R.string.dialog_validation_failed)
-                .setPositiveButton(R.string.dialog_confirm, null)
-                .create()
-                .show();
     }
 
     public interface OnCardClickedListener {

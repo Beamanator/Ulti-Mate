@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.StringRes;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.TextView;
 
@@ -306,6 +307,17 @@ public class Utils {
             }
         }
         return true;
+    }
+
+    /**
+     * Show a dialog that alerts the user that required fields must be populated.
+     */
+    public static void showValidationFailedDialog(Context ctx) {
+        new AlertDialog.Builder(ctx)
+                .setMessage(R.string.dialog_validation_failed)
+                .setPositiveButton(R.string.dialog_confirm, null)
+                .create()
+                .show();
     }
 
     /*
