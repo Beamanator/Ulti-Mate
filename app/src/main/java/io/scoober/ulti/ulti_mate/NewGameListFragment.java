@@ -8,15 +8,11 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
 import android.support.v7.app.AlertDialog;
 import android.view.ContextMenu;
-import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import java.util.List;
 
@@ -69,9 +65,6 @@ public class NewGameListFragment extends ListFragment{
         int rowPosition = info.position;
         Game template = (Game) getListAdapter().getItem(rowPosition);
         switch(item.getItemId()) {
-            case R.id.itemEditTemplateName:
-                showEditNameDialog(template, rowPosition);
-                return true;
             case R.id.itemEditTemplate:
                 launchGameSetup(MainMenuActivity.SetupToLaunch.EDIT_TEMPLATE,rowPosition);
                 return true;
@@ -102,21 +95,11 @@ public class NewGameListFragment extends ListFragment{
         templateListAdapter.notifyDataSetChanged();
     }
 
-    private void editTemplateName(Game template, String newName, int rowPosition) {
-        // update database
-        template.setTemplateName(newName);
-        Utils.saveGameDetails(getActivity().getBaseContext(), template);
-
-        // update list adapter
-        templates.set(rowPosition, template);
-        templateListAdapter.notifyDataSetChanged();
-    }
-
     private void showDeleteConfirmDialog(final Game template, final int rowPosition) {
         new AlertDialog.Builder(getActivity())
                 .setTitle(R.string.dialog_title_confirm_delete)
                 .setMessage(R.string.dialog_delete_template)
-                .setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.dialog_delete, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         deleteTemplate(template, rowPosition);
@@ -125,44 +108,5 @@ public class NewGameListFragment extends ListFragment{
                 .setNegativeButton(R.string.dialog_cancel, null)
                 .create()
                 .show();
-    }
-
-    private void showEditNameDialog(final Game template, final int rowPosition) {
-        LayoutInflater inflater = getActivity().getLayoutInflater();
-        final View dialogView = inflater.inflate(R.layout.dialog_edit_text, null);
-        final EditText nameEdit = (EditText) dialogView.findViewById(R.id.templateNameEdit);
-        nameEdit.setText(template.getTemplateName());
-        nameEdit.addTextChangedListener(new TextValidator(nameEdit) {
-            @Override
-            public void validate(TextView textView, String text) {
-                Utils.validateTextNotEmpty(text, textView, getResources(), R.string.dialog_name_template);
-            }
-        });
-
-        AlertDialog dialog = new AlertDialog.Builder(getActivity())
-                .setTitle(R.string.title_dialog_name_template)
-                .setView(dialogView)
-                .setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        editTemplateName(template, nameEdit.getText().toString(), rowPosition);
-                    }
-                })
-                .setNegativeButton(R.string.dialog_cancel, null)
-                .create();
-
-        dialog.show();
-        /*
-        Add listener to the editText and disable positive button if validation fails
-         */
-        final Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-        nameEdit.addTextChangedListener(new TextValidator(nameEdit) {
-            @Override
-            public void validate(TextView textView, String text) {
-                boolean valid = Utils.validateTextNotEmpty(text, textView,
-                        getResources(), R.string.dialog_name_template);
-                positiveButton.setEnabled(valid);
-            }
-        });
     }
 }

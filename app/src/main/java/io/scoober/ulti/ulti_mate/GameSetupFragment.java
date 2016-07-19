@@ -11,6 +11,8 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +29,9 @@ public class GameSetupFragment extends Fragment {
     private Button createFromSetupButton;
     private CardView detailSetupCard, teamSetupCard;
     private TeamImageButton team1ImageButton, team2ImageButton;
-    private TextView gameTitleText, winningScoreText, timeCapsText, team1NameText, team2NameText;
+    private EditText templateTitleText;
+    private TextView gameTitleText, winningScoreText, timeCapsText,
+            team1NameText, team2NameText, templateTitleLabelText;
 
     // Argument information
     MainMenuActivity.SetupToLaunch setupToLaunch;
@@ -62,6 +66,12 @@ public class GameSetupFragment extends Fragment {
 
         getWidgetReferences(gameSetupFragView);
 
+        if (setupToLaunch == MainMenuActivity.SetupToLaunch.CREATE_TEMPLATE ||
+                setupToLaunch == MainMenuActivity.SetupToLaunch.EDIT_TEMPLATE) {
+            templateTitleText.setVisibility(View.VISIBLE);
+            templateTitleLabelText.setVisibility(View.VISIBLE);
+        }
+
         createFromSetupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -86,7 +96,7 @@ public class GameSetupFragment extends Fragment {
                         createTemplate(true);
                         break;
                     case EDIT_TEMPLATE:
-                        editTemplate(true);
+                        editTemplate();
                         break;
                 }
             }
@@ -112,7 +122,7 @@ public class GameSetupFragment extends Fragment {
         }
 
         setCreateButtonText();
-        initializeCards();
+        initializeWidgets();
     }
 
     /**
@@ -131,15 +141,24 @@ public class GameSetupFragment extends Fragment {
         timeCapsText = (TextView) v.findViewById(R.id.timeCapsDescription);
         team1NameText = (TextView) v.findViewById(R.id.team1Name);
         team2NameText = (TextView) v.findViewById(R.id.team2Name);
+        templateTitleLabelText = (TextView) v.findViewById(R.id.templateNameLabel);
+
+        templateTitleText = (EditText) v.findViewById(R.id.templateNameEdit);
     }
 
 
     /**
      * Populates data on cards and sets onClickListeners
      */
-    private void initializeCards() {
+    private void initializeWidgets() {
         Resources res = getActivity().getResources();
 
+        String templateName = game.getTemplateName();
+        if (templateName == null) {
+            templateTitleText.setText(R.string.default_template_name);
+        } else {
+            templateTitleText.setText(game.getTemplateName());
+        }
         // Set game values to values from game
         gameTitleText.setText(game.getGameName());
 
@@ -189,6 +208,24 @@ public class GameSetupFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 cardListener.onCardClicked(GameSetupActivity.Setup.TEAM_SETUP);
+            }
+        });
+
+        templateTitleText.addTextChangedListener(new TextValidator(templateTitleText) {
+            @Override
+            public void validate(TextView textView, String text) {
+                Utils.validateTextNotEmpty(text, textView, getResources(), R.string.dialog_name_template);
+            }
+        });
+
+        templateTitleText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override
+            public void afterTextChanged(Editable s) {
+                game.setTemplateName(templateTitleText.getText().toString());
             }
         });
 
@@ -250,32 +287,20 @@ public class GameSetupFragment extends Fragment {
      * @param launchActivity    boolean to determine whether the NewGameActivity should be launched
      */
     private void createTemplate(boolean launchActivity) {
-        boolean valid = validateSetup();
-        if (!valid) {
-            Utils.showValidationFailedDialog(getActivity());
-            return;
-        }
         showTemplateNameDialog(launchActivity);
     }
 
     /**
      * Edits templates from user populated fields in the game setup activity
-     * @param launchActivity    boolean to determine whether the NewGameActivity should be launched
      */
-    private void editTemplate(boolean launchActivity) {
+    private void editTemplate() {
         boolean valid = validateSetup();
         if (!valid) {
             Utils.showValidationFailedDialog(getActivity());
             return;
         }
-        //TODO consider if this has any issues now that we store the game as a class variable
-        Game template = game;
-        storeGame(template); // set templateId in case the user presses back
-        if (launchActivity) {
-            launchNewGameActivity();
-        } else {
-            showSaveTemplateSnackbar(template.getTemplateName());
-        }
+        storeGame(game); // set templateId in case the user presses back
+        launchNewGameActivity();
     }
 
     /**
@@ -311,8 +336,8 @@ public class GameSetupFragment extends Fragment {
      * @return  Whether validation passed.
      */
     private boolean validateSetup() {
-        //TODO handle for templates
-        return true;
+        EditText requiredFields[] = {templateTitleText};
+        return Utils.validateFieldsNotEmpty(requiredFields);
     }
 
     private void showTemplateNameDialog(final boolean launchActivity) {

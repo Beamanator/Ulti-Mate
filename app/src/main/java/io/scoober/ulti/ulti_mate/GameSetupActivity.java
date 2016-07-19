@@ -179,7 +179,8 @@ public class GameSetupActivity extends AppCompatActivity
     /**
      * Returns a game from the intent passed to the activity
      *  If a Game ID is passed in, use the game that it's referring to
-     *  If a template Id is passed in, copy the template to a new game
+     *  If a template Id is passed in and we're not editing a template, copy the template to a new game
+     *  If we are editing the template, use the template as the game
      *  If neither are passed in, create a default game
      * @return      game object for use by setup
      */
@@ -190,13 +191,18 @@ public class GameSetupActivity extends AppCompatActivity
             game = Utils.getGameDetails(getBaseContext(), gameId);
         } else if (templateId > 0) {
             Game template = Utils.getGameDetails(getBaseContext(), templateId);
-            game = new Game(template.getGameName(), template.getWinningScore(), template.getTeam1Name(),
-                    template.getTeam1Color(), template.getTeam2Name(), template.getTeam2Color(),
-                    template.getSoftCapTime(), template.getHardCapTime());
+            if (setupToLaunch == MainMenuActivity.SetupToLaunch.EDIT_TEMPLATE) {
+                game = template;
+            } else {
+                game = new Game(template.getGameName(), template.getWinningScore(), template.getTeam1Name(),
+                        template.getTeam1Color(), template.getTeam2Name(), template.getTeam2Color(),
+                        template.getSoftCapTime(), template.getHardCapTime());
+            }
+
         } else {
             game = new Game(
                     res.getString(R.string.default_game_name),
-                    13,
+                    0,
                     res.getString(R.string.default_team_1_name),
                     res.getColor(R.color.md_red_500),
                     res.getString(R.string.default_team_2_name),

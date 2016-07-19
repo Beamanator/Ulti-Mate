@@ -369,7 +369,10 @@ public class GameSetupDetailFragment extends Fragment {
 
     private void initializeWidgets() {
         gameTitleText.setText(game.getGameName());
-        winningScoreText.setText(Integer.toString(game.getWinningScore()));
+        int winningScore = game.getWinningScore();
+        if (winningScore > 0) {
+            winningScoreText.setText(Integer.toString(winningScore));
+        }
         long softCap = game.getSoftCapTime();
         long hardCap = game.getHardCapTime();
         if (softCap > 0 || hardCap > 0) {
