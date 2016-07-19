@@ -49,18 +49,26 @@ public class GameSetupDetailFragment extends Fragment {
 
         View gameDetailView = inflater.inflate(R.layout.fragment_game_setup_detail, container, false);
 
-        Bundle bundle = this.getArguments();
-        if (bundle != null) {
-            game = GameSetupActivity.getGameFromBundle(bundle, getActivity().getBaseContext());
-        }
-
         getWidgetReferences(gameDetailView);
-        if (game != null) {
-            initializeWidgets();
-        }
         setListeners();
 
         return gameDetailView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (game != null) {
+            initializeWidgets();
+        }
+    }
+
+    /**
+     * Stores the passed game object into the class variable
+     * @param game  game object passed in
+     */
+    public void setGame(Game game) {
+        this.game = game;
     }
 
     private void getWidgetReferences(View v) {

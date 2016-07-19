@@ -1,6 +1,7 @@
 package io.scoober.ulti.ulti_mate;
 
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -8,8 +9,8 @@ import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.PagerAdapter;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,18 +25,29 @@ public class GameSetupFragment extends Fragment {
 
 
     private Button createFromSetupButton;
+    private CardView detailSetupCard, teamSetupCard;
+    private TeamImageButton team1ImageButton, team2ImageButton;
+    private TextView gameTitleText, winningScoreText, timeCapsText, team1NameText, team2NameText;
 
-    private Game game;
-
-    // Intent information
+    // Argument information
     MainMenuActivity.SetupToLaunch setupToLaunch;
     private long gameId;
-    private long templateId;
+    private Game game;
+    private OnCardClickedListener cardListener;
 
     public GameSetupFragment() {
         // Required empty public constructor
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            cardListener = (OnCardClickedListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString() + " must Implement OnCardClickedListener");
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -45,14 +57,11 @@ public class GameSetupFragment extends Fragment {
 
         Bundle args = getArguments();
         gameId = args.getLong(MainMenuActivity.GAME_ID_EXTRA);
-        templateId = args.getLong(MainMenuActivity.TEMPLATE_ID_EXTRA);
         setupToLaunch = (MainMenuActivity.SetupToLaunch)
                 args.getSerializable(MainMenuActivity.GAME_SETUP_ARG_EXTRA);
-        game = GameSetupActivity.getGameFromBundle(args, getActivity().getBaseContext());
 
-        initializeCards(gameSetupFragView);
+        getWidgetReferences(gameSetupFragView);
 
-        createFromSetupButton = (Button) gameSetupFragView.findViewById(R.id.createFromSetupButton);
         createFromSetupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -98,25 +107,37 @@ public class GameSetupFragment extends Fragment {
         }
 
         if (setupToLaunch == MainMenuActivity.SetupToLaunch.CREATE_TEMPLATE &&
-                templateId > 0) {
+                gameId > 0) {
             setupToLaunch = MainMenuActivity.SetupToLaunch.EDIT_TEMPLATE;
         }
 
         setCreateButtonText();
+        initializeCards();
     }
 
     /**
-     * Gets references to widgets to use in other
+     * Gets references to widgets to use in other functions
      */
-    private void initializeCards(View v) {
-        TeamImageButton team1ImageButton = (TeamImageButton) v.findViewById(R.id.team1ImageButton);
-        TeamImageButton team2ImageButton = (TeamImageButton) v.findViewById(R.id.team2ImageButton);
-        TextView gameTitleText = (TextView) v.findViewById(R.id.gameTitle);
-        TextView winningScoreText = (TextView) v.findViewById(R.id.winningScore);
-        TextView timeCapsText = (TextView) v.findViewById(R.id.timeCapsDescription);
-        TextView team1NameText = (TextView) v.findViewById(R.id.team1Name);
-        TextView team2NameText = (TextView) v.findViewById(R.id.team2Name);
+    private void getWidgetReferences(View v) {
+        createFromSetupButton = (Button) v.findViewById(R.id.createFromSetupButton);
+        team1ImageButton = (TeamImageButton) v.findViewById(R.id.team1ImageButton);
+        team2ImageButton = (TeamImageButton) v.findViewById(R.id.team2ImageButton);
 
+        detailSetupCard = (CardView) v.findViewById(R.id.detailSetupCard);
+        teamSetupCard = (CardView) v.findViewById(R.id.teamSetupCard);
+
+        gameTitleText = (TextView) v.findViewById(R.id.gameTitle);
+        winningScoreText = (TextView) v.findViewById(R.id.winningScore);
+        timeCapsText = (TextView) v.findViewById(R.id.timeCapsDescription);
+        team1NameText = (TextView) v.findViewById(R.id.team1Name);
+        team2NameText = (TextView) v.findViewById(R.id.team2Name);
+    }
+
+
+    /**
+     * Populates data on cards and sets onClickListeners
+     */
+    private void initializeCards() {
         Resources res = getActivity().getResources();
 
         // Set game values to values from game
@@ -156,12 +177,27 @@ public class GameSetupFragment extends Fragment {
         team1NameText.setText(game.getTeam1Name());
         team2NameText.setText(game.getTeam2Name());
 
+        // Set OnClickListeners
+        detailSetupCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cardListener.onCardClicked(game, GameSetupActivity.Card.GAME_SETUP);
+            }
+        });
+
+        teamSetupCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cardListener.onCardClicked(game, GameSetupActivity.Card.TEAM_SETUP);
+            }
+        });
+
     }
 
     /**
      * This function sets the text for the createFromSetupButton, depending on:
      *      1. The setupToLaunch enum that was passed in from the intent
-     *      2. Whether the gameId or templateId is populated from database creation
+     *      2. Whether the gameId is populated from database creation
      */
     private void setCreateButtonText() {
         switch (setupToLaunch) {
@@ -178,6 +214,14 @@ public class GameSetupFragment extends Fragment {
                 createFromSetupButton.setText(R.string.button_update_template);
                 break;
         }
+    }
+
+    /**
+     * Stores the passed game object into the class variable
+     * @param game  game object passed in
+     */
+    public void setGame(Game game) {
+        this.game = game;
     }
 
     /**
@@ -289,7 +333,7 @@ public class GameSetupFragment extends Fragment {
                         //TODO we do not want to convert all games to templates
                         Game template = game;
                         template.convertToTemplate(templateName);
-                        templateId = storeGame(game);
+                        gameId = storeGame(game);
                         if (launchActivity) {
                             launchNewGameActivity();
                         } else {
@@ -334,6 +378,10 @@ public class GameSetupFragment extends Fragment {
                 .setPositiveButton(R.string.dialog_confirm, null)
                 .create()
                 .show();
+    }
+
+    public interface OnCardClickedListener {
+        public void onCardClicked(Game game, GameSetupActivity.Card card);
     }
 
 }

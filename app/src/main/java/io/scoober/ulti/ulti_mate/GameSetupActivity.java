@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -15,8 +16,13 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
-public class GameSetupActivity extends AppCompatActivity {
+import java.io.Serializable;
 
+public class GameSetupActivity extends AppCompatActivity
+        implements GameSetupFragment.OnCardClickedListener {
+
+    public static String GAME_EXTRA = "Game_Extra";
+    public enum Card {GAME_SETUP, TEAM_SETUP};
     // Intent information
     MainMenuActivity.SetupToLaunch setupToLaunch;
     private long gameId;
@@ -36,17 +42,20 @@ public class GameSetupActivity extends AppCompatActivity {
 
         // Get data from the intent and bundle it for the fragments to use
         getIntentData();
-        Bundle bundle = new Bundle();
-        bundle.putLong(MainMenuActivity.GAME_ID_EXTRA, gameId);
-        bundle.putLong(MainMenuActivity.TEMPLATE_ID_EXTRA, templateId);
-        bundle.putSerializable(MainMenuActivity.GAME_SETUP_ARG_EXTRA, setupToLaunch);
 
         // Create fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        // Pass parameters to GameSetupFragment
         GameSetupFragment setupFrag = new GameSetupFragment();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(MainMenuActivity.GAME_SETUP_ARG_EXTRA, setupToLaunch);
         setupFrag.setArguments(bundle);
-        fragmentTransaction.add(R.id.setupContainer, setupFrag, "GAME_DISPLAY_FRAGMENT");
+        setupFrag.setGame(getGameFromIntent(getBaseContext()));
+
+        // Add the fragment and commit changes
+        fragmentTransaction.add(R.id.setupContainer, setupFrag, "GAME_SETUP_FRAGMENT");
         fragmentTransaction.commit();
     }
 
@@ -75,24 +84,51 @@ public class GameSetupActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onCardClicked(Game game, Card card) {
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+
+        // Go to game setup
+        if (card == Card.GAME_SETUP) {
+            GameSetupDetailFragment detailFragment =
+                    (GameSetupDetailFragment) fm.findFragmentByTag("GAME_DETAIL_SETUP_FRAGMENT");
+            if (detailFragment == null) {
+                detailFragment = new GameSetupDetailFragment();
+            }
+            detailFragment.setGame(game);
+            ft.replace(R.id.setupContainer, detailFragment, "GAME_DETAIL_SETUP_FRAGMENT");
+        }
+
+        // Go to team setup
+        if (card == Card.TEAM_SETUP) {
+            GameSetupTeamFragment teamFragment =
+                    (GameSetupTeamFragment) fm.findFragmentByTag("GAME_TEAM_SETUP_FRAGMENT");
+            if (teamFragment == null) {
+                teamFragment = new GameSetupTeamFragment();
+            }
+            teamFragment.setGame(game);
+            ft.replace(R.id.setupContainer, teamFragment, "GAME_DETAIL_SETUP_FRAGMENT");
+        }
+
+
+        ft.addToBackStack(null);
+        ft.commit();
+
+    }
+
     /**
-     * Returns a game from a bundle passed to the fragment
-     * @param bundle    fragment bundle
-     * @param ctx       context of the fragment
-     * @return          Game object with requested ID.
+     * Returns a game from the intent passed to the activity
      */
-    public static Game getGameFromBundle(Bundle bundle, Context ctx) {
-        long gameId = bundle.getLong(MainMenuActivity.GAME_ID_EXTRA);
-        if (gameId == 0) {
-            gameId = bundle.getLong(MainMenuActivity.TEMPLATE_ID_EXTRA);
-        }
-
-        Game bundleGame = null;
+    private Game getGameFromIntent(Context ctx) {
+        Game game = null;
         if (gameId > 0) {
-            bundleGame = Utils.getGameDetails(ctx, gameId);
+            game = Utils.getGameDetails(ctx, gameId);
+        } else if (templateId > 0) {
+            game = Utils.getGameDetails(ctx, templateId);
         }
 
-        return bundleGame;
+        return game;
     }
 
     /**

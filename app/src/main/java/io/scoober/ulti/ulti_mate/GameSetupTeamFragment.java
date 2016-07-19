@@ -35,11 +35,6 @@ public class GameSetupTeamFragment extends Fragment {
                              Bundle savedInstanceState) {
         View gameDetailSetupView = inflater.inflate(R.layout.fragment_game_setup_team, container, false);
 
-        Bundle bundle = this.getArguments();
-        if (bundle != null) {
-            game = GameSetupActivity.getGameFromBundle(bundle, getActivity().getBaseContext());
-        }
-
         getWidgetReferences(gameDetailSetupView);
 
         //Set to correct image
@@ -80,6 +75,14 @@ public class GameSetupTeamFragment extends Fragment {
         team1Image.build(150, team1Color);
         team2Image.build(150, team2Color);
 
+    }
+
+    /**
+     * Stores the passed game object into the class variable
+     * @param game  game object passed in
+     */
+    public void setGame(Game game) {
+        this.game = game;
     }
 
     /**
