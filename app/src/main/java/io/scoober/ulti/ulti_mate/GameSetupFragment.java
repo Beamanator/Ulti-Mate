@@ -45,7 +45,7 @@ public class GameSetupFragment extends Fragment {
         try {
             cardListener = (OnCardClickedListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must Implement OnCardClickedListener");
+            throw new ClassCastException(context.toString() + " must implement OnCardClickedListener");
         }
     }
 
@@ -181,14 +181,14 @@ public class GameSetupFragment extends Fragment {
         detailSetupCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                cardListener.onCardClicked(game, GameSetupActivity.Setup.GAME_SETUP);
+                cardListener.onCardClicked(GameSetupActivity.Setup.GAME_SETUP);
             }
         });
 
         teamSetupCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                cardListener.onCardClicked(game, GameSetupActivity.Setup.TEAM_SETUP);
+                cardListener.onCardClicked(GameSetupActivity.Setup.TEAM_SETUP);
             }
         });
 
@@ -381,7 +381,7 @@ public class GameSetupFragment extends Fragment {
     }
 
     public interface OnCardClickedListener {
-        void onCardClicked(Game game, GameSetupActivity.Setup setupToLaunch);
+        void onCardClicked(GameSetupActivity.Setup setupToLaunch);
     }
 
 }

@@ -22,13 +22,6 @@
             android:text="@string/title_game_setup"
             android:id="@+id/textView"
             android:layout_gravity="center_horizontal" />
-        <View
-            android:layout_width="20dp"
-            android:layout_height="2dp"
-            android:layout_marginTop="@dimen/vertical_menu_spacing"
-            android:layout_marginBottom="@dimen/vertical_menu_spacing"
-            android:background="#000000"
-            android:layout_gravity="center" />
 
         <EditText
             android:layout_width="wrap_content"

@@ -1,7 +1,6 @@
 package io.scoober.ulti.ulti_mate;
 
 
-import android.app.AlertDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.os.Bundle;
@@ -28,6 +27,7 @@ import java.util.Calendar;
 public class GameSetupDetailFragment extends Fragment {
 
     private Game game;
+    private onCompleteDetailListener completeListener;
 
     /*
     Widgets
@@ -39,8 +39,22 @@ public class GameSetupDetailFragment extends Fragment {
     private FloatingActionButton completeSetupButton;
     private RelativeLayout timeCapsContainer;
 
+    public interface onCompleteDetailListener {
+        void onDetailComplete();
+    }
+
     public GameSetupDetailFragment() {
         // Required empty public constructor
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            completeListener = (onCompleteDetailListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString() + " must implement onCompleteDetailListener");
+        }
     }
 
     @Override
@@ -170,7 +184,33 @@ public class GameSetupDetailFragment extends Fragment {
         completeSetupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO replace with interface
+                String gameName = gameTitleText.getText().toString();
+                int winningScore = 0;
+                if (!winningScoreText.getText().toString().isEmpty()) {
+                    winningScore = Integer.valueOf(winningScoreText.getText().toString());
+                }
+
+                long softCap = 0;
+                long hardCap = 0;
+                boolean timeCaps = timeCapsBox.isChecked();
+                if (timeCaps) {
+                    String softCapString = softCapButton.getText().toString();
+                    if (softCapString != getResources().getString(R.string.button_set_time)) {
+                        softCap = Utils.getTodayMilliFrom12HrString(softCapString);
+                    }
+
+                    String hardCapString = hardCapButton.getText().toString();
+                    if (hardCapString != getResources().getString(R.string.button_set_time)) {
+                        hardCap = Utils.getTodayMilliFrom12HrString(hardCapString);
+                    }
+                }
+
+                game.setGameName(gameName);
+                game.setWinningScore(winningScore);
+                game.setSoftCapTime(softCap);
+                game.setHardCapTime(hardCap);
+
+                completeListener.onDetailComplete();
             }
         });
 
@@ -311,24 +351,22 @@ public class GameSetupDetailFragment extends Fragment {
     }
 
     private void initializeWidgets() {
-        if (game!= null) {
-            gameTitleText.setText(game.getGameName());
-            winningScoreText.setText(Integer.toString(game.getWinningScore()));
-            long softCap = game.getSoftCapTime();
-            long hardCap = game.getHardCapTime();
-            if (softCap > 0 || hardCap > 0) {
-                timeCapsBox.setChecked(true);
-                timeCapsContainer.setVisibility(View.VISIBLE);
+        gameTitleText.setText(game.getGameName());
+        winningScoreText.setText(Integer.toString(game.getWinningScore()));
+        long softCap = game.getSoftCapTime();
+        long hardCap = game.getHardCapTime();
+        if (softCap > 0 || hardCap > 0) {
+            timeCapsBox.setChecked(true);
+            timeCapsContainer.setVisibility(View.VISIBLE);
 
-                if (softCap > 0) {
-                    softCapButton.setText(Utils.getTimeString(softCap));
-                }
-
-                if (hardCap > 0) {
-                    hardCapButton.setText(Utils.getTimeString(hardCap));
-                }
-
+            if (softCap > 0) {
+                softCapButton.setText(Utils.getTimeString(softCap));
             }
+
+            if (hardCap > 0) {
+                hardCapButton.setText(Utils.getTimeString(hardCap));
+            }
+
         }
     }
 

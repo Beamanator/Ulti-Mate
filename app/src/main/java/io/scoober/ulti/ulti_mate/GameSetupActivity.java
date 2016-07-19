@@ -2,6 +2,7 @@ package io.scoober.ulti.ulti_mate;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -17,14 +18,16 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 public class GameSetupActivity extends AppCompatActivity
-        implements GameSetupFragment.OnCardClickedListener {
+        implements GameSetupFragment.OnCardClickedListener,
+        GameSetupDetailFragment.onCompleteDetailListener {
 
-    public static String GAME_EXTRA = "Game_Extra";
-    public enum Setup {GAME_SETUP, TEAM_SETUP, OVERVIEW_SETUP};
+    public enum Setup {GAME_SETUP, TEAM_SETUP, OVERVIEW_SETUP}
 
     private Setup currentSetupFrag;
+    private Game game;
 
     ActionBar actionBar;
+    Menu actionMenu;
 
     // Intent information
     MainMenuActivity.SetupToLaunch setupToLaunch;
@@ -46,6 +49,7 @@ public class GameSetupActivity extends AppCompatActivity
 
         // Get data from the intent and bundle it for the fragments to use
         getIntentData();
+        game = getGameFromIntent();
 
         // Create fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -56,7 +60,7 @@ public class GameSetupActivity extends AppCompatActivity
         Bundle bundle = new Bundle();
         bundle.putSerializable(MainMenuActivity.GAME_SETUP_ARG_EXTRA, setupToLaunch);
         setupFrag.setArguments(bundle);
-        setupFrag.setGame(getGameFromIntent(getBaseContext()));
+        setupFrag.setGame(game);
 
         // Add the fragment and commit changes
         fragmentTransaction.add(R.id.setupContainer, setupFrag, "GAME_SETUP_FRAGMENT");
@@ -70,6 +74,7 @@ public class GameSetupActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_game_setup, menu);
+        actionMenu = menu;
 
         return true;
     }
@@ -91,15 +96,13 @@ public class GameSetupActivity extends AppCompatActivity
                 }
                 onBackPressed();
                 return true;
-
-
         }
 
         return super.onOptionsItemSelected(item);
     }
 
     @Override
-    public void onCardClicked(Game game, Setup fragmentToLaunch) {
+    public void onCardClicked(Setup fragmentToLaunch) {
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
 
@@ -109,8 +112,8 @@ public class GameSetupActivity extends AppCompatActivity
                     (GameSetupDetailFragment) fm.findFragmentByTag("GAME_DETAIL_SETUP_FRAGMENT");
             if (detailFragment == null) {
                 detailFragment = new GameSetupDetailFragment();
+                detailFragment.setGame(game);
             }
-            detailFragment.setGame(game);
             ft.replace(R.id.setupContainer, detailFragment, "GAME_DETAIL_SETUP_FRAGMENT");
         }
 
@@ -120,8 +123,8 @@ public class GameSetupActivity extends AppCompatActivity
                     (GameSetupTeamFragment) fm.findFragmentByTag("GAME_TEAM_SETUP_FRAGMENT");
             if (teamFragment == null) {
                 teamFragment = new GameSetupTeamFragment();
+                teamFragment.setGame(game);
             }
-            teamFragment.setGame(game);
             ft.replace(R.id.setupContainer, teamFragment, "GAME_DETAIL_SETUP_FRAGMENT");
         }
 
@@ -131,25 +134,69 @@ public class GameSetupActivity extends AppCompatActivity
 
         currentSetupFrag = fragmentToLaunch;
 
+        // Hide menu options for creating from template
+        actionMenu.findItem(R.id.action_template_create).setVisible(false);
+    }
+
+    @Override
+    public void onDetailComplete() {
+        returnToOverview();
+        onReturnToOverview();
     }
 
     @Override
     public void onBackPressed() {
         if (currentSetupFrag != Setup.OVERVIEW_SETUP) {
-            currentSetupFrag = Setup.OVERVIEW_SETUP;
+            onReturnToOverview();
         }
         super.onBackPressed();
     }
 
+    private void returnToOverview() {
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        GameSetupFragment setupFragment =
+                (GameSetupFragment) fm.findFragmentByTag("GAME_SETUP_FRAGMENT");
+        ft.replace(R.id.setupContainer, setupFragment, "GAME_SETUP_FRAGMENT");
+        ft.commit();
+    }
+
+    /**
+     * Performs actions that occur after returning to the overview from another setup page
+     */
+    private void onReturnToOverview() {
+        currentSetupFrag = Setup.OVERVIEW_SETUP;
+        actionMenu.findItem(R.id.action_template_create).setVisible(true);
+    }
+
     /**
      * Returns a game from the intent passed to the activity
+     *  If a Game ID is passed in, use the game that it's referring to
+     *  If a template Id is passed in, copy the template to a new game
+     *  If neither are passed in, create a default game
+     * @return      game object for use by setup
      */
-    private Game getGameFromIntent(Context ctx) {
-        Game game = null;
+    private Game getGameFromIntent() {
+        Game game;
+        Resources res = getResources();
         if (gameId > 0) {
-            game = Utils.getGameDetails(ctx, gameId);
+            game = Utils.getGameDetails(getBaseContext(), gameId);
         } else if (templateId > 0) {
-            game = Utils.getGameDetails(ctx, templateId);
+            Game template = Utils.getGameDetails(getBaseContext(), templateId);
+            game = new Game(template.getGameName(), template.getWinningScore(), template.getTeam1Name(),
+                    template.getTeam1Color(), template.getTeam2Name(), template.getTeam2Color(),
+                    template.getSoftCapTime(), template.getHardCapTime());
+        } else {
+            game = new Game(
+                    res.getString(R.string.default_game_name),
+                    13,
+                    res.getString(R.string.default_team_1_name),
+                    res.getColor(R.color.md_red_500),
+                    res.getString(R.string.default_team_2_name),
+                    res.getColor(R.color.md_blue_500),
+                    0,
+                    0
+            );
         }
 
         return game;
