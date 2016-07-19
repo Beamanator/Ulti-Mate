@@ -211,9 +211,9 @@ public class GameSetupActivity extends AppCompatActivity
                     res.getString(R.string.default_game_name),
                     0,
                     res.getString(R.string.default_team_1_name),
-                    res.getColor(R.color.md_red_500),
+                    res.getColor(R.color.default_team_1),
                     res.getString(R.string.default_team_2_name),
-                    res.getColor(R.color.md_blue_500),
+                    res.getColor(R.color.default_team_2),
                     0,
                     0
             );
