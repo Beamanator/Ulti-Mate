@@ -1,6 +1,5 @@
 package io.scoober.ulti.ulti_mate;
 
-import android.app.ListFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -120,7 +119,7 @@ public class MyGamesListFragment extends android.support.v4.app.ListFragment {
         new AlertDialog.Builder(getActivity())
                 .setTitle(R.string.dialog_title_confirm_delete)
                 .setMessage(R.string.dialog_delete_game)
-                .setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.dialog_delete, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         deleteGame(game, rowPosition);

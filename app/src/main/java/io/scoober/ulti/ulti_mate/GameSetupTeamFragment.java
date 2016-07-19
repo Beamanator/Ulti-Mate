@@ -1,9 +1,10 @@
 package io.scoober.ulti.ulti_mate;
 
 
-import android.content.res.Resources;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,31 +23,45 @@ public class GameSetupTeamFragment extends Fragment {
 
     private TeamImageButton team1Image, team2Image;
     private EditText team1NameText, team2NameText;
+    private FloatingActionButton completeSetupButton;
 
     private Game game;
+    private onCompleteTeamListener completeListener;
+
+    public interface onCompleteTeamListener {
+        void onTeamComplete();
+    }
 
     public GameSetupTeamFragment() {
         // Required empty public constructor
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            completeListener = (onCompleteTeamListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString() + " must implement onCompleteTeamListener");
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View gameDetailSetupView = inflater.inflate(R.layout.fragment_game_setup_team, container, false);
 
-        Bundle bundle = this.getArguments();
-        if (bundle != null) {
-            game = GameSetupActivity.getGameFromBundle(bundle, getActivity().getBaseContext());
-        }
-
         getWidgetReferences(gameDetailSetupView);
 
-        //Set to correct image
-        initializeImageButtons();
         setListeners();
 
         return gameDetailSetupView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        initializeWidgets();
     }
 
     /**
@@ -55,31 +70,33 @@ public class GameSetupTeamFragment extends Fragment {
     private void getWidgetReferences(View v) {
         team1Image = (TeamImageButton) v.findViewById(R.id.team1ImageButton);
         team2Image = (TeamImageButton) v.findViewById(R.id.team2ImageButton);
-
         team1NameText = (EditText) v.findViewById(R.id.team1Name);
         team2NameText = (EditText) v.findViewById(R.id.team2Name);
+        completeSetupButton = (FloatingActionButton) v.findViewById(R.id.completeSetupButton);
     }
 
     /**
      * This function initializes the image buttons by setting the default color and creating
      * a drawable with that color
      */
-    private void initializeImageButtons() {
+    private void initializeWidgets() {
 
-        Resources res = getResources();
-        int team1Color = res.getColor(R.color.default_team_1);
-        int team2Color = res.getColor(R.color.default_team_2);
-
-        if (game != null) {
-            team1Color = game.getTeam1Color();
-            team2Color = game.getTeam2Color();
-            team1NameText.setText(game.getTeam1Name());
-            team2NameText.setText(game.getTeam2Name());
-        }
+        int team1Color = game.getTeam1Color();
+        int team2Color = game.getTeam2Color();
+        team1NameText.setText(game.getTeam1Name());
+        team2NameText.setText(game.getTeam2Name());
 
         team1Image.build(150, team1Color);
         team2Image.build(150, team2Color);
 
+    }
+
+    /**
+     * Stores the passed game object into the class variable
+     * @param game  game object passed in
+     */
+    public void setGame(Game game) {
+        this.game = game;
     }
 
     /**
@@ -119,6 +136,41 @@ public class GameSetupTeamFragment extends Fragment {
                 Utils.validateTextNotEmpty(text, textView, getResources(), R.string.team_2_name_hint);
             }
         });
+
+        completeSetupButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                boolean valid = validateSetup();
+                if (!valid) {
+                    Utils.showValidationFailedDialog(getActivity());
+                    return;
+                }
+
+                String team1Name = team1NameText.getText().toString();
+                String team2Name = team2NameText.getText().toString();
+
+                int team1Color = team1Image.getColor();
+                int team2Color = team2Image.getColor();
+
+                game.setTeam1Name(team1Name);
+                game.setTeam1Color(team1Color);
+                game.setTeam2Name(team2Name);
+                game.setTeam2Color(team2Color);
+
+                completeListener.onTeamComplete();
+            }
+        });
+    }
+
+    /**
+     * Validates the setup for the game setup activity. If any of the required EditTexts are not
+     * populated, then return false.
+     * @return  Whether validation passed.
+     */
+    private boolean validateSetup() {
+        EditText requiredFields[] = {team2NameText, team2NameText};
+        return Utils.validateFieldsNotEmpty(requiredFields);
     }
 
     private void showColorPicker(final TeamImageButton imageButton) {

@@ -1,90 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     android:focusable="true"
-    android:focusableInTouchMode="true">
+    android:focusableInTouchMode="true"
+    android:id="@+id/gameTeamSetupCoordinatorLayout">
 
-    <!--Setup for game title-->
-    <TextView
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:orientation="vertical">
+        <!--Setup for game title-->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/gameTitleSetupLabel"
+            android:layout_gravity="center"
+            android:text="@string/title_team_setup"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            />
+
+        <!--Team setup-->
+        <!--Team 1-->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/vertical_menu_spacing"
+            android:layout_marginRight="@dimen/text_margin">
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@+id/team1ImageButton"
+                android:layout_alignBottom="@+id/team1ImageButton"
+                android:hint="@string/team_1_name_hint"
+                android:text="@string/default_team_1_name"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:selectAllOnFocus="true"
+                android:id="@+id/team1Name"/>
+
+            <io.scoober.ulti.ulti_mate.widgets.TeamImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:src="@drawable/sample50dp"
+                android:id="@+id/team1ImageButton"
+                android:layout_marginLeft="@dimen/text_margin"
+                android:layout_marginRight="@dimen/text_margin"
+                android:layout_centerVertical="true"
+                android:layout_alignParentStart="true" />
+
+        </RelativeLayout>
+
+        <!--Team 2-->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/vertical_menu_spacing"
+            android:layout_marginRight="@dimen/text_margin">
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@+id/team2ImageButton"
+                android:layout_alignBottom="@+id/team2ImageButton"
+                android:hint="@string/team_2_name_hint"
+                android:text="@string/default_team_2_name"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:selectAllOnFocus="true"
+                android:id="@+id/team2Name"/>
+
+            <io.scoober.ulti.ulti_mate.widgets.TeamImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:src="@drawable/sample50dp"
+                android:id="@+id/team2ImageButton"
+                android:layout_marginLeft="@dimen/text_margin"
+                android:layout_marginRight="@dimen/text_margin"
+                android:layout_centerVertical="true"
+                android:layout_alignParentStart="true" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/completeSetupButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/gameTitleSetupLabel"
-        android:layout_gravity="center"
-        android:text="@string/title_team_setup"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        />
-
-    <View
-        android:layout_width="20dp"
-        android:layout_height="2dp"
-        android:layout_marginTop="@dimen/vertical_menu_spacing"
-        android:background="#000000"
-        android:layout_gravity="center" />
-
-    <!--Team setup-->
-    <!--Team 1-->
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/vertical_menu_spacing">
-
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toStartOf="@+id/team1ImageButton"
-            android:layout_alignParentStart="true"
-            android:layout_alignBottom="@+id/team1ImageButton"
-            android:hint="@string/team_1_name_hint"
-            android:text="@string/default_team_1_name"
-            android:singleLine="true"
-            android:ellipsize="end"
-            android:selectAllOnFocus="true"
-            android:id="@+id/team1Name"/>
-
-        <io.scoober.ulti.ulti_mate.widgets.TeamImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_margin="@dimen/text_margin"
-            android:background="@android:color/transparent"
-            android:src="@drawable/sample50dp"
-            android:id="@+id/team1ImageButton"/>
-
-    </RelativeLayout>
-
-    <!--Team 2-->
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/vertical_menu_spacing">
-
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toStartOf="@+id/team2ImageButton"
-            android:layout_alignParentStart="true"
-            android:layout_alignBottom="@+id/team2ImageButton"
-            android:hint="@string/team_2_name_hint"
-            android:text="@string/default_team_2_name"
-            android:singleLine="true"
-            android:ellipsize="end"
-            android:selectAllOnFocus="true"
-            android:id="@+id/team2Name"/>
-
-        <io.scoober.ulti.ulti_mate.widgets.TeamImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_margin="@dimen/text_margin"
-            android:background="@android:color/transparent"
-            android:src="@drawable/sample50dp"
-            android:id="@+id/team2ImageButton"/>
-    </RelativeLayout>
-</LinearLayout>
+        android:layout_gravity="end|bottom"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@drawable/ic_check_white_24dp" />
+</android.support.design.widget.CoordinatorLayout>

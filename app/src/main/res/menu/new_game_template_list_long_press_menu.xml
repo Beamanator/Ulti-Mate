@@ -3,9 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <item
-        android:id="@+id/itemEditTemplateName"
-        android:title="@string/item_edit_template_name" />
-    <item
         android:id="@+id/itemEditTemplate"
         android:title="@string/item_edit_template" />
     <item

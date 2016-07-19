@@ -1,11 +1,11 @@
 package io.scoober.ulti.ulti_mate;
 
 
-import android.app.AlertDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -27,20 +27,34 @@ import java.util.Calendar;
 public class GameSetupDetailFragment extends Fragment {
 
     private Game game;
+    private onCompleteDetailListener completeListener;
 
     /*
     Widgets
      */
+    private Button softCapButton, hardCapButton;
     private CheckBox timeCapsBox;
-    private EditText gameTitleText;
-    private EditText winningScoreText;
-    private RelativeLayout timeCapsContainer;
     private CoordinatorLayout gameSetupDetailCLayout;
-    private Button softCapButton;
-    private Button hardCapButton;
+    private EditText gameTitleText, winningScoreText;
+    private FloatingActionButton completeSetupButton;
+    private RelativeLayout timeCapsContainer;
+
+    public interface onCompleteDetailListener {
+        void onDetailComplete();
+    }
 
     public GameSetupDetailFragment() {
         // Required empty public constructor
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            completeListener = (onCompleteDetailListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString() + " must implement onCompleteDetailListener");
+        }
     }
 
     @Override
@@ -49,27 +63,34 @@ public class GameSetupDetailFragment extends Fragment {
 
         View gameDetailView = inflater.inflate(R.layout.fragment_game_setup_detail, container, false);
 
-        Bundle bundle = this.getArguments();
-        if (bundle != null) {
-            game = GameSetupActivity.getGameFromBundle(bundle, getActivity().getBaseContext());
-        }
-
         getWidgetReferences(gameDetailView);
-        if (game != null) {
-            initializeWidgets();
-        }
         setListeners();
 
         return gameDetailView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        initializeWidgets();
+    }
+
+    /**
+     * Stores the passed game object into the class variable
+     * @param game  game object passed in
+     */
+    public void setGame(Game game) {
+        this.game = game;
     }
 
     private void getWidgetReferences(View v) {
         timeCapsBox = (CheckBox) v.findViewById(R.id.timeCapsCheckbox);
         gameTitleText = (EditText) v.findViewById(R.id.gameTitleEditor);
         winningScoreText = (EditText) v.findViewById(R.id.winningScore);
+        completeSetupButton = (FloatingActionButton) v.findViewById(R.id.completeSetupButton);
         timeCapsContainer = (RelativeLayout) v.findViewById(R.id.timeCapsContainer);
         gameSetupDetailCLayout = (CoordinatorLayout)
-                getActivity().findViewById(R.id.gameSetupCoordinatorLayout);
+                v.findViewById(R.id.gameDetailSetupCoordinatorLayout);
         softCapButton = (Button) v.findViewById(R.id.softCapInput);
         hardCapButton = (Button) v.findViewById(R.id.hardCapInput);
     }
@@ -160,6 +181,46 @@ public class GameSetupDetailFragment extends Fragment {
             }
         });
 
+        completeSetupButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                boolean valid = validateSetup();
+                if (!valid) {
+                    Utils.showValidationFailedDialog(getActivity());
+                    return;
+                }
+
+                String gameName = gameTitleText.getText().toString();
+                int winningScore = 0;
+                if (!winningScoreText.getText().toString().isEmpty()) {
+                    winningScore = Integer.valueOf(winningScoreText.getText().toString());
+                }
+
+                long softCap = 0;
+                long hardCap = 0;
+                boolean timeCaps = timeCapsBox.isChecked();
+                if (timeCaps) {
+                    String softCapString = softCapButton.getText().toString();
+                    if (softCapString != getResources().getString(R.string.button_set_time)) {
+                        softCap = Utils.getTodayMilliFrom12HrString(softCapString);
+                    }
+
+                    String hardCapString = hardCapButton.getText().toString();
+                    if (hardCapString != getResources().getString(R.string.button_set_time)) {
+                        hardCap = Utils.getTodayMilliFrom12HrString(hardCapString);
+                    }
+                }
+
+                game.setGameName(gameName);
+                game.setWinningScore(winningScore);
+                game.setSoftCapTime(softCap);
+                game.setHardCapTime(hardCap);
+
+                completeListener.onDetailComplete();
+            }
+        });
+
         /*
         Set text validation listener
          */
@@ -169,6 +230,16 @@ public class GameSetupDetailFragment extends Fragment {
                 Utils.validateTextNotEmpty(text, textView, getResources(), R.string.hint_game_name);
             }
         });
+    }
+
+    /**
+     * Validates the setup for the game setup activity. If any of the required EditTexts are not
+     * populated, then return false.
+     * @return  Whether validation passed.
+     */
+    private boolean validateSetup() {
+        EditText requiredFields[] = {gameTitleText};
+        return Utils.validateFieldsNotEmpty(requiredFields);
     }
 
     /**
@@ -297,24 +368,25 @@ public class GameSetupDetailFragment extends Fragment {
     }
 
     private void initializeWidgets() {
-        if (game!= null) {
-            gameTitleText.setText(game.getGameName());
-            winningScoreText.setText(Integer.toString(game.getWinningScore()));
-            long softCap = game.getSoftCapTime();
-            long hardCap = game.getHardCapTime();
-            if (softCap > 0 || hardCap > 0) {
-                timeCapsBox.setChecked(true);
-                timeCapsContainer.setVisibility(View.VISIBLE);
+        gameTitleText.setText(game.getGameName());
+        int winningScore = game.getWinningScore();
+        if (winningScore > 0) {
+            winningScoreText.setText(Integer.toString(winningScore));
+        }
+        long softCap = game.getSoftCapTime();
+        long hardCap = game.getHardCapTime();
+        if (softCap > 0 || hardCap > 0) {
+            timeCapsBox.setChecked(true);
+            timeCapsContainer.setVisibility(View.VISIBLE);
 
-                if (softCap > 0) {
-                    softCapButton.setText(Utils.getTimeString(softCap));
-                }
-
-                if (hardCap > 0) {
-                    hardCapButton.setText(Utils.getTimeString(hardCap));
-                }
-
+            if (softCap > 0) {
+                softCapButton.setText(Utils.getTimeString(softCap));
             }
+
+            if (hardCap > 0) {
+                hardCapButton.setText(Utils.getTimeString(hardCap));
+            }
+
         }
     }
 
