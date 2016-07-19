@@ -2,14 +2,10 @@ package io.scoober.ulti.ulti_mate;
 
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -35,7 +31,7 @@ public class GameSetupFragment extends Fragment {
 
     // Argument information
     MainMenuActivity.SetupToLaunch setupToLaunch;
-    private long gameId;
+    private long gameId, templateId;
     private Game game;
     private OnCardClickedListener cardListener;
 
@@ -93,7 +89,8 @@ public class GameSetupFragment extends Fragment {
                         launchGameDisplay();
                         break;
                     case CREATE_TEMPLATE:
-                        createTemplate(true);
+                        createTemplate(templateTitleText.getText().toString());
+                        launchNewGameActivity();
                         break;
                     case EDIT_TEMPLATE:
                         editTemplate();
@@ -117,7 +114,7 @@ public class GameSetupFragment extends Fragment {
         }
 
         if (setupToLaunch == MainMenuActivity.SetupToLaunch.CREATE_TEMPLATE &&
-                gameId > 0) {
+                templateId > 0) {
             setupToLaunch = MainMenuActivity.SetupToLaunch.EDIT_TEMPLATE;
         }
 
@@ -284,10 +281,14 @@ public class GameSetupFragment extends Fragment {
 
     /**
      * Creates templates from user populated fields in the game setup activity
-     * @param launchActivity    boolean to determine whether the NewGameActivity should be launched
+     * @param templateName    Name of the new template
      */
-    private void createTemplate(boolean launchActivity) {
-        showTemplateNameDialog(launchActivity);
+    public void createTemplate(String templateName) {
+        Game template = new Game(game.getGameName(), game.getWinningScore(),
+                game.getTeam1Name(), game.getTeam1Color(), game.getTeam2Name(),
+                game.getTeam2Color(), game.getSoftCapTime(), game.getHardCapTime());
+        template.convertToTemplate(templateName);
+        templateId = storeGame(template);
     }
 
     /**
@@ -338,58 +339,6 @@ public class GameSetupFragment extends Fragment {
     private boolean validateSetup() {
         EditText requiredFields[] = {templateTitleText};
         return Utils.validateFieldsNotEmpty(requiredFields);
-    }
-
-    private void showTemplateNameDialog(final boolean launchActivity) {
-
-        LayoutInflater inflater = getActivity().getLayoutInflater();
-        final View dialogView = inflater.inflate(R.layout.dialog_edit_text, null);
-        final EditText nameEdit = (EditText) dialogView.findViewById(R.id.templateNameEdit);
-
-        AlertDialog dialog = new AlertDialog.Builder(getActivity())
-                .setTitle(R.string.title_dialog_name_template)
-                .setView(dialogView)
-                .setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String templateName = nameEdit.getText().toString();
-                        //TODO we do not want to convert all games to templates
-                        Game template = game;
-                        template.convertToTemplate(templateName);
-                        gameId = storeGame(game);
-                        if (launchActivity) {
-                            launchNewGameActivity();
-                        } else {
-                            showSaveTemplateSnackbar(templateName);
-                        }
-                    }
-                })
-                .setNegativeButton(R.string.dialog_cancel, null)
-                .create();
-
-        dialog.show();
-
-        /*
-        Add listener to the editText and disable positive button if validation fails
-         */
-        final Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-        nameEdit.addTextChangedListener(new TextValidator(nameEdit) {
-            @Override
-            public void validate(TextView textView, String text) {
-                boolean valid = Utils.validateTextNotEmpty(text, textView,
-                        getResources(), R.string.dialog_name_template);
-                positiveButton.setEnabled(valid);
-            }
-        });
-    }
-
-
-
-    private void showSaveTemplateSnackbar(String templateName) {
-        CoordinatorLayout cl = (CoordinatorLayout) getActivity().findViewById(R.id.gameSetupCoordinatorLayout);
-        String message = getResources().getString(R.string.snackbar_template_save_successful, templateName);
-        Snackbar.make(cl,message,Snackbar.LENGTH_LONG).show();
-
     }
 
     public interface OnCardClickedListener {

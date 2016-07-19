@@ -1,21 +1,28 @@
 package io.scoober.ulti.ulti_mate;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 public class GameSetupActivity extends AppCompatActivity
         implements GameSetupFragment.OnCardClickedListener,
@@ -89,7 +96,7 @@ public class GameSetupActivity extends AppCompatActivity
 
         switch (id) {
             case R.id.action_template_create:
-                //TODO action for template creation
+                showTemplateNameDialog();
                 return true;
             case android.R.id.home:
                 if(currentSetupFrag == Setup.OVERVIEW_SETUP) {
@@ -126,7 +133,7 @@ public class GameSetupActivity extends AppCompatActivity
                 teamFragment = new GameSetupTeamFragment();
                 teamFragment.setGame(game);
             }
-            ft.replace(R.id.setupContainer, teamFragment, "GAME_DETAIL_SETUP_FRAGMENT");
+            ft.replace(R.id.setupContainer, teamFragment, "GAME_TEAM_SETUP_FRAGMENT");
         }
 
 
@@ -236,6 +243,58 @@ public class GameSetupActivity extends AppCompatActivity
                 setupToLaunch == MainMenuActivity.SetupToLaunch.EDIT_TEMPLATE) {
             templateId = priorIntent.getExtras().getLong(MainMenuActivity.TEMPLATE_ID_EXTRA);
         }
+    }
+
+    /**
+     * Shows a dialog that allows the user to create a template with a given name
+     */
+    private void showTemplateNameDialog() {
+
+        LayoutInflater inflater = getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.dialog_edit_text, null);
+        final EditText nameEdit = (EditText) dialogView.findViewById(R.id.templateNameEdit);
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle(R.string.title_dialog_name_template)
+                .setView(dialogView)
+                .setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String templateName = nameEdit.getText().toString();
+                        createTemplate(templateName);
+                        showSaveTemplateSnackbar(templateName);
+                    }
+                })
+                .setNegativeButton(R.string.dialog_cancel, null)
+                .create();
+
+        dialog.show();
+
+        /*
+        Add listener to the editText and disable positive button if validation fails
+         */
+        final Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+        nameEdit.addTextChangedListener(new TextValidator(nameEdit) {
+            @Override
+            public void validate(TextView textView, String text) {
+                boolean valid = Utils.validateTextNotEmpty(text, textView,
+                        getResources(), R.string.dialog_name_template);
+                positiveButton.setEnabled(valid);
+            }
+        });
+    }
+
+    private void showSaveTemplateSnackbar(String templateName) {
+        CoordinatorLayout cl = (CoordinatorLayout) findViewById(R.id.gameSetupCoordinatorLayout);
+        String message = getResources().getString(R.string.snackbar_template_save_successful, templateName);
+        Snackbar.make(cl,message,Snackbar.LENGTH_LONG).show();
+    }
+
+    private void createTemplate(String templateName) {
+        FragmentManager fm = getSupportFragmentManager();
+        GameSetupFragment setupFragment =
+                (GameSetupFragment) fm.findFragmentByTag("GAME_SETUP_FRAGMENT");
+        setupFragment.createTemplate(templateName);
     }
 
     /**
