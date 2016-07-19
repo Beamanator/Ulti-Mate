@@ -6,6 +6,7 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -31,13 +32,12 @@ public class GameSetupDetailFragment extends Fragment {
     /*
     Widgets
      */
+    private Button softCapButton, hardCapButton;
     private CheckBox timeCapsBox;
-    private EditText gameTitleText;
-    private EditText winningScoreText;
-    private RelativeLayout timeCapsContainer;
     private CoordinatorLayout gameSetupDetailCLayout;
-    private Button softCapButton;
-    private Button hardCapButton;
+    private EditText gameTitleText, winningScoreText;
+    private FloatingActionButton completeSetupButton;
+    private RelativeLayout timeCapsContainer;
 
     public GameSetupDetailFragment() {
         // Required empty public constructor
@@ -58,9 +58,7 @@ public class GameSetupDetailFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (game != null) {
-            initializeWidgets();
-        }
+        initializeWidgets();
     }
 
     /**
@@ -75,9 +73,10 @@ public class GameSetupDetailFragment extends Fragment {
         timeCapsBox = (CheckBox) v.findViewById(R.id.timeCapsCheckbox);
         gameTitleText = (EditText) v.findViewById(R.id.gameTitleEditor);
         winningScoreText = (EditText) v.findViewById(R.id.winningScore);
+        completeSetupButton = (FloatingActionButton) v.findViewById(R.id.completeSetupButton);
         timeCapsContainer = (RelativeLayout) v.findViewById(R.id.timeCapsContainer);
         gameSetupDetailCLayout = (CoordinatorLayout)
-                getActivity().findViewById(R.id.gameSetupCoordinatorLayout);
+                v.findViewById(R.id.gameDetailSetupCoordinatorLayout);
         softCapButton = (Button) v.findViewById(R.id.softCapInput);
         hardCapButton = (Button) v.findViewById(R.id.hardCapInput);
     }
@@ -165,6 +164,13 @@ public class GameSetupDetailFragment extends Fragment {
                 hardCapTimePicker.setCustomTitle(tpdTitleView);
 
                 hardCapTimePicker.show();
+            }
+        });
+
+        completeSetupButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO replace with interface
             }
         });
 
