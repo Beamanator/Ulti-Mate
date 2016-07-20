@@ -26,7 +26,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 public class GameSetupActivity extends AppCompatActivity
-        implements GameSetupFragment.OnCardClickedListener,
+        implements GameSetupOverviewFragment.OnCardClickedListener,
         GameSetupDetailFragment.onCompleteDetailListener,
         GameSetupTeamFragment.onCompleteTeamListener {
 
@@ -64,8 +64,8 @@ public class GameSetupActivity extends AppCompatActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-        // Pass parameters to GameSetupFragment
-        GameSetupFragment setupFrag = new GameSetupFragment();
+        // Pass parameters to GameSetupOverviewFragment
+        GameSetupOverviewFragment setupFrag = new GameSetupOverviewFragment();
         Bundle bundle = new Bundle();
         bundle.putSerializable(MainMenuActivity.GAME_SETUP_ARG_EXTRA, setupToLaunch);
         setupFrag.setArguments(bundle);
@@ -170,8 +170,8 @@ public class GameSetupActivity extends AppCompatActivity
     private void returnToOverview() {
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
-        GameSetupFragment setupFragment =
-                (GameSetupFragment) fm.findFragmentByTag("GAME_SETUP_FRAGMENT");
+        GameSetupOverviewFragment setupFragment =
+                (GameSetupOverviewFragment) fm.findFragmentByTag("GAME_SETUP_FRAGMENT");
         ft.replace(R.id.setupContainer, setupFragment, "GAME_SETUP_FRAGMENT");
         ft.commit();
     }
@@ -293,9 +293,9 @@ public class GameSetupActivity extends AppCompatActivity
 
     private void createTemplate(String templateName) {
         FragmentManager fm = getSupportFragmentManager();
-        GameSetupFragment setupFragment =
-                (GameSetupFragment) fm.findFragmentByTag("GAME_SETUP_FRAGMENT");
-        setupFragment.createTemplate(templateName);
+        GameSetupOverviewFragment setupFragment =
+                (GameSetupOverviewFragment) fm.findFragmentByTag("GAME_SETUP_FRAGMENT");
+        setupFragment.createTemplate(templateName, false);
     }
 
     /**

@@ -3,7 +3,6 @@ package io.scoober.ulti.ulti_mate;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
 import android.support.v7.app.AlertDialog;
@@ -28,11 +27,9 @@ public class NewGameListFragment extends ListFragment{
         // Required empty public constructor
     }
 
-
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-
-        super.onActivityCreated(savedInstanceState);
+    public void onResume() {
+        super.onResume();
 
         GameDbAdapter gameDbAdapter = new GameDbAdapter(getActivity().getBaseContext());
         gameDbAdapter.open();
@@ -40,10 +37,10 @@ public class NewGameListFragment extends ListFragment{
         gameDbAdapter.close();
 
         templateListAdapter = new NewGameListAdapter(getActivity(), templates);
-
         setListAdapter(templateListAdapter);
 
         registerForContextMenu(getListView());
+
     }
 
     @Override

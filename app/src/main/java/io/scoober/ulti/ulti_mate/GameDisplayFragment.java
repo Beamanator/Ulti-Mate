@@ -24,12 +24,13 @@ public class GameDisplayFragment extends Fragment {
 
     private Button setupFieldButton, startButton, endButton;
 
-    private TextView statusBar;
-    private TextView timeCapType, timeCapTimer, gameTitleView, gameStatusText;
+    private TextView timeCapTimer, gameTitleView, gameStatusText;
 
     private GradientDrawable leftCircle, rightCircle;
     private LinearLayout timeCapBar, gameImagesLayout;
     private ImageView leftTeamCircle, rightTeamCircle;
+
+    private long gameId;
     private Game game;
     private MainMenuActivity.DisplayToLaunch displayToLaunch;
 
@@ -48,16 +49,10 @@ public class GameDisplayFragment extends Fragment {
 
         // get data from intent:
         Intent intent = getActivity().getIntent();
-        long id = intent.getExtras().getLong(MainMenuActivity.GAME_ID_EXTRA, 0);
-        displayToLaunch = (MainMenuActivity.DisplayToLaunch)
-                intent.getSerializableExtra(MainMenuActivity.GAME_DISPLAY_ARG_EXTRA);
-        game = Utils.getGameDetails(getActivity().getBaseContext(), id);
+        gameId = intent.getExtras().getLong(MainMenuActivity.GAME_ID_EXTRA, 0);
 
         // set up widget references
         getWidgetReferences(fragmentLayout);
-
-        // inflate team data and populate private variables
-        inflateTeamData(fragmentLayout);
 
         // set up score button listeners:
         setupScoreButtonListeners(1);
@@ -69,24 +64,20 @@ public class GameDisplayFragment extends Fragment {
         // Build listener & dialogs for field setup:
         buildFieldSetupDialogListener(fragmentLayout);
 
-        Log.d("DisplayFrag", displayToLaunch.name());
-
-        switch (displayToLaunch) {
-            case NEW:
-                setGameStatusText(Game.GameStatus.NOT_STARTED);
-                break;
-            case RESUME:
-            case UPDATE:
-                startButton.setText(R.string.start_resume_button);
-                setGameStatusText(Game.GameStatus.PAUSED);
-                break;
-        }
-
         // Inflate the layout for this fragment
         return fragmentLayout;
     }
 
-    private void inflateTeamData(View v) {
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // inflate team data and populate private variables
+        game = Utils.getGameDetails(getActivity(),gameId);
+        initializeWidgets();
+    }
+
+    private void initializeWidgets() {
         // set Game title:
         gameTitleView.setText(game.getGameName());
 
@@ -113,6 +104,20 @@ public class GameDisplayFragment extends Fragment {
             // TODO: format time text better
             timeCapTimer.setText(Long.toString(game.getSoftCapTime()));
         }
+
+        // Set the field layout
+        if (game.getInitPullingTeam() != null) {
+            showFieldLayout();
+        }
+
+        // Set the start button text
+        Log.d("initializeWidgets", game.getGameStatus().toString());
+        if (game.getGameStatus() != Game.GameStatus.NOT_STARTED) {
+            startButton.setText(R.string.start_resume_button);
+        }
+
+        // Set the game status
+        setGameStatusText(game.getGameStatus());
     }
 
     private void setupScoreButtonListeners(final int team) {
@@ -122,11 +127,15 @@ public class GameDisplayFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 int score = game.incrementScore(team);
-                teamViewHolder.scoreView.setText(Integer.toString(score));
+                Game.GameStatus gameStatus = calculateGameStatus(1, team);
+                game.setGameStatus(gameStatus);
                 Utils.saveGameDetails(getActivity().getBaseContext(), game);
+
+                teamViewHolder.scoreView.setText(Integer.toString(score));
                 GameDisplayActivity.enableDisableScoreButtons(team,game,teamViewMap);
                 toggleTeamColors();
-                calculateGameStatus(1, team);
+
+                setGameStatusText(gameStatus);
             }
         });
 
@@ -135,10 +144,13 @@ public class GameDisplayFragment extends Fragment {
             public void onClick(View v) {
                 int score = game.decrementScore(team);
                 teamViewHolder.scoreView.setText(Integer.toString(score));
+                Game.GameStatus gameStatus = calculateGameStatus(1, team);
+                game.setGameStatus(gameStatus);
                 Utils.saveGameDetails(getActivity().getBaseContext(), game);
+
                 GameDisplayActivity.enableDisableScoreButtons(team,game,teamViewMap);
                 toggleTeamColors();
-                calculateGameStatus(-1, team);
+                setGameStatusText(gameStatus);
             }
         });
     }
@@ -157,8 +169,15 @@ public class GameDisplayFragment extends Fragment {
                 GameDisplayActivity.enableDisableScoreButtons(1,game,teamViewMap);;
                 GameDisplayActivity.enableDisableScoreButtons(2,game,teamViewMap);;
 
+                // Update the game status to started if it hasn't been started yet
+                Game.GameStatus gameStatus = game.getGameStatus();
+                if (gameStatus == Game.GameStatus.NOT_STARTED) {
+                    gameStatus = Game.GameStatus.IN_PROGRESS;
+                    game.setGameStatus(gameStatus);
+                    Utils.saveGameDetails(getActivity(),game);
+                }
                 // Update status bar to reflect game status
-                calculateGameStatus(0, 0);
+                setGameStatusText(gameStatus);
 
                 endButton.setVisibility(View.VISIBLE);
                 startButton.setVisibility(View.GONE);
@@ -219,24 +238,15 @@ public class GameDisplayFragment extends Fragment {
      */
     private void setGameStatusText(Game.GameStatus status) {
         gameStatusText.setText(Game.getStatusText(status,
-                getActivity().getBaseContext() ) );
+                getActivity().getBaseContext()));
     }
 
-    private void calculateGameStatus(int dir, int team) {
+    private Game.GameStatus calculateGameStatus(int dir, int team) {
         Game.GameStatus status = game.calculateGameStatus(dir, team);
-        // TODO: Create notification for users if halftime?
-
-        setGameStatusText(status);
+        return status;
     }
 
     private void buildFieldSetupDialogListener(final View fl) {
-        // Check if data has already been populated
-        if (game.getInitPullingTeam() != null) {
-            showFieldLayout();
-            return;
-        }
-
-        // else, set up listener
         setupFieldButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
@@ -261,7 +271,6 @@ public class GameDisplayFragment extends Fragment {
 
         // Time Cap Views
         timeCapBar = (LinearLayout) v.findViewById(R.id.timeCapBar);
-        timeCapType = (TextView) v.findViewById(R.id.capText);
         timeCapTimer = (TextView) v.findViewById(R.id.capTimer);
 
         getTeamViews(v);

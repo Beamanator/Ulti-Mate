@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    tools:context="io.scoober.ulti.ulti_mate.GameSetupFragment">
+    tools:context=".GameSetupOverviewFragment">
 
     <!--Game Details-->
 
