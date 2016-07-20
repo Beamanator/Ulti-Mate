@@ -78,15 +78,19 @@ public class GameSetupOverviewFragment extends Fragment {
                 }
 
                 // Store the game depending on which setup was launched
+                //TODO Create a listener interface for launching next activities
                 switch (setupToLaunch) {
                     case CREATE_GAME:
-                    case UPDATE_GAME:
                         gameId = storeGame(game);
                         launchGameDisplay();
                         break;
+                    case UPDATE_GAME:
+                        gameId = storeGame(game);
+                        finishActivity();
+                        break;
                     case CREATE_TEMPLATE:
                         createTemplate(templateTitleText.getText().toString(), true);
-                        launchNewGameActivity();
+                        finishActivity();
                         break;
                     case EDIT_TEMPLATE:
                         editTemplate();
@@ -293,13 +297,13 @@ public class GameSetupOverviewFragment extends Fragment {
             return;
         }
         storeGame(game);
-        launchNewGameActivity();
+        finishActivity();
     }
 
     /**
      * Launches the new game activity
      */
-    private void launchNewGameActivity() {
+    private void finishActivity() {
         getActivity().finish(); // returns to the previously tracked activity - like pushing back button
     }
 
