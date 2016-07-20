@@ -170,10 +170,8 @@ public class GameSetupDetailFragment extends Fragment {
                 TimePickerDialog hardCapTimePicker = createTimePickerDialog(
                         hour, minute, hardCapButton, "hard");
 
-                LayoutInflater inflater = getActivity().getLayoutInflater();
-                View tpdTitleView = inflater.inflate(R.layout.custom_view_tpd_title, null);
-                TextView title = (TextView) tpdTitleView.findViewById(R.id.tpdTitle);
-                title.setText(c.getString(R.string.timepicker_hard_cap_title));
+                View tpdTitleView = Utils.createCustomTitle(getActivity(), null,
+                        c.getString(R.string.timepicker_hard_cap_title));
 
                 hardCapTimePicker.setCustomTitle(tpdTitleView);
 

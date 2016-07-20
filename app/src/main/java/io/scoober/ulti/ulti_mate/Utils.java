@@ -5,8 +5,11 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.StringRes;
-import android.support.v7.app.AlertDialog;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.support.v7.app.AlertDialog;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
@@ -33,7 +36,24 @@ public class Utils {
     }
 
     /**
-     * Function returns a h:mm a date string from time in milliseconds
+     * Function to get date in milliseconds from MM/dd/yyyy formatted time. For example, 02/33/2016
+     * @param dateString    Date as string formatted MM/dd/yyyy
+     * @return              Date in milliseconds
+     */
+    public static long getMilliFromDateString(String dateString) {
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.getDefault());
+        try {
+            Date tempDate = sdf.parse(dateString);
+            return tempDate.getTime();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return -1;
+    }
+
+    /**
+     * Function returns a 'h:mm a' date string from time in milliseconds
      * @param milli Time in milliseconds
      * @return      MM/dd/yyyy formatted date string
      */
@@ -87,11 +107,11 @@ public class Utils {
     }
 
     /**
-     * Function to get a date string formatted as h:mm a for display purposes from a given
+     * Function to get a date string formatted as 'h:mm a' for display purposes from a given
      * hour and minute (as is returned by timePickerDialog)
      * @param hourOfDay Hour of the time
      * @param minute    Minute of the time
-     * @return          h:mm a formatted string containing the time
+     * @return          'h:mm a' formatted string containing the time
      */
     public static String to12Hr(int hourOfDay, int minute) {
         String timeString = hourOfDay + ":" + minute;
@@ -104,6 +124,11 @@ public class Utils {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static String toMMddyyyy(int year, int monthOfYear, int dayOfMonth) {
+        String timeString = monthOfYear + "/" + dayOfMonth + "/" + year;
+        return timeString;
     }
 
     /**
@@ -123,6 +148,24 @@ public class Utils {
             e.printStackTrace();
         }
         return null;
+    }
+
+    /**
+     * Function adds year, month, day of year from date param Calendar to the time Calendar. This
+     * function effectively will take one Calendar with correct hour & minute and one with the
+     * correct year, month, day of year and return a new Calendar with the correct hour,
+     * minute, year, month, day of year.
+     * @param time      Calendar with desired hour and minute
+     * @param date      Calendar with desired year, month, day of year
+     * @return          Calendar with desired hour, minute, year, month, day of year
+     */
+    public static Calendar addDateToTime(Calendar time, Calendar date) {
+        Calendar newCal = time;
+        newCal.set(Calendar.YEAR, date.get(Calendar.YEAR));
+        newCal.set(Calendar.MONTH, date.get(Calendar.MONTH));
+        newCal.set(Calendar.DAY_OF_YEAR, date.get(Calendar.DAY_OF_YEAR));
+
+        return newCal;
     }
 
     /**
@@ -215,6 +258,67 @@ public class Utils {
     }
 
     /**
+     * Function calculates the number of days between Calendars d1 and d2
+     * Assumes d1 comes before d2
+     * @param d1    Calendar date
+     * @param d2    Calendar date
+     * @return      integer number of days between d1 and d2
+     *              -1 if invalid params
+     */
+    public static int getDayDifference(Calendar d1, Calendar d2) {
+        if (d1.getTimeInMillis() > d2.getTimeInMillis()) return -1;
+        else if (d1.get(Calendar.YEAR) == d2.get(Calendar.YEAR)){
+            return ( d2.get(Calendar.DAY_OF_YEAR) - d1.get(Calendar.DAY_OF_YEAR) );
+        } else {
+            // TODO: set up logic spanning year-ends
+            Log.d("Utils","Haven't set up year-splitting logic for getDayDifference");
+            return -1;
+        }
+    }
+
+    /**
+     * Function calculates the number of hours between Calendars d1 and d2
+     * Assumes d1 comes before d2
+     * @param d1    Calendar date
+     * @param d2    Calendar date
+     * @return      integer number of hours between d1 and d2
+     *              -1 if invalid params
+     */
+    public static int getHourDifference (Calendar d1, Calendar d2) {
+        int h1, h2;
+
+        if (d1.getTimeInMillis() > d2.getTimeInMillis()) return -1;
+        else {
+            h1 = d1.get(Calendar.HOUR_OF_DAY);
+            h2 = d2.get(Calendar.HOUR_OF_DAY);
+
+            if (h2 >= h1) { return h2 - h1; }
+            else { return (h2 + 24) - h1; }
+        }
+    }
+
+    /**
+     * Function calculates the number of minutes between Calendars d1 and d2
+     * Assumes d1 comes before d2
+     * @param d1    Calendar date
+     * @param d2    Calendar date
+     * @return      integer number of minutes between d1 and d2
+     *              -1 if invalid params
+     */
+    public static int getMinuteDifference (Calendar d1, Calendar d2) {
+        int m1, m2;
+
+        if (d1.getTimeInMillis() > d2.getTimeInMillis()) return -1;
+        else {
+            m1 = d1.get(Calendar.MINUTE);
+            m2 = d2.get(Calendar.MINUTE);
+
+            if (m2 >= m1) { return m2 - m1; }
+            else { return (m2 + 60) - m1; }
+        }
+    }
+
+    /**
      * Function gets game information from database via a given id and a specified context.
      * @param c         Context to pass to GameDbAdapter
      * @param gameID    ID of game to be returned
@@ -240,6 +344,36 @@ public class Utils {
         long gameID = gameDbAdapter.saveGame(g);
         gameDbAdapter.close();
         return gameID;
+    }
+
+    /**
+     * Function checks if given Calendar time has same hour and minute as passed in variables.
+     * @param time      Calendar time that is checked against hour and minute
+     * @param hour      int hour from timepicker
+     * @param minute    int minute from timepicker
+     * @return          returns boolean (true) if time has different hour / minute
+     */
+    public static boolean timePickerTimeChanged(Calendar time, int hour, int minute) {
+        if (time.get(Calendar.HOUR_OF_DAY) != hour) { return true; }
+        if (time.get(Calendar.MINUTE) != minute) { return true; }
+        return false;
+    }
+
+    /**
+     * Function checks if given Calendar date has same year, month of year, and day of month
+     * as passed in variables
+     * @param date          Calendar date that is checked against year and month and day of month
+     * @param year          int year from datepicker
+     * @param monthOfYear   int month of year from datepicker
+     * @param dayOfMonth    int day of month from datepicker
+     * @return              returns boolean (true) if time has different year / month / day of month
+     */
+    public static boolean datePickerDateChanged(Calendar date, int year,
+                                                int monthOfYear, int dayOfMonth) {
+        if (date.get(Calendar.YEAR) != year) { return true; }
+        if (date.get(Calendar.MONTH) != monthOfYear) { return true; }
+        if (date.get(Calendar.DAY_OF_MONTH) != dayOfMonth) { return true; }
+        return false;
     }
 
     /**
@@ -318,6 +452,18 @@ public class Utils {
                 .setPositiveButton(R.string.dialog_confirm, null)
                 .create()
                 .show();
+    }
+
+    /*
+    View Utilities
+     */
+    public static View createCustomTitle(Activity activity, ViewGroup container,
+                                         String text) {
+        LayoutInflater inflater = activity.getLayoutInflater();
+        View view = inflater.inflate(R.layout.custom_view_tpd_title, container);
+        TextView title = (TextView) view.findViewById(R.id.tpdTitle);
+        title.setText(text);
+        return view;
     }
 
     /*

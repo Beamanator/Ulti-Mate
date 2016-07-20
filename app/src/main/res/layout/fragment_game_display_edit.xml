@@ -294,6 +294,16 @@
             android:layout_alignParentTop="true"
             android:layout_toEndOf="@+id/defaultGameLengthText" />
 
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_build_black_24dp"
+            android:id="@+id/buttonLengthSettings"
+            android:layout_alignParentEnd="true"
+            android:padding="10dp"
+            android:visibility="visible"
+            android:background="#00ffffff" />
+
     </RelativeLayout>
 
 
