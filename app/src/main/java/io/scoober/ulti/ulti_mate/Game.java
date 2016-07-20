@@ -3,6 +3,8 @@ package io.scoober.ulti.ulti_mate;
 import android.content.Context;
 import android.support.annotation.ColorInt;
 
+import java.util.Calendar;
+
 /**
  * Created by Navin on 6/24/2016.
  */
@@ -12,7 +14,7 @@ public class Game {
     public static final int MIN_SCORE = 0;
 
     private long id;
-    private long date; // Date game was created
+    private long createDate; // Date game was created
     private long startDate; // Date game was started
     private long endDate; // Date game was stopped
 
@@ -34,21 +36,20 @@ public class Game {
     private String team2Name; // Team Name
     private @ColorInt int team2Color; // Team Color
 
-    private GameStatus gameStatus;
-    public enum GameStatus { NOT_STARTED, PAUSED, FIRST_HALF, HALFTIME, SECOND_HALF,
+    private Status status;
+    public enum Status { NOT_STARTED, PAUSED, FIRST_HALF, HALFTIME, SECOND_HALF,
         SOFT_CAP, HARD_CAP, GAME_OVER, IN_PROGRESS}
 
     // Template info
     private boolean isTemplate;
     private String templateName;
-    // TODO Consider adding a source template ID so saving templates is smoother
 
     public long getId() {
         return id;
     }
 
-    public long getDate() {
-        return date;
+    public long getCreateDate() {
+        return createDate;
     }
 
     public long getStartDate() { return startDate; }
@@ -133,9 +134,7 @@ public class Game {
         this.team1Color = team1Color;
     }
 
-    public GameStatus getGameStatus() { return gameStatus; }
-
-    public void setGameStatus(GameStatus status) { this.gameStatus = status; }
+    public Status getStatus() { return status; }
 
     public String getTeam2Name() {
         return team2Name;
@@ -187,16 +186,16 @@ public class Game {
         this.team2Score = 0;
         this.startDate = 0;
         this.endDate = 0;
-        this.gameStatus = GameStatus.NOT_STARTED;
+        this.status = Status.NOT_STARTED;
     }
 
     /*
     Constructor for building the game from a database
      */
-    public Game(long id, String gameName, GameStatus status, int winningScore, int team1Score, int team2Score,
+    public Game(long id, String gameName, Status status, int winningScore, int team1Score, int team2Score,
                 String team1Name, int team1Color, String team2Name, int team2Color,
                 long softCapTime, long hardCapTime, String initPullingTeam, String initTeamLeft,
-                boolean isTemplate, String templateName, long date, long sDate, long eDate) {
+                boolean isTemplate, String templateName, long createDate, long sDate, long eDate) {
         this.id = id;
         this.gameName = gameName;
         this.winningScore = winningScore;
@@ -212,18 +211,20 @@ public class Game {
         this.initTeamLeft = initTeamLeft;
         this.isTemplate = isTemplate;
         this.templateName = templateName;
-        this.date = date;
+        this.createDate = createDate;
         this.startDate = sDate;
         this.endDate = eDate;
-        this.gameStatus = status;
+        this.status = status;
     }
 
     public int incrementScore(int teamNumber) {
         if (teamNumber == 1) {
             this.team1Score+=1;
+            status = calculateGameStatus();
             return this.team1Score;
         } else if(teamNumber == 2) {
             this.team2Score+=1;
+            status = calculateGameStatus();
             return this.team2Score;
         }
         return -1;
@@ -232,21 +233,42 @@ public class Game {
     public int decrementScore(int teamNumber) {
         if (teamNumber == 1) {
             this.team1Score-=1;
+            status = calculateGameStatus();
             return this.team1Score;
         } else if(teamNumber == 2) {
             this.team2Score-=1;
+            status = calculateGameStatus();
             return this.team2Score;
         }
         return -1;
     }
 
+    private boolean isUsingHalftime() {
+        return winningScore > 2;
+    }
+
+    public void start() {
+        if (isUsingHalftime()) {
+            status = Status.FIRST_HALF;
+        } else {
+            status = Status.IN_PROGRESS;
+        }
+
+        setStartDate(Calendar.getInstance().getTimeInMillis());
+    }
+
+    public void end() {
+        status = Status.GAME_OVER;
+        setEndDate(Calendar.getInstance().getTimeInMillis());
+    }
+
     /**
-     *Translates GameStatus enum values to text in strings.xml resource file
+     *Translates status enum values to text in strings.xml resource file
      * @param status    status enum value that will be translated to a string
      * @param context   base context used to find strings.xml resource file
      * @return          return translated value from strings.xml
      */
-    public static String getStatusText(GameStatus status, Context context) {
+    public static String getStatusText(Status status, Context context) {
         switch (status) {
             case NOT_STARTED:
                 return context.getString(R.string.status_not_started);
@@ -274,77 +296,36 @@ public class Game {
     /**
      * Function to calculate game status and change the gameStatusText. Halftime is defined
      * as (score to win + 1) / 2, unless there is no winning score defined for the game.
-     * @param dir       Variable to designate score change direction (-1 = minus button,
-     *                  0 = initialization, 1 = add button)
      */
-    public GameStatus calculateGameStatus(int dir, int teamScored) {
-        int t1score = getTeam1Score();
-        int t2score = getTeam2Score();
-        int winScore = getWinningScore();
-        int halftimeScore;
-        Game.GameStatus status;
+    private Status calculateGameStatus() {
 
-        if (winScore < 2) {
+        if (status == Status.GAME_OVER) {
+            return Status.GAME_OVER;
+        }
+
+        if (!isUsingHalftime()) {
             // User never entered a score / screwed up. No halftime statuses.
+            return Status.IN_PROGRESS;
+        }
 
-            status = GameStatus.IN_PROGRESS;
+        int halftimeScore = Math.round((float)winningScore /2);
+        int higherScore = (team1Score > team2Score) ? team1Score : team2Score;
+
+        // If the higher score is less than the halftime score, it must be first half
+        if(higherScore < halftimeScore) {
+            return Status.FIRST_HALF;
+        } else if(higherScore > halftimeScore) {
+            // If the higher  score is greater than the halftime score, it must be second half
+            return Status.SECOND_HALF;
         } else {
-            // Calculate halftime:
-            if (winScore % 2 == 0) {
-                // winScore is even in this case, so halftime is half the winScore.
-                halftimeScore = winScore / 2;
+            // If it was halftime or past halftime before, it's still past halftime
+            if (status == Status.HALFTIME || status == Status.SECOND_HALF) {
+                return Status.SECOND_HALF;
             } else {
-                // winScore is odd in this case, so halftime is (winScore + 1) / 2.
-                //  ex: game to 13, halftime is at 7
-                halftimeScore = (winScore + 1) / 2;
-            }
-
-            // Figure out which team is winning.
-            if (t1score > t2score) {
-                // Team 1 winning
-                if (t1score < halftimeScore) {
-                    // status: first half
-                    status = GameStatus.FIRST_HALF;
-                } else if (t1score == halftimeScore) {
-                    // if dir is 1, halftime. otherwise, 2nd half
-                    if (dir == 1 && teamScored == 1) {
-                        status = GameStatus.HALFTIME;
-                    } else {
-                        status = GameStatus.SECOND_HALF;
-                    }
-                } else {
-                    // status: second half
-                    status = GameStatus.SECOND_HALF;
-                }
-            } else if (t1score == t2score) {
-                // Scores equal
-                if (t1score < halftimeScore) {
-                    // status: first half
-                    status = GameStatus.FIRST_HALF;
-                } else {
-                    // status: second half
-                    status = GameStatus.SECOND_HALF;
-                }
-            } else {
-                // Team 2 winning
-                if (t2score < halftimeScore) {
-                    // status: first half
-                    status = GameStatus.FIRST_HALF;
-                } else if (t2score == halftimeScore) {
-                    // if dir is 1, halftime. otherwise, 2nd half
-                    if (dir == 1 && teamScored == 2) {
-                        status = GameStatus.HALFTIME;
-                    } else {
-                        status = GameStatus.SECOND_HALF;
-                    }
-                } else {
-                    // status: second half
-                    status = GameStatus.SECOND_HALF;
-                }
+                return Status.HALFTIME;
             }
         }
 
-        return status;
     }
 
     public boolean isTemplate() {

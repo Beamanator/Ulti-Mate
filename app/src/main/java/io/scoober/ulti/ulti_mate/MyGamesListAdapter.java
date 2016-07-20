@@ -53,7 +53,7 @@ public class MyGamesListAdapter extends ArrayAdapter<Game> {
 
         // set TextView texts
         holder.title.setText(game.getGameName());
-        holder.date.setText(Utils.getDateString(game.getDate()));
+        holder.date.setText(Utils.getDateString(game.getCreateDate()));
         holder.score.setText(res.getString(R.string.score_list_text,
                 game.getTeam1Score(), game.getTeam2Score()));
         holder.teams.setText(res.getString(R.string.team_list_text,
@@ -76,7 +76,7 @@ public class MyGamesListAdapter extends ArrayAdapter<Game> {
 //    public void onBindViewHolder(TemplateViewHolder holder, int position) {
 //        Game game = games.get(position);
 //        holder.title.setText(game.getGameName());
-//        holder.date.setText(getDateString(game.getDate()));
+//        holder.date.setText(getDateString(game.getCreateDate()));
 //        holder.score.setText(game.getTeam1Score() + "-" + game.getTeam2Score());
 //        holder.teams.setText(game.getTeam1Name() + " vs " + game.getTeam2Name());
 //

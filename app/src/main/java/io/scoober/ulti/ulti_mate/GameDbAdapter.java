@@ -108,7 +108,7 @@ public class GameDbAdapter {
     public long createGame(Game game) {
         ContentValues values = new ContentValues();
         values.put(C_GAME_NAME, game.getGameName());
-        values.put(C_GAME_STATUS, game.getGameStatus().name());
+        values.put(C_GAME_STATUS, game.getStatus().name());
         values.put(C_WINNING_SCORE, game.getWinningScore());
         values.put(C_TEAM_1_NAME, game.getTeam1Name());
         values.put(C_TEAM_1_COLOR, game.getTeam1Color());
@@ -151,7 +151,7 @@ public class GameDbAdapter {
      * @param statuses  Array of game statuses to get - if null, do not filter on statuses
      * @return          ArrayList of games
      */
-    public ArrayList<Game> getRecentGames(int numGames, int offset, Game.GameStatus[] statuses) {
+    public ArrayList<Game> getRecentGames(int numGames, int offset, Game.Status[] statuses) {
         ArrayList<Game> games = new ArrayList<Game>();
 
         String limit = Integer.toString(numGames);
@@ -184,7 +184,7 @@ public class GameDbAdapter {
      * @return          ArrayList of games
      */
     public ArrayList<Game> getEndedGames(int numGames, int offset) {
-        Game.GameStatus[] statuses = {Game.GameStatus.GAME_OVER};
+        Game.Status[] statuses = {Game.Status.GAME_OVER};
         return getRecentGames(numGames, offset, statuses);
     }
 
@@ -195,14 +195,14 @@ public class GameDbAdapter {
      * @return          ArrayList of games
      */
     public ArrayList<Game> getActiveGames(int numGames, int offset) {
-        Game.GameStatus[] statuses = {Game.GameStatus.NOT_STARTED,
-                Game.GameStatus.PAUSED,
-                Game.GameStatus.FIRST_HALF,
-                Game.GameStatus.HALFTIME,
-                Game.GameStatus.SECOND_HALF,
-                Game.GameStatus.SOFT_CAP,
-                Game.GameStatus.HARD_CAP,
-                Game.GameStatus.IN_PROGRESS
+        Game.Status[] statuses = {Game.Status.NOT_STARTED,
+                Game.Status.PAUSED,
+                Game.Status.FIRST_HALF,
+                Game.Status.HALFTIME,
+                Game.Status.SECOND_HALF,
+                Game.Status.SOFT_CAP,
+                Game.Status.HARD_CAP,
+                Game.Status.IN_PROGRESS
         };
         return getRecentGames(numGames, offset, statuses);
     }
@@ -243,7 +243,7 @@ public class GameDbAdapter {
     public long saveGame(Game game) {
         ContentValues values = new ContentValues();
         values.put(C_GAME_NAME, game.getGameName());
-        values.put(C_GAME_STATUS, game.getGameStatus().name());
+        values.put(C_GAME_STATUS, game.getStatus().name());
         values.put(C_WINNING_SCORE, game.getWinningScore());
         values.put(C_SOFT_CAP_TIME, game.getSoftCapTime());
         values.put(C_HARD_CAP_TIME, game.getHardCapTime());
@@ -257,7 +257,7 @@ public class GameDbAdapter {
         values.put(C_INIT_TEAM_LEFT, game.getInitTeamLeft());
         values.put(C_IS_TEMPLATE, game.isTemplate());
         values.put(C_TEMPLATE_NAME, game.getTemplateName());
-        values.put(C_DATE_CREATED, game.getDate());
+        values.put(C_DATE_CREATED, game.getCreateDate());
         values.put(C_DATE_UPDATED, Calendar.getInstance().getTimeInMillis());
         values.put(C_DATE_STARTED, game.getStartDate());
         values.put(C_DATE_ENDED, game.getEndDate());
@@ -273,7 +273,7 @@ public class GameDbAdapter {
         // Transform query into game object
         long id = cursor.getLong(0);
         String gameName = cursor.getString(1);
-        Game.GameStatus status = Game.GameStatus.valueOf(cursor.getString(2)); // Status of game
+        Game.Status status = Game.Status.valueOf(cursor.getString(2)); // Status of game
         int winningScore = cursor.getInt(3); // score needed to win
         String team1Name = cursor.getString(4); // Team Name
         int team1Color = cursor.getInt(5); // Team Color

@@ -16,7 +16,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -111,13 +110,13 @@ public class GameDisplayFragment extends Fragment {
         }
 
         // Set the start button text
-        Log.d("initializeWidgets", game.getGameStatus().toString());
-        if (game.getGameStatus() != Game.GameStatus.NOT_STARTED) {
+        Log.d("initializeWidgets", game.getStatus().toString());
+        if (game.getStatus() != Game.Status.NOT_STARTED) {
             startButton.setText(R.string.start_resume_button);
         }
 
         // Set the game status
-        setGameStatusText(game.getGameStatus());
+        setGameStatusText(game.getStatus());
     }
 
     private void setupScoreButtonListeners(final int team) {
@@ -127,15 +126,13 @@ public class GameDisplayFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 int score = game.incrementScore(team);
-                Game.GameStatus gameStatus = calculateGameStatus(1, team);
-                game.setGameStatus(gameStatus);
                 Utils.saveGameDetails(getActivity().getBaseContext(), game);
 
                 teamViewHolder.scoreView.setText(Integer.toString(score));
                 GameDisplayActivity.enableDisableScoreButtons(team,game,teamViewMap);
                 toggleTeamColors();
 
-                setGameStatusText(gameStatus);
+                setGameStatusText(game.getStatus());
             }
         });
 
@@ -144,13 +141,11 @@ public class GameDisplayFragment extends Fragment {
             public void onClick(View v) {
                 int score = game.decrementScore(team);
                 teamViewHolder.scoreView.setText(Integer.toString(score));
-                Game.GameStatus gameStatus = calculateGameStatus(1, team);
-                game.setGameStatus(gameStatus);
                 Utils.saveGameDetails(getActivity().getBaseContext(), game);
 
                 GameDisplayActivity.enableDisableScoreButtons(team,game,teamViewMap);
                 toggleTeamColors();
-                setGameStatusText(gameStatus);
+                setGameStatusText(game.getStatus());
             }
         });
     }
@@ -170,26 +165,15 @@ public class GameDisplayFragment extends Fragment {
                 GameDisplayActivity.enableDisableScoreButtons(2,game,teamViewMap);;
 
                 // Update the game status to started if it hasn't been started yet
-                Game.GameStatus gameStatus = game.getGameStatus();
-                if (gameStatus == Game.GameStatus.NOT_STARTED) {
-                    gameStatus = Game.GameStatus.IN_PROGRESS;
-                    game.setGameStatus(gameStatus);
+                if (game.getStatus() == Game.Status.NOT_STARTED) {
+                    game.start();
                     Utils.saveGameDetails(getActivity(),game);
                 }
                 // Update status bar to reflect game status
-                setGameStatusText(gameStatus);
+                setGameStatusText(game.getStatus());
 
                 endButton.setVisibility(View.VISIBLE);
                 startButton.setVisibility(View.GONE);
-
-                if (game.getStartDate() > 0) {
-                    Log.d("GameDisplayFragment","Start Date already exists in game." +
-                            " Not saving new time.");
-                } else {
-                    // set current time as start date, then save to game
-                    game.setStartDate(Calendar.getInstance().getTimeInMillis());
-                    Utils.saveGameDetails(v.getContext(), game);
-                }
             }
         });
 
@@ -216,13 +200,12 @@ public class GameDisplayFragment extends Fragment {
      * Function that handles the end game sequence. Actions taken by this function:
      * 1. Sends user back to GameDisplayActivity to deal with VIEW case
      * 2. Tells Game that game status = GAME_OVER
-     * 3. Stores endGame data
+     * 3. Stores end data
      * @param v     view used to get Context for saving game + creating a new Intent
      */
     private void endGame(View v) {
         // set new game status and endDate, then save game:
-        game.setGameStatus(Game.GameStatus.GAME_OVER);
-        game.setEndDate(Calendar.getInstance().getTimeInMillis()); // sets current time as end date
+        game.end();
         Utils.saveGameDetails(v.getContext(), game);
 
         Intent intent = new Intent(v.getContext(),GameDisplayActivity.class);
@@ -234,16 +217,11 @@ public class GameDisplayFragment extends Fragment {
 
     /**
      * Function to simplify setting the gameStatusText TextView.
-     * @param status    status in the enum Game.GameStatus
+     * @param status    status in the enum Game.status
      */
-    private void setGameStatusText(Game.GameStatus status) {
+    private void setGameStatusText(Game.Status status) {
         gameStatusText.setText(Game.getStatusText(status,
                 getActivity().getBaseContext()));
-    }
-
-    private Game.GameStatus calculateGameStatus(int dir, int team) {
-        Game.GameStatus status = game.calculateGameStatus(dir, team);
-        return status;
     }
 
     private void buildFieldSetupDialogListener(final View fl) {

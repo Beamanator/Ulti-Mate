@@ -269,7 +269,7 @@ public class GameSetupDetailFragment extends Fragment {
                         // get date game was created
                         long dateCreated;
                         if (game != null) {
-                            dateCreated = game.getDate();
+                            dateCreated = game.getCreateDate();
                         } else {
                             // if game doesn't exist yet, get current date
                             dateCreated = currentTime.getTimeInMillis();
