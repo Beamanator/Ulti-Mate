@@ -1,0 +1,165 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    tools:context="io.scoober.ulti.ulti_mate.GameSetupFragment">
+
+    <!--Game Details-->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/createFromSetupButton"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="@string/dialog_name_template"
+            android:visibility="gone"
+            android:id="@+id/templateNameLabel" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:selectAllOnFocus="true"
+            android:hint="@string/dialog_name_template"
+            android:visibility="gone"
+            android:id="@+id/templateNameEdit" />
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/detailSetupCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:elevation="2dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="@string/title_game_setup"
+                    android:id="@+id/gameSetupLabel"
+                    android:layout_gravity="center_horizontal" />
+                <TextView
+                    android:id="@+id/gameTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="Game Title"/>
+                <TextView
+                    android:id="@+id/winningScore"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="Game to 13"/>
+                <TextView
+                    android:id="@+id/timeCapsDescription"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="Soft Cap: 7:20 PM\nHard Cap: 7:30 PM"/>
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/teamSetupCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:elevation="2dp">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp">
+                <TextView
+                    android:id="@+id/teamSetupLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:layout_centerHorizontal="true"
+                    android:text="@string/title_team_setup"/>
+                <io.scoober.ulti.ulti_mate.widgets.TeamImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_below="@id/teamSetupLabel"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@android:color/transparent"
+                    android:src="@drawable/sample50dp"
+                    android:id="@+id/team1ImageButton"/>
+                <TextView
+                    android:id="@+id/team1Name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/team1ImageButton"
+                    android:layout_toEndOf="@+id/team1ImageButton"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="Team 1" />
+                <io.scoober.ulti.ulti_mate.widgets.TeamImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_below="@id/team1ImageButton"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@android:color/transparent"
+                    android:src="@drawable/sample50dp"
+                    android:id="@+id/team2ImageButton"/>
+                <TextView
+                    android:id="@+id/team2Name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/team2ImageButton"
+                    android:layout_toEndOf="@+id/team2ImageButton"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="Team 1" />
+
+            </RelativeLayout>
+        </android.support.v7.widget.CardView>
+
+    </LinearLayout>
+
+    <!--Create Game-->
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/createFromSetupButton"
+        android:text="@string/button_create_game"
+        android:layout_alignParentBottom="true" />
+
+</RelativeLayout>

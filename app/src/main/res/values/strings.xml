@@ -7,21 +7,20 @@
     <string name="action_game_settings">Edit Game Settings</string>
     <string name="action_edit_field_setup">Change Field Setup</string>
     <string name="action_create_new_template">New Template</string>
-    <string name="action_template_save">Save</string>
-    <string name="action_template_save_as">Save As</string>
+    <string name="action_template_save_as">Save As Template</string>
 
     <!--Common-->
     <string name="item_edit">Edit</string>
     <string name="item_delete">Delete</string>
     <string name="dialog_confirm">Confirm</string>
+    <string name="dialog_delete">Delete</string>
     <string name="dialog_cancel">Cancel</string>
     <string name="error_text_empty">%1$s is a required field.</string>
 
     <!--Main Menu Activity Strings-->
     <string name="resume_button">Resume</string>
     <string name="new_game_button">New Game</string>
-    <string name="my_games_button">My Games</string>
-    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="past_games_button">Past Games</string>
 
     <!--Game Display Fragment-->
     <string name="title_activity_game_display">Ulti-Mate</string>
@@ -66,11 +65,9 @@
     <!--New Game Activity-->
     <string name="title_activity_new_game">Templates</string>
     <string name="button_create_without_template">Start without Template</string>
-    <string name="item_edit_template_name">Edit Template Name</string>
     <string name="item_edit_template">Edit Template</string>
     <string name="item_delete_template">Delete Template</string>
     <string name="dialog_delete_template">Are you sure you want to delete this game?</string>
-    <string name="dialog_title_change_template_name">Change Template Name</string>
 
     <!--Game Setup Activity-->
     <string name="title_activity_game_setup">Setup</string>
@@ -98,6 +95,11 @@
     <string name="timepicker_soft_cap_title">Set Soft Cap</string>
     <string name="timepicker_hard_cap_title">Set Hard Cap</string>
     <string name="dialog_validation_failed">Please enter all required fields.</string>
+    <string name="description_winning_score">Game to %1$d</string>
+    <string name="description_no_winning_score">No score limit</string>
+    <string name="description_no_time_caps">No time caps</string>
+    <string name="description_soft_cap">Soft Cap: %1$s</string>
+    <string name="description_hard_cap">Hard Cap: %1$s</string>
 
     <!--Game Defaults-->
     <string name="default_game_name">Ultimate!</string>

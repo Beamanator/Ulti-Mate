@@ -2,46 +2,39 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingRight="10dp"
     android:paddingTop="10dp"
-    android:paddingBottom="10dp">
+    android:paddingBottom="10dp"
+    android:descendantFocusability="blocksDescendants">
+    <!--descendantFocusability is set to allow the user to click on the list row, as the
+    ImageButton would otherwise take priority-->
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/listItemGameTitle"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:layout_marginStart="@dimen/text_margin"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
-        android:id="@+id/listTitleDateContainer">
-        <TextView
-            android:id="@+id/listItemGameTitle"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="0.7"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textStyle="bold"
-            android:ellipsize="end"
-            android:singleLine="true"
-            android:text="Game Title"/>
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textStyle="bold"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:text="Game Title"/>
 
-        <TextView
-            android:id="@+id/listItemGameDate"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="0.3"
-            android:gravity="end|bottom"
-            android:layout_marginEnd="@dimen/text_margin"
-            android:textAppearance="?android:attr/textAppearanceListItem"
-            android:text="6/26/2016"/>
-    </LinearLayout>
+    <TextView
+        android:id="@+id/listItemGameDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="end|bottom"
+        android:textAppearance="?android:attr/textAppearanceListItem"
+        android:text="6/26/2016"
+        android:layout_above="@+id/listItemTeams"
+        android:layout_toStartOf="@+id/contextMenuButton" />
 
     <TextView
         android:id="@+id/listItemTeams"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/listTitleDateContainer"
-        android:layout_alignStart="@+id/listTitleDateContainer"
+        android:layout_below="@+id/listItemGameTitle"
+        android:layout_alignStart="@+id/listItemGameTitle"
         android:textAppearance="?android:attr/textAppearanceListItem"
         android:ellipsize="end"
         android:singleLine="true"
@@ -55,6 +48,15 @@
         android:layout_alignStart="@+id/listItemTeams"
         android:textAppearance="?android:attr/textAppearanceListItem"
         android:text="13-11" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_more_vert_black_24dp"
+        android:id="@+id/contextMenuButton"/>
 
 
 </RelativeLayout>

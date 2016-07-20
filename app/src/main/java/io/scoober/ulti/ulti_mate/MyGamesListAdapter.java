@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.util.List;
@@ -14,11 +15,13 @@ public class MyGamesListAdapter extends ArrayAdapter<Game> {
 
     public class GameViewHolder {
         public TextView title,score,date,teams;
+        public ImageButton contextMenuButton;
         public GameViewHolder(View itemView) {
             title = (TextView) itemView.findViewById(R.id.listItemGameTitle);
             score = (TextView) itemView.findViewById(R.id.listItemScores);
             date = (TextView) itemView.findViewById(R.id.listItemGameDate);
             teams = (TextView) itemView.findViewById(R.id.listItemTeams);
+            contextMenuButton = (ImageButton) itemView.findViewById(R.id.contextMenuButton);
         }
     }
 
@@ -30,7 +33,6 @@ public class MyGamesListAdapter extends ArrayAdapter<Game> {
     public View getView(int position, View convertView, ViewGroup parent) {
 
         GameViewHolder holder;
-
         // analogous to onCreateViewHolder() from RecycleView.Adapter
         if (convertView == null) {
             // Inflate view
@@ -56,6 +58,9 @@ public class MyGamesListAdapter extends ArrayAdapter<Game> {
                 game.getTeam1Score(), game.getTeam2Score()));
         holder.teams.setText(res.getString(R.string.team_list_text,
                 game.getTeam1Name(), game.getTeam2Name()));
+
+        // Set onClickListener for contextMenuButton
+        Utils.setContextMenuListener(holder.contextMenuButton, convertView, getContext());
 
         return convertView;
     }

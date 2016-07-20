@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.util.List;
@@ -17,10 +18,12 @@ public class NewGameListAdapter extends ArrayAdapter<Game>{
 
     public class TemplateViewHolder {
         public TextView templateTitle, gameTitle,teams;
+        public ImageButton contextMenuButton;
         public TemplateViewHolder(View itemView) {
             templateTitle = (TextView) itemView.findViewById(R.id.listItemTemplateTitle);
             gameTitle = (TextView) itemView.findViewById(R.id.listItemGameTitle);
             teams = (TextView) itemView.findViewById(R.id.listItemTeams);
+            contextMenuButton = (ImageButton) itemView.findViewById(R.id.contextMenuButton);
         }
     }
 
@@ -55,6 +58,9 @@ public class NewGameListAdapter extends ArrayAdapter<Game>{
         holder.gameTitle.setText(template.getGameName());
         holder.teams.setText(res.getString(R.string.team_list_text,
                 template.getTeam1Name(), template.getTeam2Name()));
+
+        // Set onClickListener for contextMenuButton
+        Utils.setContextMenuListener(holder.contextMenuButton, convertView, getContext());
 
         return convertView;
     }

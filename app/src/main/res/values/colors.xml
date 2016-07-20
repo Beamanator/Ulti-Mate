@@ -29,12 +29,6 @@
         <item>@color/md_blue_grey_500</item>
     </array>
 
-    <!--Color for ViewPager Circles-->
-    <color name="icon_enabled">#FFFFFFFF</color>
-    <color name="icon_disabled">#FF63727B</color>
-    <color name="transparent">#00000000</color>
-    <color name="accent">#40C4FF</color>
-
     <!-- google's material design colours from
 http://www.google.com/design/spec/style/color.html#color-ui-color-palette -->
 

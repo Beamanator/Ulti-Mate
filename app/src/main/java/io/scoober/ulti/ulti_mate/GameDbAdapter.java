@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -145,11 +146,12 @@ public class GameDbAdapter {
     /**
      * Function gets an ArrayList of games from the database, ordered with most recent first.
      * An offset can be used to get items n to n+offset, useful for limiting lists.
-     * @param numGames Number of Games to return
-     * @param offset   Offset on the SQL query.
-     * @return         ArrayList of games
+     * @param numGames  Number of Games to return
+     * @param offset    Offset on the SQL query.
+     * @param statuses  Array of game statuses to get - if null, do not filter on statuses
+     * @return          ArrayList of games
      */
-    public ArrayList<Game> getRecentGames(int numGames, int offset) {
+    public ArrayList<Game> getRecentGames(int numGames, int offset, Game.GameStatus[] statuses) {
         ArrayList<Game> games = new ArrayList<Game>();
 
         String limit = Integer.toString(numGames);
@@ -158,6 +160,11 @@ public class GameDbAdapter {
         }
 
         String selection = C_IS_TEMPLATE + " = 0";
+        if(statuses != null) {
+            selection = selection + " AND " + C_GAME_STATUS + " IN ( \"" +
+                    TextUtils.join("\", \"", statuses)+"\" )" ;
+        }
+
         Cursor cursor = sqlDB.query(GAMES_TABLE, allGameColumns, selection, null, null, null, C_DATE_CREATED + " DESC", limit);
 
         for(cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
@@ -171,11 +178,41 @@ public class GameDbAdapter {
     }
 
     /**
+     * Get games that have been ended, sorted by creation date
+     * @param numGames  Number of Games to return
+     * @param offset    Offset on the SQL query.
+     * @return          ArrayList of games
+     */
+    public ArrayList<Game> getEndedGames(int numGames, int offset) {
+        Game.GameStatus[] statuses = {Game.GameStatus.GAME_OVER};
+        return getRecentGames(numGames, offset, statuses);
+    }
+
+    /**
+     * Get games that are still active, sorted by creation date
+     * @param numGames  Number of Games to return.
+     * @param offset    Offset on the SQL query.
+     * @return          ArrayList of games
+     */
+    public ArrayList<Game> getActiveGames(int numGames, int offset) {
+        Game.GameStatus[] statuses = {Game.GameStatus.NOT_STARTED,
+                Game.GameStatus.PAUSED,
+                Game.GameStatus.FIRST_HALF,
+                Game.GameStatus.HALFTIME,
+                Game.GameStatus.SECOND_HALF,
+                Game.GameStatus.SOFT_CAP,
+                Game.GameStatus.HARD_CAP,
+                Game.GameStatus.IN_PROGRESS
+        };
+        return getRecentGames(numGames, offset, statuses);
+    }
+
+    /**
      * Get the ID of the most recent (non-template) game
      * @return  ID of the most recent game or 0 if there are no games
      */
     public long getRecentGameId() {
-        ArrayList<Game> games = getRecentGames(1,0);
+        ArrayList<Game> games = getRecentGames(1,0,null);
         if(games.isEmpty()) {
             return 0;
         }

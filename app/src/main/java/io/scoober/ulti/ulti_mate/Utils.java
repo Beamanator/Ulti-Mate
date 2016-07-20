@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.support.v7.app.AlertDialog;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
@@ -442,6 +443,17 @@ public class Utils {
         return true;
     }
 
+    /**
+     * Show a dialog that alerts the user that required fields must be populated.
+     */
+    public static void showValidationFailedDialog(Context ctx) {
+        new AlertDialog.Builder(ctx)
+                .setMessage(R.string.dialog_validation_failed)
+                .setPositiveButton(R.string.dialog_confirm, null)
+                .create()
+                .show();
+    }
+
     /*
     View Utilities
      */
@@ -452,5 +464,53 @@ public class Utils {
         TextView title = (TextView) view.findViewById(R.id.tpdTitle);
         title.setText(text);
         return view;
+    }
+
+    /*
+    Listener Utilities
+     */
+
+    /**
+     * Sets a listener for a view to open the context menu of a specified activity
+     * @param clickable     View that is enabled for clicking
+     * @param contextView   View to show the context menu for
+     * @param ctx           Context
+     */
+    public static void setContextMenuListener(final View clickable,
+                                       final View contextView, final Context ctx) {
+
+
+        clickable.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                registerAndOpenContextMenu(clickable, contextView, ctx);
+            }
+        });
+
+        /*
+        Override the onLongClickListener, such that we don't also open the
+        list item's LongClickListener.
+        */
+
+        clickable.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                registerAndOpenContextMenu(clickable, contextView, ctx);
+                return true;
+            }
+        });
+    }
+
+    /**
+     * Helper function that registers the clickable view for the context menu and opens the
+     * context menu
+     * @param clickable     View that is enabled for clicking
+     * @param contextView   View to show the context menu for
+     * @param ctx           Context
+     */
+    private static void registerAndOpenContextMenu(View clickable, View contextView, Context ctx) {
+        Activity activity = (Activity) ctx;
+        activity.registerForContextMenu(clickable);
+        activity.openContextMenu(contextView);
     }
 }
