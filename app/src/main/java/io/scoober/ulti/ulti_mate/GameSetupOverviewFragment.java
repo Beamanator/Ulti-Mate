@@ -19,7 +19,7 @@ import android.widget.TextView;
 import io.scoober.ulti.ulti_mate.widgets.TeamImageButton;
 
 
-public class GameSetupFragment extends Fragment {
+public class GameSetupOverviewFragment extends Fragment {
 
 
     private Button createFromSetupButton;
@@ -35,7 +35,7 @@ public class GameSetupFragment extends Fragment {
     private Game game;
     private OnCardClickedListener cardListener;
 
-    public GameSetupFragment() {
+    public GameSetupOverviewFragment() {
         // Required empty public constructor
     }
 
@@ -61,12 +61,8 @@ public class GameSetupFragment extends Fragment {
                 args.getSerializable(MainMenuActivity.GAME_SETUP_ARG_EXTRA);
 
         getWidgetReferences(gameSetupFragView);
-
-        if (setupToLaunch == MainMenuActivity.SetupToLaunch.CREATE_TEMPLATE ||
-                setupToLaunch == MainMenuActivity.SetupToLaunch.EDIT_TEMPLATE) {
-            templateTitleText.setVisibility(View.VISIBLE);
-            templateTitleLabelText.setVisibility(View.VISIBLE);
-        }
+        initializeWidgets();
+        setCreateButtonText();
 
         createFromSetupButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,7 +85,7 @@ public class GameSetupFragment extends Fragment {
                         launchGameDisplay();
                         break;
                     case CREATE_TEMPLATE:
-                        createTemplate(templateTitleText.getText().toString());
+                        createTemplate(templateTitleText.getText().toString(), true);
                         launchNewGameActivity();
                         break;
                     case EDIT_TEMPLATE:
@@ -99,27 +95,6 @@ public class GameSetupFragment extends Fragment {
             }
         });
         return gameSetupFragView;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        /*
-        Change the setupToLaunch parameter depending on whether or not the game/template IDs
-        are populated, likely indicating that the user pressed the back button
-         */
-        if (setupToLaunch == MainMenuActivity.SetupToLaunch.CREATE_GAME &&
-                gameId > 0) {
-            setupToLaunch = MainMenuActivity.SetupToLaunch.UPDATE_GAME;
-        }
-
-        if (setupToLaunch == MainMenuActivity.SetupToLaunch.CREATE_TEMPLATE &&
-                templateId > 0) {
-            setupToLaunch = MainMenuActivity.SetupToLaunch.EDIT_TEMPLATE;
-        }
-
-        setCreateButtonText();
-        initializeWidgets();
     }
 
     /**
@@ -151,11 +126,20 @@ public class GameSetupFragment extends Fragment {
         Resources res = getActivity().getResources();
 
         String templateName = game.getTemplateName();
+
+        // Template information
         if (templateName == null) {
             templateTitleText.setText(R.string.default_template_name);
         } else {
             templateTitleText.setText(game.getTemplateName());
         }
+
+        if (setupToLaunch == MainMenuActivity.SetupToLaunch.CREATE_TEMPLATE ||
+                setupToLaunch == MainMenuActivity.SetupToLaunch.EDIT_TEMPLATE) {
+            templateTitleText.setVisibility(View.VISIBLE);
+            templateTitleLabelText.setVisibility(View.VISIBLE);
+        }
+
         // Set game values to values from game
         gameTitleText.setText(game.getGameName());
 
@@ -281,14 +265,22 @@ public class GameSetupFragment extends Fragment {
 
     /**
      * Creates templates from user populated fields in the game setup activity
-     * @param templateName    Name of the new template
+     * @param templateName      Name of the new template
+     * @param storeToGame       Set to true if the game should be stored for further editing by
+     *                          the fragment. This should be used, for example, after creating
+     *                          a template so that it can be edited, but not when creating a template
+     *                          from a game ad hoc
      */
-    public void createTemplate(String templateName) {
+    public void createTemplate(String templateName, boolean storeToGame) {
         Game template = new Game(game.getGameName(), game.getWinningScore(),
                 game.getTeam1Name(), game.getTeam1Color(), game.getTeam2Name(),
                 game.getTeam2Color(), game.getSoftCapTime(), game.getHardCapTime());
         template.convertToTemplate(templateName);
         templateId = storeGame(template);
+
+        if (storeToGame) {
+            game = template;
+        }
     }
 
     /**
@@ -300,7 +292,7 @@ public class GameSetupFragment extends Fragment {
             Utils.showValidationFailedDialog(getActivity());
             return;
         }
-        storeGame(game); // set templateId in case the user presses back
+        storeGame(game);
         launchNewGameActivity();
     }
 
@@ -308,8 +300,7 @@ public class GameSetupFragment extends Fragment {
      * Launches the new game activity
      */
     private void launchNewGameActivity() {
-        Intent intent = new Intent(getActivity().getBaseContext(), NewGameActivity.class);
-        startActivity(intent);
+        getActivity().finish(); // returns to the previously tracked activity - like pushing back button
     }
 
     /**
@@ -329,6 +320,7 @@ public class GameSetupFragment extends Fragment {
         intent.putExtra(MainMenuActivity.GAME_ID_EXTRA, gameId);
         intent.putExtra(MainMenuActivity.GAME_DISPLAY_ARG_EXTRA, displayToLaunch);
         startActivity(intent);
+        getActivity().finish();
     }
 
     /**

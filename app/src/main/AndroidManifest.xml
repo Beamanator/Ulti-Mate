@@ -24,6 +24,7 @@
             android:label="@string/title_activity_game_setup"
             android:parentActivityName=".MainMenuActivity"
             android:theme="@style/AppTheme.NoActionBar"
+            android:noHistory="true"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
