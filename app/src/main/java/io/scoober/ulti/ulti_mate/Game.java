@@ -13,6 +13,8 @@ public class Game {
 
     private long id;
     private long date; // Date game was created
+    private long startDate; // Date game was started
+    private long endDate; // Date game was stopped
 
     private String gameName;
     private int winningScore; // score needed to win
@@ -48,6 +50,14 @@ public class Game {
     public long getDate() {
         return date;
     }
+
+    public long getStartDate() { return startDate; }
+
+    public void setStartDate(long date) { this.startDate = date; }
+
+    public long getEndDate() { return endDate; }
+
+    public void setEndDate(long date) { this.endDate = date; }
 
     public String getGameName() {
         return gameName;
@@ -175,6 +185,8 @@ public class Game {
         // set defaults
         this.team1Score = 0;
         this.team2Score = 0;
+        this.startDate = 0;
+        this.endDate = 0;
         this.gameStatus = GameStatus.NOT_STARTED;
     }
 
@@ -184,7 +196,7 @@ public class Game {
     public Game(long id, String gameName, GameStatus status, int winningScore, int team1Score, int team2Score,
                 String team1Name, int team1Color, String team2Name, int team2Color,
                 long softCapTime, long hardCapTime, String initPullingTeam, String initTeamLeft,
-                boolean isTemplate, String templateName, long date) {
+                boolean isTemplate, String templateName, long date, long sDate, long eDate) {
         this.id = id;
         this.gameName = gameName;
         this.winningScore = winningScore;
@@ -201,6 +213,8 @@ public class Game {
         this.isTemplate = isTemplate;
         this.templateName = templateName;
         this.date = date;
+        this.startDate = sDate;
+        this.endDate = eDate;
         this.gameStatus = status;
     }
 

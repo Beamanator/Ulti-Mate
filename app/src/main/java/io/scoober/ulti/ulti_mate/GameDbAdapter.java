@@ -16,7 +16,12 @@ import java.util.Calendar;
 public class GameDbAdapter {
 
     static final String DATABASE_NAME = "ultimate.db";
-    static final int DATABASE_VERSION = 7;
+    /*
+    New in database version:
+    7 -- Added template_name / is_template
+    8 -- Added date_started / date_ended
+    */
+    static final int DATABASE_VERSION = 8;
 
     //Games table
     public static final String GAMES_TABLE = "games";
@@ -50,11 +55,13 @@ public class GameDbAdapter {
     // Date info
     public static final String C_DATE_CREATED = "date_created"; // Date game was created
     public static final String C_DATE_UPDATED = "date_updated"; // Date game was last updated
+    public static final String C_DATE_STARTED = "date_started"; // Date game was started
+    public static final String C_DATE_ENDED = "date_ended"; // Date game was ended
 
     String[] allGameColumns = {C_ID, C_GAME_NAME, C_GAME_STATUS, C_WINNING_SCORE, C_TEAM_1_NAME, C_TEAM_1_COLOR,
             C_TEAM_1_SCORE, C_TEAM_2_NAME, C_TEAM_2_COLOR, C_TEAM_2_SCORE, C_SOFT_CAP_TIME, C_HARD_CAP_TIME,
             C_INIT_PULL_TEAM, C_INIT_TEAM_LEFT, C_IS_TEMPLATE, C_TEMPLATE_NAME,
-            C_DATE_CREATED, C_DATE_UPDATED};
+            C_DATE_CREATED, C_DATE_UPDATED, C_DATE_STARTED, C_DATE_ENDED};
 
     public static final String CREATE_TABLE_GAMES = "create table " + GAMES_TABLE + " ( "
             + C_ID + " integer primary key autoincrement, "
@@ -73,8 +80,10 @@ public class GameDbAdapter {
             + C_INIT_TEAM_LEFT + " text, "
             + C_IS_TEMPLATE + " boolean, "
             + C_TEMPLATE_NAME + " text, "
-            + C_DATE_CREATED + " text not null, "
-            + C_DATE_UPDATED + " text not null);";
+            + C_DATE_CREATED + " integer not null, "
+            + C_DATE_UPDATED + " integer not null, "
+            + C_DATE_STARTED + " integer not null, "
+            + C_DATE_ENDED + " integer not null);";
 
     SQLiteDatabase sqlDB;
     Context context;
@@ -112,6 +121,8 @@ public class GameDbAdapter {
         values.put(C_TEMPLATE_NAME, game.getTemplateName());
         values.put(C_DATE_CREATED, Calendar.getInstance().getTimeInMillis());
         values.put(C_DATE_UPDATED, Calendar.getInstance().getTimeInMillis());
+        values.put(C_DATE_STARTED, game.getStartDate());
+        values.put(C_DATE_ENDED, game.getEndDate());
 
         long insertId = sqlDB.insert(GAMES_TABLE,null,values);
 
@@ -211,6 +222,8 @@ public class GameDbAdapter {
         values.put(C_TEMPLATE_NAME, game.getTemplateName());
         values.put(C_DATE_CREATED, game.getDate());
         values.put(C_DATE_UPDATED, Calendar.getInstance().getTimeInMillis());
+        values.put(C_DATE_STARTED, game.getStartDate());
+        values.put(C_DATE_ENDED, game.getEndDate());
 
         return sqlDB.update(GAMES_TABLE, values, C_ID + " = " + game.getId(), null);
     }
@@ -238,11 +251,14 @@ public class GameDbAdapter {
         boolean isTemplate = (cursor.getInt(14) == 1);
         String templateName = cursor.getString(15);
         long date = cursor.getLong(16); // Date game was created
+        // position 17 = update date
+        long startDate = cursor.getLong(18); // Date game was started
+        long endDate = cursor.getLong(19); // Date game was ended
 
         // Create game object and return it.
         Game newGame = new Game(id, gameName, status, winningScore,team1Score,team2Score,
                 team1Name, team1Color, team2Name, team2Color, softCapTime, hardCapTime,
-                initPullingTeam, initTeamLeft, isTemplate, templateName, date);
+                initPullingTeam, initTeamLeft, isTemplate, templateName, date, startDate, endDate);
 
         return newGame;
 

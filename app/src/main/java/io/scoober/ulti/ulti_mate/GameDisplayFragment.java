@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -145,7 +146,7 @@ public class GameDisplayFragment extends Fragment {
     /**
      * Function to allow users to start changing scores and viewing game statuses.
      * @param startButton   Start / Resume button. Once clicked, game is started / resumed
-     * @param endButton     TODO: End button will store data to database and lock game
+     * @param endButton     End button stores data to database and locks game settings
      */
     private void startGame(final Button startButton, final Button endButton) {
         startButton.setOnClickListener(new View.OnClickListener() {
@@ -161,6 +162,15 @@ public class GameDisplayFragment extends Fragment {
 
                 endButton.setVisibility(View.VISIBLE);
                 startButton.setVisibility(View.GONE);
+
+                if (game.getStartDate() > 0) {
+                    Log.d("GameDisplayFragment","Start Date already exists in game." +
+                            " Not saving new time.");
+                } else {
+                    // set current time as start date, then save to game
+                    game.setStartDate(Calendar.getInstance().getTimeInMillis());
+                    Utils.saveGameDetails(v.getContext(), game);
+                }
             }
         });
 
@@ -187,11 +197,13 @@ public class GameDisplayFragment extends Fragment {
      * Function that handles the end game sequence. Actions taken by this function:
      * 1. Sends user back to GameDisplayActivity to deal with VIEW case
      * 2. Tells Game that game status = GAME_OVER
+     * 3. Stores endGame data
      * @param v     view used to get Context for saving game + creating a new Intent
      */
     private void endGame(View v) {
-        // set new game status:
+        // set new game status and endDate, then save game:
         game.setGameStatus(Game.GameStatus.GAME_OVER);
+        game.setEndDate(Calendar.getInstance().getTimeInMillis()); // sets current time as end date
         Utils.saveGameDetails(v.getContext(), game);
 
         Intent intent = new Intent(v.getContext(),GameDisplayActivity.class);
@@ -281,8 +293,6 @@ public class GameDisplayFragment extends Fragment {
         teamViewMap.put(1,team1View);
         teamViewMap.put(2,team2View);
     }
-
-
 
     private void toggleTeamColors() {
         // TODO: worry about score eventually [halfime n such] + initTeamLeft

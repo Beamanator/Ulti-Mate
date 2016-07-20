@@ -40,8 +40,17 @@
     <string name="game_title_hint_text">Game Title</string>
     <string name="edit_button_text">Edit Game</string>
     <string name="save_button_text">Save Game</string>
-    <string name="default_game_length_text">Game Length:</string>
+    <string name="default_game_length_text">Length:</string>
     <string name="game_length_text">- time goes here -</string>
+    <string name="text_game_in_progress">Game in progress</string>
+    <string name="text_invalid_dates">&lt; Invalid &gt;</string>
+    <string name="text_minute_full_plural">minutes</string>
+    <string name="text_day_abbv_plural"> days</string>
+    <string name="text_day_abbv_singular"> day</string>
+    <string name="text_hour_abbv_plural"> hrs</string>
+    <string name="text_hour_abbv_singular"> hr</string>
+    <string name="text_minute_abbv_plural"> mins</string>
+    <string name="text_minute_abbv_singular"> min</string>
 
     <!--Game Statuses-->
     <string name="status_not_started">Game Not Started</string>
@@ -102,4 +111,16 @@
     <string name="dialog_delete_game">Are you sure you want to delete this game?</string>
     <string name="score_list_text">%1$d - %2$d</string>
     <string name="team_list_text">%1$s vs %2$s</string>
+    
+    <!--date / time dialog fragment-->
+    <string name="text_start_title">Start</string>
+    <string name="text_end_title">End</string>
+    <string name="text_time">time:</string>
+    <string name="text_date">date:</string>
+    <string name="text_time_default"><u>0:00</u></string>
+    <string name="text_date_default"><u>Month day, Year</u></string>
+    <string name="text_dialog_fragment_title">Set Game Start and End Times</string>
+    <string name="text_dialog_fragment_default_title">Title Goes Here</string>
+    <string name="text_positive_action">Save</string>
+    <string name="text_negative_action">Cancel</string>
 </resources>

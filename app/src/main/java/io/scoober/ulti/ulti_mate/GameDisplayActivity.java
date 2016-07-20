@@ -1,10 +1,14 @@
 package io.scoober.ulti.ulti_mate;
 
+import android.app.DatePickerDialog;
+import android.app.Fragment;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
@@ -18,15 +22,22 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.TimePicker;
 
+import java.util.Calendar;
 import java.util.Map;
 
 import io.scoober.ulti.ulti_mate.widgets.TeamImageButton;
 
-public class GameDisplayActivity extends AppCompatActivity {
+public class GameDisplayActivity extends AppCompatActivity
+        implements  GameLengthDialogFragment.OnTimeSelectedListener,
+                    GameLengthDialogFragment.OnDateSelectedListener,
+                    GameLengthDialogFragment.OnNegativeButtonClickListener,
+                    GameLengthDialogFragment.OnPositiveButtonClickListener{
 
     private MainMenuActivity.DisplayToLaunch displayToLaunch;
     private long gameId;
@@ -39,6 +50,8 @@ public class GameDisplayActivity extends AppCompatActivity {
         public TextView nameView;
         public EditText nameEdit;
     }
+
+    private GameDisplayEditFragment gameEditFrag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +86,7 @@ public class GameDisplayActivity extends AppCompatActivity {
                 break;
             case EDIT:
             case VIEW:
-                GameDisplayEditFragment gameEditFrag = new GameDisplayEditFragment();
+                gameEditFrag = new GameDisplayEditFragment();
                 fragmentTransaction.add(R.id.game_container, gameEditFrag, "GAME_DISPLAY_EDIT_FRAGMENT");
                 break;
         }
@@ -250,5 +263,131 @@ public class GameDisplayActivity extends AppCompatActivity {
             }
         }
         return super.dispatchTouchEvent( event );
+    }
+
+    /**
+     * Interface Function from GameLengthDialogFragment.OnTimeSelectedListener
+     * @param tv    TextView
+     */
+    public void onTimeSelected(final TextView tv) {
+        tv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Calendar time = Calendar.getInstance();
+                long buttonTimeMilli = Utils.getMilliFrom12HrString(tv.getText().toString());
+
+                time.setTimeInMillis(buttonTimeMilli);
+
+                int hour = time.get(Calendar.HOUR_OF_DAY);
+                int minute = time.get(Calendar.MINUTE);
+
+                TimePickerDialog picker = new TimePickerDialog(GameDisplayActivity.this,
+                        new TimePickerDialog.OnTimeSetListener() {
+                            @Override
+                            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                                String newTime = Utils.to12Hr(hourOfDay, minute);
+                                tv.setText(newTime);
+                            }
+                        }, hour, minute, false);
+
+                View customTitleView = Utils.createCustomTitle(GameDisplayActivity.this, null,
+                        "Edit Time");
+                picker.setCustomTitle(customTitleView);
+
+                picker.show();
+            }
+        });
+    }
+
+    /**
+     * Interface Function from GameLengthDialogFragment.OnDateSelectedListener
+     * @param tv    TextView
+     */
+    public void onDateSelected(final TextView tv) {
+        tv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Calendar time = Calendar.getInstance();
+
+                // get time in milli from date text
+                long buttonTimeMilli = Utils.getMilliFromDateString(tv.getText().toString());
+
+                time.setTimeInMillis(buttonTimeMilli);
+
+                int year = time.get(Calendar.YEAR);
+                int month = time.get(Calendar.MONTH);
+                int day = time.get(Calendar.DAY_OF_MONTH);
+
+                DatePickerDialog picker = new DatePickerDialog(GameDisplayActivity.this,
+                        new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+
+                        // Add 1 to month of year to fix offset
+                        monthOfYear += 1;
+
+                        String newTime = Utils.toMMddyyyy(year, monthOfYear, dayOfMonth);
+                        tv.setText(newTime);
+                    }
+                }, year, month, day);
+
+                View customTitleView = Utils.createCustomTitle(GameDisplayActivity.this, null,
+                        "Edit Date");
+                picker.setCustomTitle(customTitleView);
+
+                picker.show();
+            }
+        });
+    }
+
+    /**
+     * Interface function from GameLengthDialogFragment.OnNegativeButtonClickListener
+     * @param tv    TextView representing negative button
+     */
+    public void onNegativeButtonClick(TextView tv) {
+        tv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Get game length dialog fragment from fragmentManager
+                GameLengthDialogFragment frag = (GameLengthDialogFragment) getFragmentManager()
+                        .findFragmentByTag("GameLengthDialogFragment");
+
+                if (frag != null) {
+                    frag.dismiss();
+                } else {
+                    Log.d("GameDisplayActivity",
+                            "Trying to dismiss a fragment that doesn't exist.");
+                }
+            }
+        });
+    }
+
+    /**
+     * Interface function from GameLengthDialogFragment.OnPositiveButtonClickListener
+     * @param tv    TextView representing positive button
+     * @param g     Game to be saved
+     */
+    public void onPositiveButtonClick(TextView tv, final Game g) {
+        tv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Get game length dialog fragment from fragmentManager
+                GameLengthDialogFragment frag = (GameLengthDialogFragment) getFragmentManager()
+                        .findFragmentByTag("GameLengthDialogFragment");
+
+                long start = frag.getGameStartMilli();
+                long end = frag.getGameEndMilli();
+
+                g.setStartDate(start);
+                g.setEndDate(end);
+
+                Utils.saveGameDetails(GameDisplayActivity.this, g);
+
+                frag.dismiss();
+
+                gameEditFrag.refreshGameLength();
+            }
+        });
     }
 }
