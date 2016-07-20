@@ -4,10 +4,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
@@ -18,11 +21,17 @@ import java.util.List;
  * <p>
  */
 public class MyGamesListFragment extends android.support.v4.app.ListFragment {
+//            implements AbsListView.OnScrollListener {
 
     private List<Game> games;
     private MyGamesListAdapter gamesListAdapter;
 
     MainMenuActivity.GamesToShow gamesToShow;
+    GameDbAdapter gameDbAdapter;
+
+    // initial number of games to load
+    private int gamesToLoad= 10;
+    private final int GAME_LOAD_INCREMENT = 10;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -34,14 +43,9 @@ public class MyGamesListFragment extends android.support.v4.app.ListFragment {
         gamesToShow = (MainMenuActivity.GamesToShow)
                 bundle.getSerializable(MainMenuActivity.GAMES_TO_SHOW_EXTRA);
 
-        GameDbAdapter gameDbAdapter = new GameDbAdapter(getActivity().getBaseContext());
-        gameDbAdapter.open();
-        if (gamesToShow == MainMenuActivity.GamesToShow.ACTIVE) {
-            games = gameDbAdapter.getActiveGames(10,0);
-        } else if (gamesToShow == MainMenuActivity.GamesToShow.ENDED) {
-            games = gameDbAdapter.getEndedGames(10,0);
-        }
-        gameDbAdapter.close();
+        gameDbAdapter = new GameDbAdapter(getActivity().getBaseContext());
+
+        games = loadGames(0, 0);
 
         gamesListAdapter = new MyGamesListAdapter(getActivity(),games);
 
@@ -50,9 +54,55 @@ public class MyGamesListFragment extends android.support.v4.app.ListFragment {
         registerForContextMenu(getListView());
 
         //TODO Add feature to get more than 10 games
+        ListView listView = getListView();
+        setListViewScrollListener(listView);
     }
 
+    private List<Game> loadGames(int firstGame, int additionalGamesToLoad) {
+        int offset = firstGame;
+        int newGamesToLoad = gamesToLoad + additionalGamesToLoad;
+        List<Game> newGames;
 
+        gameDbAdapter.open();
+        if (gamesToShow == MainMenuActivity.GamesToShow.ACTIVE) {
+            newGames = gameDbAdapter.getActiveGames(newGamesToLoad, offset);
+        } else if (gamesToShow == MainMenuActivity.GamesToShow.ENDED) {
+            newGames = gameDbAdapter.getEndedGames(newGamesToLoad, offset);
+        } else {
+            newGames = gameDbAdapter.getEndedGames(newGamesToLoad, 0);
+        }
+        gameDbAdapter.close();
+
+        // Some new games were loaded, aka not all have been loaded yet
+        if (newGames.size() != 0) {
+            gamesToLoad = newGamesToLoad;
+        }
+
+        return newGames;
+    }
+
+    private void setListViewScrollListener(final ListView lv) {
+        lv.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE
+                        && (lv.getLastVisiblePosition() - lv.getHeaderViewsCount() -
+                        lv.getFooterViewsCount()) >= (gamesListAdapter.getCount() - 1)) {
+
+                    // Now listview has hit the bottom. Load more.
+                    List<Game> newGames;
+
+                    newGames = loadGames(gamesToLoad, GAME_LOAD_INCREMENT);
+                    gamesListAdapter.addAll(newGames);
+                    gamesListAdapter.notifyDataSetChanged();
+                }
+            }
+
+            // Need to implement onScroll, even if it's unused.
+            @Override
+            public void onScroll(AbsListView v, int f, int vr, int t) {}
+        });
+    }
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
