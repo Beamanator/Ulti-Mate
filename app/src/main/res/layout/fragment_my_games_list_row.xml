@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/topLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingTop="10dp"
@@ -13,6 +14,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/text_margin"
+        android:layout_alignParentStart="true"
+        android:layout_toStartOf="@+id/listItemGameDate"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textStyle="bold"
         android:ellipsize="end"
@@ -53,10 +56,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
+        android:layout_alignTop="@+id/listItemGameTitle"
+        android:layout_alignBottom="@id/listItemScores"
         android:layout_centerVertical="true"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
         android:background="@android:color/transparent"
         android:src="@drawable/ic_more_vert_black_24dp"
         android:id="@+id/contextMenuButton"/>
-
 
 </RelativeLayout>

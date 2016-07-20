@@ -14,6 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
+        android:layout_toStartOf="@+id/contextMenuButton"
         android:layout_marginStart="@dimen/text_margin"
         android:layout_marginEnd="@dimen/text_margin"
         android:textAppearance="?android:attr/textAppearanceLarge"
@@ -21,6 +22,7 @@
         android:ellipsize="end"
         android:singleLine="true"
         android:text="Template Title"/>
+
     <TextView
         android:id="@+id/listItemGameTitle"
         android:layout_width="wrap_content"
@@ -43,9 +45,13 @@
 
     <ImageButton
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
+        android:layout_alignTop="@+id/listItemTemplateTitle"
+        android:layout_alignBottom="@+id/listItemTeams"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
         android:background="@android:color/transparent"
         android:src="@drawable/ic_more_vert_black_24dp"
         android:id="@+id/contextMenuButton"/>
