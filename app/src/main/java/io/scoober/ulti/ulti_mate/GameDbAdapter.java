@@ -125,9 +125,7 @@ public class GameDbAdapter {
         values.put(C_DATE_STARTED, game.getStartDate());
         values.put(C_DATE_ENDED, game.getEndDate());
 
-        long insertId = sqlDB.insert(GAMES_TABLE,null,values);
-
-        return insertId;
+        return sqlDB.insert(GAMES_TABLE,null,values);
     }
 
     /*
@@ -152,7 +150,7 @@ public class GameDbAdapter {
      * @return          ArrayList of games
      */
     public ArrayList<Game> getRecentGames(int numGames, int offset, Game.Status[] statuses) {
-        ArrayList<Game> games = new ArrayList<Game>();
+        ArrayList<Game> games = new ArrayList<>();
 
         String limit = Integer.toString(numGames);
         if (offset != 0) {
@@ -196,7 +194,6 @@ public class GameDbAdapter {
      */
     public ArrayList<Game> getActiveGames(int numGames, int offset) {
         Game.Status[] statuses = {Game.Status.NOT_STARTED,
-                Game.Status.PAUSED,
                 Game.Status.FIRST_HALF,
                 Game.Status.HALFTIME,
                 Game.Status.SECOND_HALF,
@@ -225,7 +222,7 @@ public class GameDbAdapter {
      * @return ArrayList of template games
      */
     public ArrayList<Game> getAllTemplates() {
-        ArrayList<Game> games = new ArrayList<Game>();
+        ArrayList<Game> games = new ArrayList<>();
 
         String selection = C_IS_TEMPLATE + " = 1";
         Cursor cursor = sqlDB.query(GAMES_TABLE, allGameColumns, selection, null, null, null, C_TEMPLATE_NAME + " ASC", null);
@@ -293,11 +290,9 @@ public class GameDbAdapter {
         long endDate = cursor.getLong(19); // Date game was ended
 
         // Create game object and return it.
-        Game newGame = new Game(id, gameName, status, winningScore,team1Score,team2Score,
+        return new Game(id, gameName, status, winningScore,team1Score,team2Score,
                 team1Name, team1Color, team2Name, team2Color, softCapTime, hardCapTime,
                 initPullingTeam, initTeamLeft, isTemplate, templateName, date, startDate, endDate);
-
-        return newGame;
 
     }
 
