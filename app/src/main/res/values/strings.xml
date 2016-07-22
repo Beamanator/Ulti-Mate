@@ -58,7 +58,6 @@
 
     <!--Game Statuses-->
     <string name="status_not_started">Game Not Started</string>
-    <string name="status_paused">Game Paused</string>
     <string name="status_first_half">First Half</string>
     <string name="status_halftime">Halftime!</string>
     <string name="status_second_half">Second Half</string>

@@ -106,7 +106,6 @@ public class GameDisplayFragment extends Fragment {
         teamViewMap.get(2).nameView.setText(game.getTeam2Name());
         teamViewMap.get(1).scoreView.setText(Integer.toString(game.getTeam1Score()));
         teamViewMap.get(2).scoreView.setText(Integer.toString(game.getTeam2Score()));
-        //TODO: possibly set variables based on team orientation?
 
         // populate team circles with colors from database and black stroke
         int mdBlack = getResources().getColor(R.color.md_black_1000);
@@ -170,11 +169,8 @@ public class GameDisplayFragment extends Fragment {
                 int score = game.incrementScore(team);
                 Utils.saveGameDetails(getActivity().getBaseContext(), game);
 
-                teamViewHolder.scoreView.setText(Integer.toString(score));
-                GameDisplayActivity.enableDisableScoreButtons(team,game,teamViewMap);
-                toggleTeamColors();
+                afterPointsChange(team, score);
 
-                setGameStatusText(game.getStatus());
             }
         });
 
@@ -182,14 +178,22 @@ public class GameDisplayFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 int score = game.decrementScore(team);
-                teamViewHolder.scoreView.setText(Integer.toString(score));
                 Utils.saveGameDetails(getActivity().getBaseContext(), game);
-
-                GameDisplayActivity.enableDisableScoreButtons(team,game,teamViewMap);
-                toggleTeamColors();
-                setGameStatusText(game.getStatus());
+                afterPointsChange(team,score);
             }
         });
+    }
+
+    /**
+     * Function defines what happens to the view after the score changes
+     * @param team      Team number whose score was modified
+     * @param score     New team score
+     */
+    private void afterPointsChange(int team, int score) {
+        teamViewMap.get(team).scoreView.setText(Integer.toString(score));
+        GameDisplayActivity.enableDisableScoreButtons(team,game,teamViewMap);
+        setFieldOrientation();
+        setGameStatusText(game.getStatus());
     }
 
     /**
@@ -203,8 +207,8 @@ public class GameDisplayFragment extends Fragment {
             public void onClick(View v) {
 
                 // Enable or disable the score buttons, depending on the score
-                GameDisplayActivity.enableDisableScoreButtons(1,game,teamViewMap);;
-                GameDisplayActivity.enableDisableScoreButtons(2,game,teamViewMap);;
+                GameDisplayActivity.enableDisableScoreButtons(1,game,teamViewMap);
+                GameDisplayActivity.enableDisableScoreButtons(2,game,teamViewMap);
 
                 // Update the game status to started if it hasn't been started yet
                 if (game.getStatus() == Game.Status.NOT_STARTED) {
@@ -405,7 +409,8 @@ public class GameDisplayFragment extends Fragment {
         teamViewMap.put(2,team2View);
     }
 
-    private void toggleTeamColors() {
+    //TODO move most of this logic into the Game class
+    private void setFieldOrientation() {
         // TODO: worry about score eventually [halfime n such] + initTeamLeft
         int totalScore = game.getTeam1Score() + game.getTeam2Score();
         int team1Color = game.getTeam1Color();

@@ -37,7 +37,7 @@ public class Game {
     private @ColorInt int team2Color; // Team Color
 
     private Status status;
-    public enum Status { NOT_STARTED, PAUSED, FIRST_HALF, HALFTIME, SECOND_HALF,
+    public enum Status { NOT_STARTED, FIRST_HALF, HALFTIME, SECOND_HALF,
         SOFT_CAP, HARD_CAP, GAME_OVER, IN_PROGRESS}
 
     // Template info
@@ -272,8 +272,6 @@ public class Game {
         switch (status) {
             case NOT_STARTED:
                 return context.getString(R.string.status_not_started);
-            case PAUSED:
-                return context.getString(R.string.status_paused);
             case FIRST_HALF:
                 return context.getString(R.string.status_first_half);
             case HALFTIME:
