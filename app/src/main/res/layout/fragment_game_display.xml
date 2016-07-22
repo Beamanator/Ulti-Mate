@@ -222,7 +222,7 @@
 
     </LinearLayout>
 
-    <!--Start / Pause / End buttons-->
+    <!--Start / End buttons-->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -251,37 +251,96 @@
             android:layout_marginLeft="5dp" />
     </LinearLayout>
 
-    <!--Soft / Hard Cap Text-->
-    <LinearLayout
+    <ViewSwitcher
+        android:id="@+id/timeCapBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/statusBar"
-        android:id="@+id/timeCapBar"
+        android:padding="10dp"
         android:background="#323232"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
-        android:paddingStart="10dp">
+        android:animateFirstView="false">
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.4"
-            android:text="@string/soft_cap_text"
-            android:id="@+id/capText"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="#ffffff" />
+        <!--Soft / Hard Cap Static Text [before game starts]-->
+        <LinearLayout
+            android:id="@+id/timeCapDisplayBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.6"
-            android:text="@string/time_remaining_text"
-            android:id="@+id/capTimer"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textAlignment="center"
-            android:textColor="#ffffff"/>
+            <TextView
+                android:id="@+id/softCapText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/soft_cap_text"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#ffffff" />
 
-    </LinearLayout>
+            <TextView
+                android:id="@+id/softCapTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/time_basic_hhmm_a"
+                android:paddingStart="5dp"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#ffffff" />
+
+            <TextView
+                android:id="@+id/capBarSpacerText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:text="@string/text_cap_time_spacer"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#ffffff" />
+
+            <TextView
+                android:id="@+id/hardCapText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/hard_cap_text"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#ffffff"
+                android:singleLine="true"/>
+
+            <TextView
+                android:id="@+id/hardCapTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/time_basic_hhmm_a"
+                android:paddingStart="5dp"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#ffffff"
+                android:singleLine="true"/>
+
+
+        </LinearLayout>
+
+        <!--Soft / Hard Cap Timer Text [once game has started]-->
+        <LinearLayout
+            android:id="@+id/timeCapTimerBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/soft_cap_timer_text"
+                android:id="@+id/capTimerText"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#ffffff" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/time_remaining_text"
+                android:id="@+id/capTimer"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textAlignment="center"
+                android:textColor="#ffffff"/>
+
+        </LinearLayout>
+
+    </ViewSwitcher>
 
     <!--Game Status Bar-->
     <RelativeLayout
