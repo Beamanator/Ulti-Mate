@@ -1,24 +1,16 @@
 package io.scoober.ulti.ulti_mate;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
-import android.app.Dialog;
 import android.app.TimePickerDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -29,11 +21,7 @@ import android.widget.ViewSwitcher;
 
 import com.thebluealliance.spectrum.SpectrumDialog;
 
-import org.greenrobot.eventbus.util.ErrorDialogManager;
-import org.w3c.dom.Text;
-
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -293,13 +281,16 @@ public class GameDisplayEditFragment extends Fragment {
                 @ColorInt int team1Color = team1View.colorButton.getColor();
                 @ColorInt int team2Color = team2View.colorButton.getColor();
 
+                Team firstTeam = game.getTeam(1);
+                Team secondTeam = game.getTeam(2);
                 game.setGameName(gameName);
-                game.setTeam1Name(team1Name);
-                game.setTeam2Name(team2Name);
-                game.setTeam1Score(team1Score);
-                game.setTeam2Score(team2Score);
-                game.setTeam1Color(team1Color);
-                game.setTeam2Color(team2Color);
+                game.setTeamScore(1,team1Score);
+                game.setTeamScore(2,team2Score);
+
+                firstTeam.setName(team1Name);
+                firstTeam.setColor(team1Color);
+                secondTeam.setName(team2Name);
+                secondTeam.setColor(team2Color);
 
                 Utils.saveGameDetails(v.getContext(), game);
 
@@ -379,15 +370,17 @@ public class GameDisplayEditFragment extends Fragment {
         // Get the TeamViewHolder
         GameDisplayActivity.TeamViewHolder team1View = teamViewMap.get(1);
         GameDisplayActivity.TeamViewHolder team2View = teamViewMap.get(2);
-        team1View.nameEdit.setText(game.getTeam1Name());
-        team1View.nameView.setText(game.getTeam1Name());
-        team2View.nameEdit.setText(game.getTeam2Name());
-        team2View.nameView.setText(game.getTeam2Name());
-        team1View.scoreView.setText(Integer.toString(game.getTeam1Score()));
-        team2View.scoreView.setText(Integer.toString(game.getTeam2Score()));
+        Team firstTeam = game.getTeam(1);
+        Team secondTeam = game.getTeam(2);
+        team1View.nameEdit.setText(firstTeam.getName());
+        team1View.nameView.setText(firstTeam.getName());
+        team2View.nameEdit.setText(secondTeam.getName());
+        team2View.nameView.setText(secondTeam.getName());
+        team1View.scoreView.setText(Integer.toString(game.getScore(1)));
+        team2View.scoreView.setText(Integer.toString(game.getScore(2)));
 
-        @ColorInt int leftTeamColor = game.getTeam1Color();
-        @ColorInt int rightTeamColor = game.getTeam2Color();
+        @ColorInt int leftTeamColor = firstTeam.getColor();
+        @ColorInt int rightTeamColor = secondTeam.getColor();
 
         team1View.colorButton.build(150, leftTeamColor);
         team2View.colorButton.build(150, rightTeamColor);

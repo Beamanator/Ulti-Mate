@@ -1,18 +1,14 @@
 package io.scoober.ulti.ulti_mate;
 
 import android.app.DatePickerDialog;
-import android.app.Fragment;
 import android.app.TimePickerDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -24,7 +20,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
@@ -41,6 +36,8 @@ public class GameDisplayActivity extends AppCompatActivity
 
     private MainMenuActivity.DisplayToLaunch displayToLaunch;
     private long gameId;
+
+    GameDisplayFragment gameFrag;
 
     public static class TeamViewHolder {
         public Button addButton;
@@ -81,7 +78,7 @@ public class GameDisplayActivity extends AppCompatActivity
             case NEW:
             case RESUME:
             case UPDATE:
-                GameDisplayFragment gameFrag = new GameDisplayFragment();
+                gameFrag = new GameDisplayFragment();
                 fragmentTransaction.add(R.id.game_container, gameFrag, "GAME_DISPLAY_FRAGMENT");
                 break;
             case EDIT:
@@ -126,92 +123,17 @@ public class GameDisplayActivity extends AppCompatActivity
                 return true;
             case R.id.action_edit_field_setup:
                 View gameDisplayView = findViewById(R.id.game_container);
-                Game game = Utils.getGameDetails(gameDisplayView.getContext(), gameId);
-                buildFieldSetupDialogs(game, gameDisplayView);
+                Game game = Utils.getGameDetails(this, gameId);
+                gameFrag.buildFieldSetupDialogs(gameDisplayView);
                 return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    public static void buildFieldSetupDialogs(final Game g, final View v) {
-        AlertDialog pullDialog;
-
-        final String t1 = g.getTeam1Name();
-        final String t2 = g.getTeam2Name();
-
-        // items to display in dialog boxes:
-        final CharSequence[] items1 = {t1, t2};
-
-        // First dialog box gets initial pulling team:
-        AlertDialog.Builder dialogBox1 = new AlertDialog.Builder(v.getContext());
-        dialogBox1.setTitle("Which Team Pulls First?");
-        dialogBox1.setSingleChoiceItems(items1, -1, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which) {
-                    case 0:
-                        g.setInitPullingTeam(t1);
-                        break;
-                    case 1:
-                        g.setInitPullingTeam(t2);
-                        break;
-                }
-                dialog.dismiss();
-                buildTeamOrientationDialog(g, t1, t2, v);
-            }
-        });
-
-        pullDialog = dialogBox1.create();
-        pullDialog.show();
-    }
-
-    private static void buildTeamOrientationDialog(final Game g, final String t1, final String t2,
-                                                   final View v) {
-
-        AlertDialog orientationDialog;
-
-        // Strings to show in Dialog with Radio Buttons:
-        final CharSequence[] items = {"Left", "Right"};
-
-        AlertDialog.Builder dialogBox = new AlertDialog.Builder(v.getContext());
-
-        dialogBox.setTitle("Which Side is " + t1 + " on?");
-
-        // 2nd param = automatically checked item
-        dialogBox.setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int item) {
-                switch (item) {
-                    case 0:
-                        g.setInitTeamLeft(t1);
-                        break;
-                    case 1:
-                        g.setInitTeamLeft(t2);
-                        break;
-                }
-                dialog.dismiss();
-
-                // At this point, both dialog boxes must have been hit & populated Game.
-                Utils.saveGameDetails(v.getContext(), g);
-
-                showFieldLayout(v);
-            }
-        });
-
-        orientationDialog = dialogBox.create();
-        orientationDialog.show();
-    }
-
     /*
     Utility Functions
      */
-    public static void showFieldLayout(View v) {
-        Button setupFieldButton = (Button) v.findViewById(R.id.fieldSetup);
-        LinearLayout gameImagesLayout = (LinearLayout) v.findViewById(R.id.gameImagesLayout);
-
-        setupFieldButton.setVisibility(View.GONE);
-        gameImagesLayout.setVisibility(View.VISIBLE);
-    }
 
     /**
      * This function handles enabling and disabling score buttons for the game displays

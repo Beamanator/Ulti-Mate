@@ -19,7 +19,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -202,19 +201,23 @@ public class GameSetupActivity extends AppCompatActivity
             if (setupToLaunch == MainMenuActivity.SetupToLaunch.EDIT_TEMPLATE) {
                 game = template;
             } else {
-                game = new Game(template.getGameName(), template.getWinningScore(), template.getTeam1Name(),
-                        template.getTeam1Color(), template.getTeam2Name(), template.getTeam2Color(),
+                game = new Game(template.getGameName(), template.getWinningScore(),
+                        template.getTeam(1), template.getTeam(2),
                         template.getSoftCapTime(), template.getHardCapTime());
             }
 
         } else {
+
+            // Defaults
+            Team firstTeam = new Team(res.getString(R.string.default_team_1_name),
+                    res.getColor(R.color.default_team_1));
+            Team secondTeam = new Team(res.getString(R.string.default_team_2_name),
+                    res.getColor(R.color.default_team_2));
             game = new Game(
                     res.getString(R.string.default_game_name),
                     0,
-                    res.getString(R.string.default_team_1_name),
-                    res.getColor(R.color.default_team_1),
-                    res.getString(R.string.default_team_2_name),
-                    res.getColor(R.color.default_team_2),
+                    firstTeam,
+                    secondTeam,
                     0,
                     0
             );

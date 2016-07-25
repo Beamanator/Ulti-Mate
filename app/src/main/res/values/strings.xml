@@ -32,6 +32,10 @@
     <string name="time_remaining_text">Time remaining</string>
     <string name="default_status_text">Status:</string>
     <string name="default_game_status_text">- status goes here -</string>
+    <string name="dialog_init_pulling_team">"Which team pulls first?"</string>
+    <string name="dialog_left_team">Which side is %1$s on?</string>
+    <string name="left">Left</string>
+    <string name="right">Right</string>
 
     <!--Game Display Edit Fragment-->
     <string name="team_1_hint_text">Team 1</string>
@@ -93,7 +97,7 @@
     <string name="dialog_name_template">Template Name</string>
     <string name="timepicker_soft_cap_title">Set Soft Cap</string>
     <string name="timepicker_hard_cap_title">Set Hard Cap</string>
-    <string name="dialog_validation_failed">Please enter all required fields.</string>
+    <string name="dialog_validation_failed">Please enter all required fields</string>
     <string name="description_winning_score">Game to %1$d</string>
     <string name="description_no_winning_score">No score limit</string>
     <string name="description_no_time_caps">No time caps</string>
