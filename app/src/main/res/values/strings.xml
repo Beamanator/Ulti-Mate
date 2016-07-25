@@ -16,6 +16,7 @@
     <string name="dialog_delete">Delete</string>
     <string name="dialog_cancel">Cancel</string>
     <string name="error_text_empty">%1$s is a required field.</string>
+    <string name="time_basic_hhmm_a">00:00 AM</string>
 
     <!--Main Menu Activity Strings-->
     <string name="resume_button">Resume</string>
@@ -28,7 +29,11 @@
     <string name="end_button">End Game</string>
     <string name="start_button">Start Game</string>
     <string name="start_resume_button">Resume Game</string>
-    <string name="soft_cap_text">Soft Cap:</string>
+    <string name="soft_cap_text">Soft cap:</string>
+    <string name="hard_cap_text">Hard cap:</string>
+    <string name="text_cap_time_spacer">-</string>
+    <string name="soft_cap_timer_text">Time \'till Soft Cap:</string>
+    <string name="hard_cap_timer_text">Time \'till Hard Cap:</string>
     <string name="time_remaining_text">Time remaining</string>
     <string name="default_status_text">Status:</string>
     <string name="default_game_status_text">- status goes here -</string>

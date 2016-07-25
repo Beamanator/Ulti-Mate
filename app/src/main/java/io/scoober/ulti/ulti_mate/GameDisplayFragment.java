@@ -7,8 +7,11 @@ import android.content.res.Resources;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
+import android.os.CountDownTimer;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.PopupMenu;
+import android.support.v7.widget.ViewStubCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +20,9 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.ViewSwitcher;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,13 +32,15 @@ public class GameDisplayFragment extends Fragment {
     private final static int TEAM_CIRCLE_SIZE = 100;
 
     private Button setupFieldButton, startButton, endButton;
-
-    private TextView timeCapTimer, gameTitleView, gameStatusText;
-
+    private TextView gameTitleView, gameStatusText, timeCapTimer;
+    private TextView timeCapTimerText, softCapTimeView, hardCapTimeView;
     private GradientDrawable leftCircle, rightCircle;
-    private LinearLayout timeCapBar, gameImagesLayout;
     private ImageView leftTeamCircle, rightTeamCircle;
 
+    private CountDownTimer softCapTimer, hardCapTimer;
+
+    private ViewSwitcher timeCapBar;
+    private LinearLayout gameImagesLayout;
     private long gameId;
     private Game game;
     private MainMenuActivity.DisplayToLaunch displayToLaunch;
@@ -79,6 +86,20 @@ public class GameDisplayFragment extends Fragment {
     }
 
     @Override
+    public void onStop() {
+        super.onStop();
+
+        // Stop timers when fragment is stopped.
+        //  this prevents duplicate timers from being created
+        if (softCapTimer != null) {
+            softCapTimer.cancel();
+        }
+        if (hardCapTimer != null) {
+            hardCapTimer.cancel();
+        }
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
 
@@ -110,8 +131,27 @@ public class GameDisplayFragment extends Fragment {
         if (game.getHardCapTime() < 1 && game.getSoftCapTime() < 1) {
             timeCapBar.setVisibility(View.GONE);
         } else {
-            // TODO: format time text better
-            timeCapTimer.setText(Long.toString(game.getSoftCapTime()));
+            timeCapBar.setVisibility(View.VISIBLE);
+            if (game.getStatus() == Game.Status.NOT_STARTED) {
+                // display soft / hard cap times - only if they exist!
+                if (game.getSoftCapTime() < 1) {
+                    softCapTimeView.setText("None");
+                } else {
+                    softCapTimeView.setText( Utils.getTimeString(game.getSoftCapTime()) );
+                }
+                if (game.getHardCapTime() < 1) {
+                    hardCapTimeView.setText("None");
+                } else {
+                    hardCapTimeView.setText( Utils.getTimeString(game.getHardCapTime()) );
+                }
+            } else {
+                // display soft / hard cap timers!
+                if (timeCapBar.getCurrentView().getId() != R.id.timeCapTimerBar) {
+                    timeCapBar.showNext();
+                }
+                // Start game cap timer
+                startCapTimer();
+            }
         }
 
         // Set the field layout
@@ -120,9 +160,14 @@ public class GameDisplayFragment extends Fragment {
             setFieldOrientation();
         }
 
-        // Set the start button text
+        // Hide start button / unhide end button if game has already started
         if (game.getStatus() != Game.Status.NOT_STARTED) {
-            startButton.setText(R.string.start_resume_button);
+            if (endButton.getVisibility() != View.VISIBLE) {
+                endButton.setVisibility(View.VISIBLE);
+            }
+            if (startButton.getVisibility() != View.GONE) {
+                startButton.setVisibility(View.GONE);
+            }
         }
 
         // Set the game status
@@ -196,9 +241,16 @@ public class GameDisplayFragment extends Fragment {
 
                 endButton.setVisibility(View.VISIBLE);
                 startButton.setVisibility(View.GONE);
+
+                // Start time cap timer
+                if (timeCapBar.getVisibility() == View.VISIBLE) {
+                    timeCapBar.showNext();
+                    startCapTimer();
+                }
             }
         });
 
+        // TODO: set endButton builder text to strings.xml file
         endButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
@@ -216,6 +268,78 @@ public class GameDisplayFragment extends Fragment {
                 confirmBuilder.show();
             }
         });
+    }
+
+    private void startCapTimer() {
+        // TODO: change 60000 [1 min] to final variable
+        // TODO: insert logic to figure out if soft cap or hard cap is next.
+
+        Calendar softCap = Calendar.getInstance();
+        Calendar hardCap = Calendar.getInstance();
+        Calendar now = Calendar.getInstance();
+
+        softCap.setTimeInMillis(game.getSoftCapTime());
+        hardCap.setTimeInMillis(game.getHardCapTime());
+
+        // Create timer based on which time is next in future
+        if (Utils.isFuture(now, softCap)) {
+            softCapTimer = createCountDownTimer(game.getSoftCapTime(), 1000, true);
+            timeCapTimerText.setText(getActivity().getResources()
+                    .getString(R.string.soft_cap_timer_text));
+            softCapTimer.start();
+        } else if (Utils.isFuture(now, hardCap)) {
+            hardCapTimer = createCountDownTimer(game.getHardCapTime(), 1000, false);
+            timeCapTimerText.setText(getActivity().getResources()
+                    .getString(R.string.hard_cap_timer_text));
+            hardCapTimer.start();
+        } else {
+        /*
+        Time has passed Hard cap. Maybe create a SnackBar that recommends ending game?
+         */
+        }
+    }
+
+    private CountDownTimer createCountDownTimer(long capTime, long countDownInterval,
+                                                final boolean startNext) {
+        // Get current time
+        long now = Calendar.getInstance().getTimeInMillis();
+
+        // Calculate time between now and capTime
+        long millisInFuture = capTime - now;
+
+        return new CountDownTimer(millisInFuture, countDownInterval) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                // TODO: add to String resource file
+                timeCapTimer.setText("sec: " + millisUntilFinished / 1000);
+            }
+
+            @Override
+            public void onFinish() {
+                // TODO: add to String resource file
+                String message;
+
+                if (startNext) {
+                    // Start next timer (hard cap timer)
+                    hardCapTimer = createCountDownTimer(game.getHardCapTime(), 1000,
+                            false);
+                    hardCapTimer.start();
+
+                    // Change text of soft cap timer to "Hard Cap"
+                    timeCapTimerText.setText(getActivity().getResources()
+                            .getString(R.string.hard_cap_timer_text));
+
+                    // Soft cap hit.
+                    message = "Soft Cap Limit Hit!";
+                } else {
+                    // Hard cap hit.
+                    message = "Hard Cap Limit Hit!";
+                }
+
+                // TODO: Create Notification for user to hear / feel
+                // Text to send is stored in message variable
+            }
+        };
     }
 
     /**
@@ -265,8 +389,11 @@ public class GameDisplayFragment extends Fragment {
         rightTeamCircle = (ImageView) v.findViewById(R.id.rightTeamCircle);
 
         // Time Cap Views
-        timeCapBar = (LinearLayout) v.findViewById(R.id.timeCapBar);
+        timeCapBar = (ViewSwitcher) v.findViewById(R.id.timeCapBar);
         timeCapTimer = (TextView) v.findViewById(R.id.capTimer);
+        timeCapTimerText = (TextView) v.findViewById(R.id.capTimerText);
+        softCapTimeView = (TextView) v.findViewById(R.id.softCapTime);
+        hardCapTimeView = (TextView) v.findViewById(R.id.hardCapTime);
 
         getTeamViews(v);
 

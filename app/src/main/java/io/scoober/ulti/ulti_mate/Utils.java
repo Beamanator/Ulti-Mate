@@ -190,7 +190,7 @@ public class Utils {
 
     /**
      * Function takes two calendar parameters (past and future) and confirms if the
-     * past is actually before the future Calendar date
+     * past Calendar date is actually before the future Calendar date
      * @param p     past Calendar date
      * @param f     future Calendar date
      * @return      returns Boolean (true) if passed Calendar date is before future Calendar date
