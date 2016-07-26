@@ -14,6 +14,8 @@ public class MainMenuActivity extends AppCompatActivity {
     public static final String GAME_SETUP_ARG_EXTRA = "io.scoober.ulti.ulti_mate.Game_Setup_To_Launch";
     public static final String GAMES_TO_SHOW_EXTRA = "io.scoober.ulti.ulti_mate.games_to_show";
 
+    public static final int PERSISTENT_GAME_NOTIFICATION_ID = 1;
+
     public enum DisplayToLaunch {NEW, RESUME, VIEW, EDIT, UPDATE}
     public enum SetupToLaunch {CREATE_GAME, UPDATE_GAME,
         CREATE_TEMPLATE, EDIT_TEMPLATE}

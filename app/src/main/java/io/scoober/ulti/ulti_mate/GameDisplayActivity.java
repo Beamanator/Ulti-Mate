@@ -1,6 +1,8 @@
 package io.scoober.ulti.ulti_mate;
 
 import android.app.DatePickerDialog;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +12,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.NotificationCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -20,6 +23,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.RemoteViews;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
@@ -32,12 +36,14 @@ public class GameDisplayActivity extends AppCompatActivity
         implements  GameLengthDialogFragment.OnTimeSelectedListener,
                     GameLengthDialogFragment.OnDateSelectedListener,
                     GameLengthDialogFragment.OnNegativeButtonClickListener,
-                    GameLengthDialogFragment.OnPositiveButtonClickListener{
+                    GameLengthDialogFragment.OnPositiveButtonClickListener,
+                    GameDisplayFragment.onGameEndListener {
 
     private MainMenuActivity.DisplayToLaunch displayToLaunch;
     private long gameId;
 
-    GameDisplayFragment gameFrag;
+    private GameDisplayFragment gameFrag;
+    private GameDisplayEditFragment gameEditFrag;
 
     public static class TeamViewHolder {
         public Button addButton;
@@ -48,7 +54,7 @@ public class GameDisplayActivity extends AppCompatActivity
         public EditText nameEdit;
     }
 
-    private GameDisplayEditFragment gameEditFrag;
+    private Menu actionMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,17 +79,24 @@ public class GameDisplayActivity extends AppCompatActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
+        // Create arguments Bundle for fragments
+        Bundle args = new Bundle();
+        args.putSerializable(MainMenuActivity.GAME_DISPLAY_ARG_EXTRA, displayToLaunch);
+        args.putLong(MainMenuActivity.GAME_ID_EXTRA, gameId);
+
         // handle different cases for where Activity is called from
         switch (displayToLaunch) {
             case NEW:
             case RESUME:
             case UPDATE:
                 gameFrag = new GameDisplayFragment();
+                gameFrag.setArguments(args);
                 fragmentTransaction.add(R.id.game_container, gameFrag, "GAME_DISPLAY_FRAGMENT");
                 break;
             case EDIT:
             case VIEW:
                 gameEditFrag = new GameDisplayEditFragment();
+                gameEditFrag.setArguments(args);
                 fragmentTransaction.add(R.id.game_container, gameEditFrag, "GAME_DISPLAY_EDIT_FRAGMENT");
                 break;
         }
@@ -93,14 +106,33 @@ public class GameDisplayActivity extends AppCompatActivity
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
+    protected void onResume() {
+        cancelAppNotification();
+        super.onResume();
+    }
+
+    @Override
+    protected void onStop() {
         if (displayToLaunch == MainMenuActivity.DisplayToLaunch.NEW ||
                 displayToLaunch == MainMenuActivity.DisplayToLaunch.RESUME ||
-                displayToLaunch == MainMenuActivity.DisplayToLaunch.UPDATE ) {
-            getMenuInflater().inflate(R.menu.menu_game_display, menu);
-            return true;
+                displayToLaunch == MainMenuActivity.DisplayToLaunch.UPDATE) {
+            showAppNotification();
         }
+        super.onStop();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        actionMenu = menu;
+        getMenuInflater().inflate(R.menu.menu_game_display, menu);
+
+        if (displayToLaunch == MainMenuActivity.DisplayToLaunch.VIEW ||
+                displayToLaunch == MainMenuActivity.DisplayToLaunch.EDIT ) {
+            actionMenu.findItem(R.id.action_game_settings).setVisible(false);
+            actionMenu.findItem(R.id.action_edit_field_setup).setVisible(false);
+        }
+
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -123,12 +155,34 @@ public class GameDisplayActivity extends AppCompatActivity
                 return true;
             case R.id.action_edit_field_setup:
                 View gameDisplayView = findViewById(R.id.game_container);
-                Game game = Utils.getGameDetails(this, gameId);
                 gameFrag.buildFieldSetupDialogs(gameDisplayView);
                 return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onGameEnd() {
+
+        displayToLaunch = MainMenuActivity.DisplayToLaunch.VIEW;
+
+        // Generate arguments for game edit fragment
+        Bundle args = new Bundle();
+        args.putSerializable(MainMenuActivity.GAME_DISPLAY_ARG_EXTRA, displayToLaunch);
+        args.putLong(MainMenuActivity.GAME_ID_EXTRA, gameId);
+
+        // Disable specified menu options
+        actionMenu.findItem(R.id.action_game_settings).setVisible(false);
+        actionMenu.findItem(R.id.action_edit_field_setup).setVisible(false);
+
+        // Replace current fragment with gameEditFragment
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        gameEditFrag = new GameDisplayEditFragment();
+        gameEditFrag.setArguments(args);
+        ft.replace(R.id.game_container, gameEditFrag, "GAME_DISPLAY_EDIT_FRAGMENT");
+        ft.commit();
     }
 
     /*
@@ -172,6 +226,34 @@ public class GameDisplayActivity extends AppCompatActivity
 
         teamView.addButton.setEnabled(addButtonEnabled);
         teamView.subtractButton.setEnabled(subtractButtonEnabled);
+    }
+
+    /*
+    Notifications
+     */
+
+    /**
+     * Shows a persistent notification for the app that has various functions that it can handle.
+     */
+    private void showAppNotification() {
+        RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.notification_game_display_persistent);
+        Notification notification = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.drawable.field)
+                .setContent(remoteViews)
+                .setOngoing(true)
+                .build();
+
+        NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        nm.notify(MainMenuActivity.PERSISTENT_GAME_NOTIFICATION_ID,notification);
+
+    }
+
+    /**
+     * Cancels the persistent notification for the application
+     */
+    private void cancelAppNotification() {
+        NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        nm.cancel(MainMenuActivity.PERSISTENT_GAME_NOTIFICATION_ID);
     }
 
     /**

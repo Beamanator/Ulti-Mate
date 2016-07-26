@@ -34,8 +34,7 @@ public class GameSetupActivity extends AppCompatActivity
     private Setup currentSetupFrag;
     private Game game;
 
-    ActionBar actionBar;
-    Menu actionMenu;
+    private Menu actionMenu;
 
     // Intent information
     MainMenuActivity.SetupToLaunch setupToLaunch;
@@ -52,7 +51,7 @@ public class GameSetupActivity extends AppCompatActivity
         */
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        actionBar = getSupportActionBar();
+        ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         // Get data from the intent and bundle it for the fragments to use

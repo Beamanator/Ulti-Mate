@@ -60,10 +60,10 @@ public class GameDisplayEditFragment extends Fragment {
                 container, false);
 
         // get data from intent:
-        Intent intent = getActivity().getIntent();
-        long id = intent.getExtras().getLong(MainMenuActivity.GAME_ID_EXTRA, 0);
+        Bundle args = getArguments();
+        long id = args.getLong(MainMenuActivity.GAME_ID_EXTRA, 0);
         displayToLaunch = (MainMenuActivity.DisplayToLaunch)
-                intent.getSerializableExtra(MainMenuActivity.GAME_DISPLAY_ARG_EXTRA);
+                args.getSerializable(MainMenuActivity.GAME_DISPLAY_ARG_EXTRA);
         game = Utils.getGameDetails(getActivity().getBaseContext(), id);
 
         // set up widget references

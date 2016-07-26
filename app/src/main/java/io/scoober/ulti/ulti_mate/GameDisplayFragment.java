@@ -1,8 +1,8 @@
 package io.scoober.ulti.ulti_mate;
 
 
+import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
@@ -28,6 +28,8 @@ public class GameDisplayFragment extends Fragment {
     private final static int PULLING_STROKE_SIZE = 8;
     private final static int TEAM_CIRCLE_SIZE = 100;
 
+    private onGameEndListener endListener;
+
     private Button setupFieldButton, startButton, endButton;
     private TextView gameTitleView, gameStatusText, timeCapTimer;
     private TextView timeCapTimerText, softCapTimeView, hardCapTimeView;
@@ -43,8 +45,22 @@ public class GameDisplayFragment extends Fragment {
 
     private Map<Integer,GameDisplayActivity.TeamViewHolder> teamViewMap;
 
+    public interface onGameEndListener {
+        void onGameEnd();
+    }
+
     public GameDisplayFragment() {
         // Required empty public constructor
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            endListener = (onGameEndListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString() + " must implement onGameEndListener");
+        }
     }
 
     @Override
@@ -54,9 +70,8 @@ public class GameDisplayFragment extends Fragment {
         View fragmentLayout = inflater.inflate(R.layout.fragment_game_display,
                 container, false);
 
-        // get data from intent:
-        Intent intent = getActivity().getIntent();
-        gameId = intent.getExtras().getLong(MainMenuActivity.GAME_ID_EXTRA, 0);
+        Bundle args = getArguments();
+        gameId = args.getLong(MainMenuActivity.GAME_ID_EXTRA, 0);
 
         // set up widget references
         getWidgetReferences(fragmentLayout);
@@ -354,11 +369,7 @@ public class GameDisplayFragment extends Fragment {
         game.end();
         Utils.saveGameDetails(v.getContext(), game);
 
-        Intent intent = new Intent(v.getContext(),GameDisplayActivity.class);
-        intent.putExtra(MainMenuActivity.GAME_ID_EXTRA, game.getId());
-        intent.putExtra(MainMenuActivity.GAME_DISPLAY_ARG_EXTRA,
-                MainMenuActivity.DisplayToLaunch.VIEW);
-        startActivity(intent);
+        endListener.onGameEnd();
     }
 
     /**
