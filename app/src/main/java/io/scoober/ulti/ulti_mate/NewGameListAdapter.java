@@ -57,7 +57,7 @@ public class NewGameListAdapter extends ArrayAdapter<Game>{
         holder.templateTitle.setText(template.getTemplateName());
         holder.gameTitle.setText(template.getGameName());
         holder.teams.setText(res.getString(R.string.team_list_text,
-                template.getTeam1Name(), template.getTeam2Name()));
+                template.getTeam(1).getName(), template.getTeam(2).getName()));
 
         // Set onClickListener for contextMenuButton
         Utils.setContextMenuListener(holder.contextMenuButton, convertView, getContext());

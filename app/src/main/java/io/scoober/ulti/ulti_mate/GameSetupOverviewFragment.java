@@ -176,10 +176,10 @@ public class GameSetupOverviewFragment extends Fragment {
         timeCapsText.setText(timeCapString);
 
         // Set the team information
-        team1ImageButton.build(80, game.getTeam1Color());
-        team2ImageButton.build(80, game.getTeam2Color());
-        team1NameText.setText(game.getTeam1Name());
-        team2NameText.setText(game.getTeam2Name());
+        team1ImageButton.build(80, game.getTeam(1).getColor());
+        team2ImageButton.build(80, game.getTeam(2).getColor());
+        team1NameText.setText(game.getTeam(1).getName());
+        team2NameText.setText(game.getTeam(2).getName());
 
         // Set OnClickListeners
         detailSetupCard.setOnClickListener(new View.OnClickListener() {
@@ -277,8 +277,7 @@ public class GameSetupOverviewFragment extends Fragment {
      */
     public void createTemplate(String templateName, boolean storeToGame) {
         Game template = new Game(game.getGameName(), game.getWinningScore(),
-                game.getTeam1Name(), game.getTeam1Color(), game.getTeam2Name(),
-                game.getTeam2Color(), game.getSoftCapTime(), game.getHardCapTime());
+                game.getTeam(1), game.getTeam(2), game.getSoftCapTime(), game.getHardCapTime());
         template.convertToTemplate(templateName);
         templateId = storeGame(template);
 

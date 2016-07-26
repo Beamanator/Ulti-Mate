@@ -3,8 +3,10 @@ package io.scoober.ulti.ulti_mate;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.support.annotation.ColorInt;
 import android.os.CountDownTimer;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -25,6 +27,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class GameDisplayFragment extends Fragment {
+
+    private final static int PULLING_STROKE_SIZE = 8;
+    private final static int TEAM_CIRCLE_SIZE = 100;
 
     private Button setupFieldButton, startButton, endButton;
     private TextView gameTitleView, gameStatusText, timeCapTimer;
@@ -68,7 +73,13 @@ public class GameDisplayFragment extends Fragment {
         startGame(startButton, endButton);
 
         // Build listener & dialogs for field setup:
-        buildFieldSetupDialogListener(fragmentLayout);
+        final View fl = fragmentLayout;
+        setupFieldButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                buildFieldSetupDialogs(fl);
+            }
+        });
 
         // Inflate the layout for this fragment
         return fragmentLayout;
@@ -94,23 +105,25 @@ public class GameDisplayFragment extends Fragment {
 
         // inflate team data and populate private variables
         game = Utils.getGameDetails(getActivity(),gameId);
-        initializeWidgets();
+        refreshWidgets();
     }
 
-    private void initializeWidgets() {
+    public void refreshWidgets() {
         // set Game title:
         gameTitleView.setText(game.getGameName());
 
         // set team details:
-        teamViewMap.get(1).nameView.setText(game.getTeam1Name());
-        teamViewMap.get(2).nameView.setText(game.getTeam2Name());
-        teamViewMap.get(1).scoreView.setText(Integer.toString(game.getTeam1Score()));
-        teamViewMap.get(2).scoreView.setText(Integer.toString(game.getTeam2Score()));
+        teamViewMap.get(1).nameView.setText(game.getTeam(1).getName());
+        teamViewMap.get(2).nameView.setText(game.getTeam(2).getName());
+        teamViewMap.get(1).scoreView.setText(Integer.toString(game.getScore(1)));
+        teamViewMap.get(2).scoreView.setText(Integer.toString(game.getScore(2)));
 
         // populate team circles with colors from database and black stroke
-        int mdBlack = getResources().getColor(R.color.md_black_1000);
-        leftCircle = Utils.createGradientDrawableCircle(100, game.getTeam1Color(), 8, mdBlack);
-        rightCircle = Utils.createGradientDrawableCircle(100, game.getTeam2Color(), 0, mdBlack);
+        int strokeColor = getResources().getColor(R.color.stroke_color);
+        leftCircle = Utils.createGradientDrawableCircle(TEAM_CIRCLE_SIZE,
+                game.getTeam(1).getColor(), 0, strokeColor);
+        rightCircle = Utils.createGradientDrawableCircle(TEAM_CIRCLE_SIZE,
+                game.getTeam(2).getColor(), 0, strokeColor);
         leftTeamCircle.setImageDrawable(leftCircle);
         rightTeamCircle.setImageDrawable(rightCircle);
 
@@ -142,8 +155,9 @@ public class GameDisplayFragment extends Fragment {
         }
 
         // Set the field layout
-        if (game.getInitPullingTeam() != null) {
+        if (game.getInitPullingTeamPos() != 0 && game.getInitLeftTeamPos() != 0) {
             showFieldLayout();
+            setFieldOrientation();
         }
 
         // Hide start button / unhide end button if game has already started
@@ -193,7 +207,14 @@ public class GameDisplayFragment extends Fragment {
         teamViewMap.get(team).scoreView.setText(Integer.toString(score));
         GameDisplayActivity.enableDisableScoreButtons(team,game,teamViewMap);
         setFieldOrientation();
-        setGameStatusText(game.getStatus());
+
+        // Handle game statuses
+        Game.Status status = game.getStatus();
+        setGameStatusText(status);
+
+        if (status == Game.Status.HALFTIME) {
+            showHalftimeNotification();
+        }
     }
 
     /**
@@ -363,13 +384,8 @@ public class GameDisplayFragment extends Fragment {
                 getActivity().getBaseContext()));
     }
 
-    private void buildFieldSetupDialogListener(final View fl) {
-        setupFieldButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                GameDisplayActivity.buildFieldSetupDialogs(game, fl);
-            }
-        });
+    private void showHalftimeNotification() {
+        //TODO
     }
 
     private void getWidgetReferences(View v) {
@@ -423,20 +439,106 @@ public class GameDisplayFragment extends Fragment {
         teamViewMap.put(2,team2View);
     }
 
-    //TODO move most of this logic into the Game class
     private void setFieldOrientation() {
-        // TODO: worry about score eventually [halfime n such] + initTeamLeft
-        int totalScore = game.getTeam1Score() + game.getTeam2Score();
-        int team1Color = game.getTeam1Color();
-        int team2Color = game.getTeam2Color();
 
-        if (totalScore % 2 == 0) {
-            leftCircle.setColor(team1Color);
-            rightCircle.setColor(team2Color);
-        } else {
-            leftCircle.setColor(team2Color);
-            rightCircle.setColor(team1Color);
+        // Set the team positions
+        int leftTeamPos = game.getLeftTeamPos();
+        int rightTeamPos = game.getOpposingTeamPos(leftTeamPos);
+
+        leftCircle.setColor(game.getTeam(leftTeamPos).getColor());
+        rightCircle.setColor(game.getTeam(rightTeamPos).getColor());
+
+        // Set the pulling team
+        @ColorInt int strokeColor = getResources().getColor(R.color.stroke_color);
+        int pullingTeamPos = game.getPullingTeamPos();
+        int leftCircleStrokeSize = 0;
+        int rightCircleStrokeSize = 0;
+        if (pullingTeamPos == leftTeamPos) {
+            leftCircleStrokeSize = PULLING_STROKE_SIZE;
+        } else if (pullingTeamPos == rightTeamPos) {
+            rightCircleStrokeSize = PULLING_STROKE_SIZE;
         }
+
+        Log.d("GAMEDISPLAYFRAGMENT", "setFieldOrientation: " + leftCircleStrokeSize);
+        Log.d("GAMEDISPLAYFRAGMENT", "setFieldOrientation: " + rightCircleStrokeSize);
+        leftCircle.setStroke(leftCircleStrokeSize, strokeColor);
+        rightCircle.setStroke(rightCircleStrokeSize, strokeColor);
+
+
+
+
+    }
+
+    /*
+    Dialogs
+     */
+    public void buildFieldSetupDialogs(final View v) {
+        AlertDialog pullDialog;
+
+        final String t1Name = game.getTeam(1).getName();
+        final String t2Name = game.getTeam(2).getName();
+
+        // items to display in dialog boxes:
+        final String[] items = {t1Name, t2Name};
+
+        // First dialog box gets initial pulling team:
+        AlertDialog.Builder dialogBox = new AlertDialog.Builder(v.getContext());
+        dialogBox.setTitle(R.string.dialog_init_pulling_team);
+        dialogBox.setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case 0:
+                        game.setInitPullingTeamPos(1);
+                        break;
+                    case 1:
+                        game.setInitPullingTeamPos(2);
+                        break;
+                }
+                dialog.dismiss();
+                buildTeamOrientationDialog(game, t1Name, v);
+            }
+        });
+
+        pullDialog = dialogBox.create();
+        pullDialog.show();
+    }
+
+    private void buildTeamOrientationDialog(final Game g, final String t1,
+                                            final View v) {
+
+        AlertDialog orientationDialog;
+
+        // Strings to show in Dialog with Radio Buttons:
+        Resources res = v.getResources();
+        final CharSequence[] items = {res.getString(R.string.left), res.getString(R.string.right)};
+
+        AlertDialog.Builder dialogBox = new AlertDialog.Builder(v.getContext());
+
+        dialogBox.setTitle(res.getString(R.string.dialog_left_team, t1));
+
+        // 2nd param = automatically checked item
+        dialogBox.setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int item) {
+                switch (item) {
+                    case 0:
+                        g.setInitLeftTeamPos(1);
+                        break;
+                    case 1:
+                        g.setInitLeftTeamPos(2);
+                        break;
+                }
+                dialog.dismiss();
+
+                // At this point, both dialog boxes must have been hit & populated Game.
+                Utils.saveGameDetails(v.getContext(), g);
+
+                refreshWidgets();
+            }
+        });
+
+        orientationDialog = dialogBox.create();
+        orientationDialog.show();
     }
 
     /**

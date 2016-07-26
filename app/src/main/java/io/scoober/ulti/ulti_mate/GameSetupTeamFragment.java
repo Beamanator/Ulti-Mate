@@ -81,13 +81,13 @@ public class GameSetupTeamFragment extends Fragment {
      */
     private void initializeWidgets() {
 
-        int team1Color = game.getTeam1Color();
-        int team2Color = game.getTeam2Color();
-        team1NameText.setText(game.getTeam1Name());
-        team2NameText.setText(game.getTeam2Name());
+        Team firstTeam = game.getTeam(1);
+        Team secondTeam = game.getTeam(2);
+        team1NameText.setText(firstTeam.getName());
+        team2NameText.setText(secondTeam.getName());
 
-        team1Image.build(150, team1Color);
-        team2Image.build(150, team2Color);
+        team1Image.build(150, firstTeam.getColor());
+        team2Image.build(150, secondTeam.getColor());
 
     }
 
@@ -153,10 +153,12 @@ public class GameSetupTeamFragment extends Fragment {
                 int team1Color = team1Image.getColor();
                 int team2Color = team2Image.getColor();
 
-                game.setTeam1Name(team1Name);
-                game.setTeam1Color(team1Color);
-                game.setTeam2Name(team2Name);
-                game.setTeam2Color(team2Color);
+                Team firstTeam = game.getTeam(1);
+                Team secondTeam = game.getTeam(2);
+                firstTeam.setName(team1Name);
+                firstTeam.setColor(team1Color);
+                secondTeam.setName(team2Name);
+                secondTeam.setColor(team2Color);
 
                 completeListener.onTeamComplete();
             }

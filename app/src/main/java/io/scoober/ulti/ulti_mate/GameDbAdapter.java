@@ -21,10 +21,11 @@ public class GameDbAdapter {
     New in database version:
     7 -- Added template_name / is_template
     8 -- Added date_started / date_ended
+    9 -- Revamp to pulling team and left team
     */
-    static final int DATABASE_VERSION = 8;
+    static final int DATABASE_VERSION = 9;
 
-    //Games table
+    // Games table
     public static final String GAMES_TABLE = "games";
     public static final String C_ID = "_id"; // Game ID
 
@@ -33,12 +34,12 @@ public class GameDbAdapter {
     public static final String C_GAME_STATUS = "game_status"; // Status of the game
     public static final String C_WINNING_SCORE = "winning_score"; // score needed to win
 
-    // Team 1 information
+    // Position 1 Team information
     public static final String C_TEAM_1_NAME = "team_1_name"; // Team Name
     public static final String C_TEAM_1_COLOR = "team_1_color"; // Team Color
     public static final String C_TEAM_1_SCORE = "team_1_score"; // Team Score
 
-    // Team 2 information
+    // Position 2 Team information
     public static final String C_TEAM_2_NAME = "team_2_name"; // Team Name
     public static final String C_TEAM_2_COLOR = "team_2_color"; // Team Color
     public static final String C_TEAM_2_SCORE = "team_2_score"; // Team Score
@@ -46,8 +47,10 @@ public class GameDbAdapter {
     // Additional Game Information
     public static final String C_SOFT_CAP_TIME = "soft_cap_time"; // time of soft cap
     public static final String C_HARD_CAP_TIME = "hard_cap_time"; // time of hard cap
-    public static final String C_INIT_PULL_TEAM = "init_pull_team"; // Team pulling at the beginning
-    public static final String C_INIT_TEAM_LEFT = "init_team_left"; // Team on the left at the beginning
+    public static final String C_INIT_PULL_TEAM_POS = "init_pull_team_pos"; // Team pulling at the beginning
+    public static final String C_INIT_LEFT_TEAM_POS = "init_team_left_pos"; // Team on the left at the beginning
+    public static final String C_PULL_TEAM_POS = "pull_team_pos"; // Team pulling at current state
+    public static final String C_LEFT_TEAM_POS = "team_left_pos"; // Team on the left at current state
 
     // Template Info
     public static final String C_IS_TEMPLATE = "is_template"; // Boolean indicating whether this is a template
@@ -59,10 +62,28 @@ public class GameDbAdapter {
     public static final String C_DATE_STARTED = "date_started"; // Date game was started
     public static final String C_DATE_ENDED = "date_ended"; // Date game was ended
 
-    String[] allGameColumns = {C_ID, C_GAME_NAME, C_GAME_STATUS, C_WINNING_SCORE, C_TEAM_1_NAME, C_TEAM_1_COLOR,
-            C_TEAM_1_SCORE, C_TEAM_2_NAME, C_TEAM_2_COLOR, C_TEAM_2_SCORE, C_SOFT_CAP_TIME, C_HARD_CAP_TIME,
-            C_INIT_PULL_TEAM, C_INIT_TEAM_LEFT, C_IS_TEMPLATE, C_TEMPLATE_NAME,
-            C_DATE_CREATED, C_DATE_UPDATED, C_DATE_STARTED, C_DATE_ENDED};
+    String[] allGameColumns = {C_ID,    // 0
+            C_GAME_NAME,                // 1
+            C_GAME_STATUS,              // 2
+            C_WINNING_SCORE,            // 3
+            C_TEAM_1_NAME,              // 4
+            C_TEAM_1_COLOR,             // 5
+            C_TEAM_1_SCORE,             // 6
+            C_TEAM_2_NAME,              // 7
+            C_TEAM_2_COLOR,             // 8
+            C_TEAM_2_SCORE,             // 9
+            C_SOFT_CAP_TIME,            // 10
+            C_HARD_CAP_TIME,            // 11
+            C_INIT_PULL_TEAM_POS,       // 12
+            C_INIT_LEFT_TEAM_POS,       // 13
+            C_PULL_TEAM_POS,            // 14
+            C_LEFT_TEAM_POS,            // 15
+            C_IS_TEMPLATE,              // 16
+            C_TEMPLATE_NAME,            // 17
+            C_DATE_CREATED,             // 18
+            C_DATE_UPDATED,             // 19
+            C_DATE_STARTED,             // 20
+            C_DATE_ENDED};              // 21
 
     public static final String CREATE_TABLE_GAMES = "create table " + GAMES_TABLE + " ( "
             + C_ID + " integer primary key autoincrement, "
@@ -77,8 +98,10 @@ public class GameDbAdapter {
             + C_TEAM_2_SCORE + " integer not null, "
             + C_SOFT_CAP_TIME + " text, "
             + C_HARD_CAP_TIME + " text, "
-            + C_INIT_PULL_TEAM + " text, "
-            + C_INIT_TEAM_LEFT + " text, "
+            + C_INIT_PULL_TEAM_POS + " text, "
+            + C_INIT_LEFT_TEAM_POS + " text, "
+            + C_PULL_TEAM_POS + " text, "
+            + C_LEFT_TEAM_POS + " text, "
             + C_IS_TEMPLATE + " boolean, "
             + C_TEMPLATE_NAME + " text, "
             + C_DATE_CREATED + " integer not null, "
@@ -106,26 +129,48 @@ public class GameDbAdapter {
     }
 
     public long createGame(Game game) {
+        ContentValues values = getDbValuesFromGame(game);
+        return sqlDB.insert(GAMES_TABLE,null,values);
+    }
+
+    public long saveGame(Game game) {
+        ContentValues values = getDbValuesFromGame(game);
+        return sqlDB.update(GAMES_TABLE, values, C_ID + " = " + game.getId(), null);
+    }
+
+    public long deleteGame(long idToDelete) {
+        return sqlDB.delete(GAMES_TABLE, C_ID + " = " + idToDelete, null);
+    }
+
+    private ContentValues getDbValuesFromGame(Game game) {
+
         ContentValues values = new ContentValues();
         values.put(C_GAME_NAME, game.getGameName());
         values.put(C_GAME_STATUS, game.getStatus().name());
         values.put(C_WINNING_SCORE, game.getWinningScore());
-        values.put(C_TEAM_1_NAME, game.getTeam1Name());
-        values.put(C_TEAM_1_COLOR, game.getTeam1Color());
-        values.put(C_TEAM_1_SCORE, 0);
-        values.put(C_TEAM_2_NAME, game.getTeam2Name());
-        values.put(C_TEAM_2_COLOR, game.getTeam2Color());
-        values.put(C_TEAM_2_SCORE, 0);
         values.put(C_SOFT_CAP_TIME, game.getSoftCapTime());
         values.put(C_HARD_CAP_TIME, game.getHardCapTime());
+
+        Team team1 = game.getTeam(1);
+        Team team2 = game.getTeam(2);
+        values.put(C_TEAM_1_NAME, team1.getName());
+        values.put(C_TEAM_1_COLOR, team1.getColor());
+        values.put(C_TEAM_1_SCORE, game.getScore(1));
+        values.put(C_TEAM_2_NAME, team2.getName());
+        values.put(C_TEAM_2_COLOR, team2.getColor());
+        values.put(C_TEAM_2_SCORE, game.getScore(2));
+        values.put(C_INIT_PULL_TEAM_POS, game.getInitPullingTeamPos());
+        values.put(C_INIT_LEFT_TEAM_POS, game.getInitLeftTeamPos());
+        values.put(C_PULL_TEAM_POS, game.getPullingTeamPos());
+        values.put(C_LEFT_TEAM_POS, game.getLeftTeamPos());
         values.put(C_IS_TEMPLATE, game.isTemplate());
         values.put(C_TEMPLATE_NAME, game.getTemplateName());
-        values.put(C_DATE_CREATED, Calendar.getInstance().getTimeInMillis());
+        values.put(C_DATE_CREATED, game.getCreateDate());
         values.put(C_DATE_UPDATED, Calendar.getInstance().getTimeInMillis());
         values.put(C_DATE_STARTED, game.getStartDate());
         values.put(C_DATE_ENDED, game.getEndDate());
 
-        return sqlDB.insert(GAMES_TABLE,null,values);
+        return values;
     }
 
     /*
@@ -237,35 +282,12 @@ public class GameDbAdapter {
         return games;
     }
 
-    public long saveGame(Game game) {
-        ContentValues values = new ContentValues();
-        values.put(C_GAME_NAME, game.getGameName());
-        values.put(C_GAME_STATUS, game.getStatus().name());
-        values.put(C_WINNING_SCORE, game.getWinningScore());
-        values.put(C_SOFT_CAP_TIME, game.getSoftCapTime());
-        values.put(C_HARD_CAP_TIME, game.getHardCapTime());
-        values.put(C_TEAM_1_NAME, game.getTeam1Name());
-        values.put(C_TEAM_1_COLOR, game.getTeam1Color());
-        values.put(C_TEAM_1_SCORE, game.getTeam1Score());
-        values.put(C_TEAM_2_NAME, game.getTeam2Name());
-        values.put(C_TEAM_2_COLOR, game.getTeam2Color());
-        values.put(C_TEAM_2_SCORE, game.getTeam2Score());
-        values.put(C_INIT_PULL_TEAM, game.getInitPullingTeam());
-        values.put(C_INIT_TEAM_LEFT, game.getInitTeamLeft());
-        values.put(C_IS_TEMPLATE, game.isTemplate());
-        values.put(C_TEMPLATE_NAME, game.getTemplateName());
-        values.put(C_DATE_CREATED, game.getCreateDate());
-        values.put(C_DATE_UPDATED, Calendar.getInstance().getTimeInMillis());
-        values.put(C_DATE_STARTED, game.getStartDate());
-        values.put(C_DATE_ENDED, game.getEndDate());
-
-        return sqlDB.update(GAMES_TABLE, values, C_ID + " = " + game.getId(), null);
-    }
-
-    public long deleteGame(long idToDelete) {
-        return sqlDB.delete(GAMES_TABLE, C_ID + " = " + idToDelete, null);
-    }
-
+    /**
+     * Transforms a cursor generated by an SQL query on all columns. Use the comment on the
+     * allGameColumns to determine what each index is.
+     * @param cursor    Cursor generated by SQL query
+     * @return          game object
+     */
     private Game cursorToGame(Cursor cursor) {
         // Transform query into game object
         long id = cursor.getLong(0);
@@ -280,19 +302,22 @@ public class GameDbAdapter {
         int team2Score = cursor.getInt(9); // Team Score
         long softCapTime = cursor.getLong(10); // time of soft cap
         long hardCapTime = cursor.getLong(11); // time of hard cap
-        String initPullingTeam = cursor.getString(12); // Team pulling at the beginning
-        String initTeamLeft = cursor.getString(13); // Team on the left at the beginning
-        boolean isTemplate = (cursor.getInt(14) == 1);
-        String templateName = cursor.getString(15);
-        long date = cursor.getLong(16); // Date game was created
-        // position 17 = update date
-        long startDate = cursor.getLong(18); // Date game was started
-        long endDate = cursor.getLong(19); // Date game was ended
+        int initPullingTeamId = cursor.getInt(12); // Team pulling at the beginning
+        int initLeftTeamId = cursor.getInt(13); // Team on the left at the beginning
+        int pullingTeamId = cursor.getInt(14);
+        int leftTeamId = cursor.getInt(15);
+        boolean isTemplate = (cursor.getInt(16) == 1);
+        String templateName = cursor.getString(17);
+        long date = cursor.getLong(18); // Date game was created
+        // position 18 = update date
+        long startDate = cursor.getLong(20); // Date game was started
+        long endDate = cursor.getLong(21); // Date game was ended
 
         // Create game object and return it.
         return new Game(id, gameName, status, winningScore,team1Score,team2Score,
                 team1Name, team1Color, team2Name, team2Color, softCapTime, hardCapTime,
-                initPullingTeam, initTeamLeft, isTemplate, templateName, date, startDate, endDate);
+                initPullingTeamId, initLeftTeamId, pullingTeamId, leftTeamId,
+                isTemplate, templateName, date, startDate, endDate);
 
     }
 

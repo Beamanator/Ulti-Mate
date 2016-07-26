@@ -1,7 +1,7 @@
 package io.scoober.ulti.ulti_mate;
 
 import android.content.Context;
-import android.support.annotation.ColorInt;
+import android.util.SparseArray;
 
 import java.util.Calendar;
 
@@ -20,21 +20,17 @@ public class Game {
 
     private String gameName;
     private int winningScore; // score needed to win
+
+    SparseArray<Team> teams; // SparseArray holds teams mapped by setup position, either 1 or 2
+    SparseArray<Integer> scoreMap; // Maps team IDs to their score
+
     private long softCapTime; // time of soft cap
     private long hardCapTime; // time of hard cap
-    private int team1Score; // Team Score
-    private int team2Score; // Team Score
 
-    private String initPullingTeam; // Team pulling at the beginning
-    private String initTeamLeft; // Team on the left at the beginning
-
-    // Team 1 information
-    private String team1Name; // Team Name
-    private @ColorInt int team1Color; // Team Color
-
-    // Team 2 information
-    private String team2Name; // Team Name
-    private @ColorInt int team2Color; // Team Color
+    private int initPullingTeamPos; // Team pulling at the beginning
+    private int pullingTeamPos; // Team pulling at the current game state
+    private int initLeftTeamPos; // Team on the left at the beginning
+    private int leftTeamPos; // team on the left at the current game state
 
     private Status status;
     public enum Status { NOT_STARTED, FIRST_HALF, HALFTIME, SECOND_HALF,
@@ -90,73 +86,55 @@ public class Game {
         this.hardCapTime = hardCapTime;
     }
 
-    public int getScore(int team) {
-        if (team == 1) {
-            return team1Score;
-        } else if (team == 2) {
-            return team2Score;
-        } else {
-            return -1;
+    public int getScore(int teamPos) {
+        return scoreMap.get(teamPos);
+    }
+
+    public void setTeamScore(int teamPos, int score) {
+        scoreMap.put(teamPos, score);
+    }
+
+    /**
+     * Gets the team corresponding to the team position passed in. Options for team position
+     * are currently 1 and 2.
+     * @param position  Team position based on setup
+     * @return          Team object corresponding to the number
+     */
+    public Team getTeam(int position) {
+        return teams.get(position);
+    }
+
+    public int getInitPullingTeamPos() {
+        return initPullingTeamPos;
+    }
+
+    public int getInitLeftTeamPos() {
+        return initLeftTeamPos;
+    }
+
+    public void setInitPullingTeamPos(int initPullingTeamPos) {
+        this.initPullingTeamPos = initPullingTeamPos;
+        if (scoreMap.get(1) == 0 && scoreMap.get(2) == 0) {
+            this.pullingTeamPos = this.initPullingTeamPos;
         }
     }
 
-    public int getTeam1Score() {
-        return team1Score;
+    public void setInitLeftTeamPos(int initLeftTeamPos) {
+        this.initLeftTeamPos = initLeftTeamPos;
+        if (scoreMap.get(1) == 0 && scoreMap.get(2) == 0) {
+            this.leftTeamPos = this.initLeftTeamPos;
+        }
     }
 
-    public void setTeam1Score(int score) { this.team1Score = score; }
-
-    public int getTeam2Score() {
-        return team2Score;
+    public int getLeftTeamPos() {
+        return leftTeamPos;
     }
 
-    public void setTeam2Score(int score) {this.team2Score = score; }
-
-    public String getInitPullingTeam() {
-        return initPullingTeam;
-    }
-
-    public String getInitTeamLeft() {
-        return initTeamLeft;
-    }
-
-    public String getTeam1Name() {
-        return team1Name;
-    }
-
-    public void setTeam1Name(String name) { this.team1Name = name; }
-
-    public int getTeam1Color() {
-        return team1Color;
-    }
-
-    public void setTeam1Color(int team1Color) {
-        this.team1Color = team1Color;
+    public int getPullingTeamPos() {
+        return pullingTeamPos;
     }
 
     public Status getStatus() { return status; }
-
-    public String getTeam2Name() {
-        return team2Name;
-    }
-
-    public void setTeam2Name(String name) { this.team2Name = name; }
-
-    public int getTeam2Color() {
-        return team2Color;
-    }
-
-    public void setTeam2Color(int team2Color) {
-        this.team2Color = team2Color;
-    }
-
-    public void setInitPullingTeam(String initPullingTeam) {
-        this.initPullingTeam = initPullingTeam;
-    }
-
-    public void setInitTeamLeft(String initTeamLeft) {
-        this.initTeamLeft = initTeamLeft;
-    }
 
     public String getTemplateName() {
         return templateName;
@@ -167,23 +145,23 @@ public class Game {
     }
 
     /*
-        Constructor for building the game from the Game Setup Activity. Defaults are set here
-        and will not need to be reset again, as this will populate them in the database.
-        */
-    public Game(String gameName, int winningScore, String team1Name, int team1Color,
-                String team2Name, int team2Color, long softCapTime, long hardCapTime) {
+        Constructor for building the game from the Game Setup Activity.
+    */
+    public Game(String gameName, int winningScore, Team firstTeam, Team secondTeam, long softCapTime, long hardCapTime) {
         this.gameName = gameName;
         this.winningScore = winningScore;
-        this.team1Name = team1Name;
-        this.team1Color = team1Color;
-        this.team2Name = team2Name;
-        this.team2Color = team2Color;
         this.softCapTime = softCapTime;
         this.hardCapTime = hardCapTime;
 
+        this.teams = new SparseArray<>();
+        teams.put(1, firstTeam); // Hard code position 1
+        teams.put(2, secondTeam); // Hard code position 2
+
         // set defaults
-        this.team1Score = 0;
-        this.team2Score = 0;
+        this.scoreMap = new SparseArray<>();
+        this.scoreMap.put(1,0);
+        this.scoreMap.put(2,0);
+
         this.startDate = 0;
         this.endDate = 0;
         this.status = Status.NOT_STARTED;
@@ -194,21 +172,29 @@ public class Game {
      */
     public Game(long id, String gameName, Status status, int winningScore, int team1Score, int team2Score,
                 String team1Name, int team1Color, String team2Name, int team2Color,
-                long softCapTime, long hardCapTime, String initPullingTeam, String initTeamLeft,
-                boolean isTemplate, String templateName, long createDate, long sDate, long eDate) {
+                long softCapTime, long hardCapTime, int initPullingTeamPos, int initTeamLeftId,
+                int pullingTeamPos, int leftTeamPos, boolean isTemplate, String templateName,
+                long createDate, long sDate, long eDate) {
         this.id = id;
         this.gameName = gameName;
         this.winningScore = winningScore;
-        this.team1Score = team1Score;
-        this.team2Score = team2Score;
-        this.team1Name = team1Name;
-        this.team1Color = team1Color;
-        this.team2Name = team2Name;
-        this.team2Color = team2Color;
+
+        Team firstTeam = new Team(team1Name, team1Color);
+        Team secondTeam = new Team(team2Name, team2Color);
+        this.teams = new SparseArray<>();
+        teams.put(1, firstTeam); // Hard code Position 1
+        teams.put(2, secondTeam); // Hard code Position 2
+
+        this.scoreMap = new SparseArray<>();
+        this.scoreMap.put(1,team1Score); // Hard code Position 1
+        this.scoreMap.put(2,team2Score); // Hard code Position 2
+
         this.softCapTime = softCapTime;
         this.hardCapTime = hardCapTime;
-        this.initPullingTeam = initPullingTeam;
-        this.initTeamLeft = initTeamLeft;
+        this.initPullingTeamPos = initPullingTeamPos;
+        this.initLeftTeamPos = initTeamLeftId;
+        this.pullingTeamPos = pullingTeamPos;
+        this.leftTeamPos = leftTeamPos;
         this.isTemplate = isTemplate;
         this.templateName = templateName;
         this.createDate = createDate;
@@ -217,30 +203,97 @@ public class Game {
         this.status = status;
     }
 
-    public int incrementScore(int teamNumber) {
-        if (teamNumber == 1) {
-            this.team1Score+=1;
-            status = calculateGameStatus();
-            return this.team1Score;
-        } else if(teamNumber == 2) {
-            this.team2Score+=1;
-            status = calculateGameStatus();
-            return this.team2Score;
-        }
-        return -1;
+    /**
+     * Increment the score of the team corresponding to the given position
+     * @param teamPos       Position of the team
+     * @return              New Score
+     */
+    public int incrementScore(int teamPos) {
+        int score = scoreMap.get(teamPos);
+        score += 1;
+
+        scoreMap.put(teamPos, score);
+        Status prevStatus = status;
+        status = calcGameStatus();
+        pullingTeamPos = calcPullingTeam(true, teamPos);
+        leftTeamPos = calcLeftTeam(prevStatus);
+
+        return score;
     }
 
-    public int decrementScore(int teamNumber) {
-        if (teamNumber == 1) {
-            this.team1Score-=1;
-            status = calculateGameStatus();
-            return this.team1Score;
-        } else if(teamNumber == 2) {
-            this.team2Score-=1;
-            status = calculateGameStatus();
-            return this.team2Score;
+    /**
+     * Decrement the score of the team corresponding to the given position
+     * @param teamPos       Position of the team
+     * @return              New Score
+     */
+    public int decrementScore(int teamPos) {
+        int score = scoreMap.get(teamPos);
+        score -= 1;
+
+        scoreMap.put(teamPos, score);
+        Status prevStatus = status;
+        status = calcGameStatus();
+        pullingTeamPos = calcPullingTeam(false, teamPos);
+        leftTeamPos = calcLeftTeam(prevStatus);
+
+        return score;
+    }
+
+    private int calcLeftTeam(Status prevStatus) {
+        // If the score is 0-0, then return the initial pulling team
+        if (scoreMap.get(1) == 0 && scoreMap.get(2) == 0) {
+            return initLeftTeamPos;
         }
-        return -1;
+
+        // If we're at halftime, then return the opposing team to the initial team
+        if (status == Status.HALFTIME) {
+            return getOpposingTeamPos(initLeftTeamPos);
+        }
+
+        // If we transition below halftime, figure out the pulling team from the sum of the scores
+        if (prevStatus == Status.HALFTIME && status == Status.FIRST_HALF) {
+            int sumScores = getScore(1) + getScore(2);
+            return (sumScores % 2 == 0) ? initLeftTeamPos : getOpposingTeamPos(initLeftTeamPos);
+        }
+
+        // Otherwise, return the opposing team to the last team on the left
+        return getOpposingTeamPos(leftTeamPos);
+
+    }
+
+    /**
+     * Calculates the pulling team
+     * @param scoreUp   Boolean indicating whether the score increased
+     * @param teamPos   position of Team whose score was modified
+     * @return          position Team that will be pulling or 0, if unknown
+     */
+    private int calcPullingTeam(boolean scoreUp, int teamPos) {
+        // If we got back to the original score, then return the initial pulling team
+        if (scoreMap.get(1) == 0 && scoreMap.get(2) == 0) {
+            return initPullingTeamPos;
+        }
+
+        // If we're at halftime, it's the opposite team of the initial pulling team
+        if (status == Status.HALFTIME) {
+            return getOpposingTeamPos(initPullingTeamPos);
+        }
+
+        // If the score went down, the pulling team is unreliable - return null
+        if (!scoreUp) {
+            return 0;
+        }
+
+        // If the score went up, set it to the team that just scored
+        return teamPos;
+    }
+
+    /**
+     * Returns the opposing team position
+     * @param teamPos   Position of the original team
+     * @return          Team position of opposing team
+     */
+    public int getOpposingTeamPos(int teamPos) {
+        return (teamPos == 1) ? 2 : 1;
     }
 
     private boolean isUsingHalftime() {
@@ -295,7 +348,7 @@ public class Game {
      * Function to calculate game status and change the gameStatusText. Halftime is defined
      * as (score to win + 1) / 2, unless there is no winning score defined for the game.
      */
-    private Status calculateGameStatus() {
+    private Status calcGameStatus() {
 
         if (status == Status.GAME_OVER) {
             return Status.GAME_OVER;
@@ -307,6 +360,9 @@ public class Game {
         }
 
         int halftimeScore = Math.round((float)winningScore /2);
+
+        int team1Score = scoreMap.get(1);
+        int team2Score = scoreMap.get(2);
         int higherScore = (team1Score > team2Score) ? team1Score : team2Score;
 
         // If the higher score is less than the halftime score, it must be first half
