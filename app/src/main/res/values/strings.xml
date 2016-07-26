@@ -17,6 +17,7 @@
     <string name="dialog_cancel">Cancel</string>
     <string name="error_text_empty">%1$s is a required field.</string>
     <string name="time_basic_hhmm_a">00:00 AM</string>
+    <string name="time_basic_h_m_s">%1$d:%2$d:%3$d</string>
 
     <!--Main Menu Activity Strings-->
     <string name="resume_button">Resume</string>

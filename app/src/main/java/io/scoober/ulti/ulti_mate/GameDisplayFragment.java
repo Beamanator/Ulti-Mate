@@ -279,9 +279,16 @@ public class GameDisplayFragment extends Fragment {
                     .getString(R.string.hard_cap_timer_text));
             hardCapTimer.start();
         } else {
-        /*
-        Time has passed Hard cap. Maybe create a SnackBar that recommends ending game?
-         */
+            timeCapTimerText.setText(getActivity().getResources()
+                    .getString(R.string.hard_cap_timer_text));
+            timeCapTimer.setText(getActivity().getResources().getString(
+                    R.string.time_basic_h_m_s, 0, 0, 0) );
+
+            /*
+            Time has passed Hard cap. Maybe create a SnackBar that recommends ending game?
+             */
+
+            // TODO: create notification for user
         }
     }
 
@@ -296,12 +303,19 @@ public class GameDisplayFragment extends Fragment {
         return new CountDownTimer(millisInFuture, countDownInterval) {
             @Override
             public void onTick(long millisUntilFinished) {
-                // TODO: add to String resource file
-                timeCapTimer.setText("sec: " + millisUntilFinished / 1000);
+                timeCapTimer.setText(getActivity().getResources().getString(
+                        R.string.time_basic_h_m_s,
+                        (millisUntilFinished / 3600000),
+                        (millisUntilFinished / 60000),
+                        (millisUntilFinished / 1000)
+                ));
             }
 
             @Override
             public void onFinish() {
+                timeCapTimer.setText(getActivity().getResources().getString(
+                        R.string.time_basic_h_m_s, 0, 0, 0) );
+
                 // TODO: add to String resource file
                 String message;
 
