@@ -6,13 +6,10 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
-import android.support.annotation.ColorInt;
 import android.os.CountDownTimer;
+import android.support.annotation.ColorInt;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.PopupMenu;
-import android.support.v7.widget.ViewStubCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,7 +40,6 @@ public class GameDisplayFragment extends Fragment {
     private LinearLayout gameImagesLayout;
     private long gameId;
     private Game game;
-    private MainMenuActivity.DisplayToLaunch displayToLaunch;
 
     private Map<Integer,GameDisplayActivity.TeamViewHolder> teamViewMap;
 
@@ -172,6 +168,13 @@ public class GameDisplayFragment extends Fragment {
 
         // Set the game status
         setGameStatusText(game.getStatus());
+
+        /*
+        Enable or disable the score buttons, depending on the score
+        Not started will be handled by the
+         */
+        GameDisplayActivity.enableDisableScoreButtons(1, game, teamViewMap, true);
+        GameDisplayActivity.enableDisableScoreButtons(2, game, teamViewMap, true);
     }
 
     private void setupScoreButtonListeners(final int team) {
@@ -180,10 +183,9 @@ public class GameDisplayFragment extends Fragment {
         teamViewHolder.addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int score = game.incrementScore(team);
+                game.incrementScore(team);
                 Utils.saveGameDetails(getActivity().getBaseContext(), game);
-
-                afterPointsChange(team, score);
+                afterPointsChange();
 
             }
         });
@@ -191,30 +193,24 @@ public class GameDisplayFragment extends Fragment {
         teamViewHolder.subtractButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int score = game.decrementScore(team);
+                game.decrementScore(team);
                 Utils.saveGameDetails(getActivity().getBaseContext(), game);
-                afterPointsChange(team,score);
+                afterPointsChange();
             }
         });
     }
 
     /**
      * Function defines what happens to the view after the score changes
-     * @param team      Team number whose score was modified
-     * @param score     New team score
      */
-    private void afterPointsChange(int team, int score) {
-        teamViewMap.get(team).scoreView.setText(Integer.toString(score));
-        GameDisplayActivity.enableDisableScoreButtons(team,game,teamViewMap);
-        setFieldOrientation();
-
+    private void afterPointsChange() {
         // Handle game statuses
         Game.Status status = game.getStatus();
-        setGameStatusText(status);
-
         if (status == Game.Status.HALFTIME) {
             showHalftimeNotification();
         }
+
+        refreshWidgets();
     }
 
     /**
@@ -226,27 +222,17 @@ public class GameDisplayFragment extends Fragment {
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                // Enable or disable the score buttons, depending on the score
-                GameDisplayActivity.enableDisableScoreButtons(1,game,teamViewMap);
-                GameDisplayActivity.enableDisableScoreButtons(2,game,teamViewMap);
-
                 // Update the game status to started if it hasn't been started yet
-                if (game.getStatus() == Game.Status.NOT_STARTED) {
-                    game.start();
-                    Utils.saveGameDetails(getActivity(),game);
-                }
-                // Update status bar to reflect game status
-                setGameStatusText(game.getStatus());
-
-                endButton.setVisibility(View.VISIBLE);
-                startButton.setVisibility(View.GONE);
+                game.start();
+                Utils.saveGameDetails(getActivity(),game);
 
                 // Start time cap timer
                 if (timeCapBar.getVisibility() == View.VISIBLE) {
                     timeCapBar.showNext();
                     startCapTimer();
                 }
+
+                refreshWidgets();
             }
         });
 
@@ -445,8 +431,6 @@ public class GameDisplayFragment extends Fragment {
             rightCircleStrokeSize = PULLING_STROKE_SIZE;
         }
 
-        Log.d("GAMEDISPLAYFRAGMENT", "setFieldOrientation: " + leftCircleStrokeSize);
-        Log.d("GAMEDISPLAYFRAGMENT", "setFieldOrientation: " + rightCircleStrokeSize);
         leftCircle.setStroke(leftCircleStrokeSize, strokeColor);
         rightCircle.setStroke(rightCircleStrokeSize, strokeColor);
 

@@ -95,7 +95,7 @@ public class GameDisplayEditFragment extends Fragment {
                 int score = game.incrementScore(team);
                 teamViewHolder.scoreView.setText(Integer.toString(score));
                 Utils.saveGameDetails(getActivity().getBaseContext(), game);
-                GameDisplayActivity.enableDisableScoreButtons(team,game,teamViewMap);
+                GameDisplayActivity.enableDisableScoreButtons(team, game, teamViewMap, false);
             }
         });
 
@@ -105,7 +105,7 @@ public class GameDisplayEditFragment extends Fragment {
                 int score = game.decrementScore(team);
                 teamViewHolder.scoreView.setText(Integer.toString(score));
                 Utils.saveGameDetails(getActivity().getBaseContext(), game);
-                GameDisplayActivity.enableDisableScoreButtons(team,game,teamViewMap);
+                GameDisplayActivity.enableDisableScoreButtons(team, game, teamViewMap, false);
             }
         });
     }
@@ -130,8 +130,8 @@ public class GameDisplayEditFragment extends Fragment {
         teamViewMap.get(2).colorButton.setClickable(true);
 
         // Enable Score Buttons
-        GameDisplayActivity.enableDisableScoreButtons(1, game, teamViewMap);
-        GameDisplayActivity.enableDisableScoreButtons(2, game, teamViewMap);
+        GameDisplayActivity.enableDisableScoreButtons(1, game, teamViewMap, false);
+        GameDisplayActivity.enableDisableScoreButtons(2, game, teamViewMap, false);
 
         // Add listeners to text buttons
         gameTitleEdit.addTextChangedListener(new TextValidator(gameTitleEdit) {

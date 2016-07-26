@@ -137,31 +137,41 @@ public class GameDisplayActivity extends AppCompatActivity
 
     /**
      * This function handles enabling and disabling score buttons for the game displays
-     * @param team  Number corresponding to the team for which
+     * @param team          Number corresponding to the team for which the buttons will be enabled
+     * @param game          Game object
+     * @param teamViewMap   Object that contains the views for each team
+     * @param respectStatus Boolean indicating whether status should be respected if true,
+     *                      NOT_STARTED and GAME_OVER will disable both buttons
      */
     public static void enableDisableScoreButtons(int team, Game game,
-                                           Map<Integer,TeamViewHolder> teamViewMap) {
+                                           Map<Integer,TeamViewHolder> teamViewMap,
+                                                 boolean respectStatus) {
         GameDisplayActivity.TeamViewHolder teamView = teamViewMap.get(team);
 
-        /*
-        If the score is equal to or greater than the max score, disable the add button
-        Otherwise enable it.
-        */
-        if(game.getScore(team) >= Game.MAX_SCORE) {
-            teamView.addButton.setEnabled(false);
+        boolean addButtonEnabled, subtractButtonEnabled;
+        Game.Status status = game.getStatus();
+
+        if (respectStatus &&
+                (status == Game.Status.NOT_STARTED || status == Game.Status.GAME_OVER)) {
+            addButtonEnabled = false;
+            subtractButtonEnabled = false;
+
         } else {
-            teamView.addButton.setEnabled(true);
+            /*
+            If the score is equal to or greater than the max score, disable the add button
+            Otherwise enable it.
+            */
+            addButtonEnabled = game.getScore(team) < Game.MAX_SCORE;
+
+            /*
+            If the score is equal to or less than the min score, disable the subtract button
+            Otherwise enable it.
+            */
+            subtractButtonEnabled = game.getScore(team) > Game.MIN_SCORE;
         }
 
-        /*
-        If the score is equal to or less than the min score, disable the subtract button
-        Otherwise enable it.
-        */
-        if(game.getScore(team) <= Game.MIN_SCORE) {
-            teamView.subtractButton.setEnabled(false);
-        } else {
-            teamView.subtractButton.setEnabled(true);
-        }
+        teamView.addButton.setEnabled(addButtonEnabled);
+        teamView.subtractButton.setEnabled(subtractButtonEnabled);
     }
 
     /**
