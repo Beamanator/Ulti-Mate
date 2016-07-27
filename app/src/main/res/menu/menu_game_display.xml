@@ -11,6 +11,7 @@
         android:id="@+id/action_edit_field_setup"
         android:orderInCategory="100"
         android:title="@string/action_edit_field_setup"
+        android:enabled="false"
         app:showAsAction="never"/>
     <item
         android:id="@+id/action_share"

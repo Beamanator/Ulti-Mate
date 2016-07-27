@@ -37,7 +37,7 @@ public class GameDisplayActivity extends AppCompatActivity
                     GameLengthDialogFragment.OnDateSelectedListener,
                     GameLengthDialogFragment.OnNegativeButtonClickListener,
                     GameLengthDialogFragment.OnPositiveButtonClickListener,
-                    GameDisplayFragment.onGameEndListener {
+                    GameDisplayFragment.StatusChangeListener {
 
     private MainMenuActivity.DisplayToLaunch displayToLaunch;
     private long gameId;
@@ -163,6 +163,24 @@ public class GameDisplayActivity extends AppCompatActivity
     }
 
     @Override
+    public void onStatusChange(Game.Status newStatus) {
+        switch(newStatus) {
+            case FIRST_HALF:
+                actionMenu.findItem(R.id.action_edit_field_setup).setVisible(true);
+                break;
+            case HALFTIME:
+                actionMenu.findItem(R.id.action_edit_field_setup).setVisible(false);
+                break;
+            case GAME_OVER:
+                onGameEnd();
+                break;
+        }
+    }
+
+    /**
+     * Function that handles what happens once the user ends the game, specifically swapping out
+     * the game display fragment with the game edit fragment and hiding menu options.
+     */
     public void onGameEnd() {
 
         displayToLaunch = MainMenuActivity.DisplayToLaunch.VIEW;
@@ -174,7 +192,7 @@ public class GameDisplayActivity extends AppCompatActivity
 
         // Disable specified menu options
         actionMenu.findItem(R.id.action_game_settings).setVisible(false);
-        actionMenu.findItem(R.id.action_edit_field_setup).setVisible(false);
+        actionMenu.findItem(R.id.action_edit_field_setup).setVisible(false); // also occurs at halftime
 
         // Replace current fragment with gameEditFragment
         FragmentManager fm = getSupportFragmentManager();
@@ -244,7 +262,7 @@ public class GameDisplayActivity extends AppCompatActivity
                 .build();
 
         NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        nm.notify(MainMenuActivity.PERSISTENT_GAME_NOTIFICATION_ID,notification);
+        nm.notify(MainMenuActivity.PERSISTENT_GAME_NOTIFICATION_ID, notification);
 
     }
 

@@ -28,7 +28,7 @@ public class GameDisplayFragment extends Fragment {
     private final static int PULLING_STROKE_SIZE = 8;
     private final static int TEAM_CIRCLE_SIZE = 100;
 
-    private onGameEndListener endListener;
+    private StatusChangeListener statusListener;
 
     private Button setupFieldButton, startButton, endButton;
     private TextView gameTitleView, gameStatusText, timeCapTimer;
@@ -45,8 +45,8 @@ public class GameDisplayFragment extends Fragment {
 
     private Map<Integer,GameDisplayActivity.TeamViewHolder> teamViewMap;
 
-    public interface onGameEndListener {
-        void onGameEnd();
+    public interface StatusChangeListener {
+        void onStatusChange(Game.Status newStatus);
     }
 
     public GameDisplayFragment() {
@@ -57,9 +57,9 @@ public class GameDisplayFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            endListener = (onGameEndListener) context;
+            statusListener = (StatusChangeListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement onGameEndListener");
+            throw new ClassCastException(context.toString() + " must implement StatusChangeListener");
         }
     }
 
@@ -139,11 +139,12 @@ public class GameDisplayFragment extends Fragment {
         rightTeamCircle.setImageDrawable(rightCircle);
 
         // Hard cap / Soft cap bar information:
+        Game.Status status = game.getStatus();
         if (game.getHardCapTime() < 1 && game.getSoftCapTime() < 1) {
             timeCapBar.setVisibility(View.GONE);
         } else {
             timeCapBar.setVisibility(View.VISIBLE);
-            if (game.getStatus() == Game.Status.NOT_STARTED) {
+            if (status == Game.Status.NOT_STARTED) {
                 // display soft / hard cap times - only if they exist!
                 if (game.getSoftCapTime() < 1) {
                     softCapTimeView.setText("None");
@@ -172,7 +173,7 @@ public class GameDisplayFragment extends Fragment {
         }
 
         // Hide start button / unhide end button if game has already started
-        if (game.getStatus() != Game.Status.NOT_STARTED) {
+        if (status != Game.Status.NOT_STARTED) {
             if (endButton.getVisibility() != View.VISIBLE) {
                 endButton.setVisibility(View.VISIBLE);
             }
@@ -182,7 +183,7 @@ public class GameDisplayFragment extends Fragment {
         }
 
         // Set the game status
-        setGameStatusText(game.getStatus());
+        setGameStatusText(status);
 
         /*
         Enable or disable the score buttons, depending on the score
@@ -190,6 +191,15 @@ public class GameDisplayFragment extends Fragment {
          */
         GameDisplayActivity.enableDisableScoreButtons(1, game, teamViewMap, true);
         GameDisplayActivity.enableDisableScoreButtons(2, game, teamViewMap, true);
+
+        /*
+        Enable or disable the field setup button, depending on status
+         */
+        if (status.compareTo(Game.Status.HALFTIME) >= 0) {
+            setupFieldButton.setEnabled(false);
+        } else {
+            setupFieldButton.setEnabled(true);
+        }
     }
 
     private void setupScoreButtonListeners(final int team) {
@@ -198,9 +208,10 @@ public class GameDisplayFragment extends Fragment {
         teamViewHolder.addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Game.Status prevStatus = game.getStatus();
                 game.incrementScore(team);
                 Utils.saveGameDetails(getActivity().getBaseContext(), game);
-                afterPointsChange();
+                afterPointsChange(prevStatus, game.getStatus());
 
             }
         });
@@ -208,9 +219,10 @@ public class GameDisplayFragment extends Fragment {
         teamViewHolder.subtractButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Game.Status prevStatus = game.getStatus();
                 game.decrementScore(team);
                 Utils.saveGameDetails(getActivity().getBaseContext(), game);
-                afterPointsChange();
+                afterPointsChange(prevStatus, game.getStatus());
             }
         });
     }
@@ -218,11 +230,14 @@ public class GameDisplayFragment extends Fragment {
     /**
      * Function defines what happens to the view after the score changes
      */
-    private void afterPointsChange() {
+    private void afterPointsChange(Game.Status prevStatus, Game.Status newStatus) {
         // Handle game statuses
-        Game.Status status = game.getStatus();
-        if (status == Game.Status.HALFTIME) {
+        if (newStatus == Game.Status.HALFTIME) {
             showHalftimeNotification();
+        }
+
+        if (prevStatus != newStatus) {
+            statusListener.onStatusChange(newStatus);
         }
 
         refreshWidgets();
@@ -369,7 +384,7 @@ public class GameDisplayFragment extends Fragment {
         game.end();
         Utils.saveGameDetails(v.getContext(), game);
 
-        endListener.onGameEnd();
+        statusListener.onStatusChange(game.getStatus());
     }
 
     /**

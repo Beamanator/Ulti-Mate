@@ -30,7 +30,8 @@
             android:text="@string/field_setup_button"
             android:id="@+id/fieldSetup"
             android:layout_gravity="center_horizontal"
-            android:visibility="visible"/>
+            android:visibility="visible"
+            android:enabled="false" />
 
         <!--Layout that contains team color & Field images-->
         <LinearLayout

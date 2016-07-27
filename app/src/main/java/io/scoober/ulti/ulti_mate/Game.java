@@ -33,8 +33,8 @@ public class Game {
     private int leftTeamPos; // team on the left at the current game state
 
     private Status status;
-    public enum Status { NOT_STARTED, FIRST_HALF, HALFTIME, SECOND_HALF,
-        SOFT_CAP, HARD_CAP, GAME_OVER, IN_PROGRESS}
+    public enum Status { NOT_STARTED, IN_PROGRESS, FIRST_HALF, HALFTIME, SECOND_HALF,
+        SOFT_CAP, HARD_CAP, GAME_OVER}
 
     // Template info
     private boolean isTemplate;
