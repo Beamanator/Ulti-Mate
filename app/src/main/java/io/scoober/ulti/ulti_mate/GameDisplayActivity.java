@@ -3,6 +3,7 @@ package io.scoober.ulti.ulti_mate;
 import android.app.DatePickerDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -269,10 +270,20 @@ public class GameDisplayActivity extends AppCompatActivity
      */
     private void showAppNotification() {
         RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.notification_game_display_persistent);
+
+        Intent showGames = new Intent(this, GameDisplayActivity.class);
+        showGames.putExtra(MainMenuActivity.GAME_ID_EXTRA, gameId);
+        showGames.putExtra(MainMenuActivity.GAME_DISPLAY_ARG_EXTRA, displayToLaunch);
+        PendingIntent showGamePI = PendingIntent.getActivity(this,
+                3, // TODO
+                showGames,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+
         Notification notification = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.field)
                 .setContent(remoteViews)
                 .setOngoing(true)
+                .setContentIntent(showGamePI)
                 .build();
 
         NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);

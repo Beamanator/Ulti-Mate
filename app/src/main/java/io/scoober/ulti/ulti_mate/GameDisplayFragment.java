@@ -222,10 +222,8 @@ public class GameDisplayFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Game.Status prevStatus = game.getStatus();
-                game.incrementScore(team);
-                Utils.saveGameDetails(getActivity().getBaseContext(), game);
+                changeScore(game, team, true);
                 afterPointsChange(prevStatus, game.getStatus());
-
             }
         });
 
@@ -233,15 +231,32 @@ public class GameDisplayFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Game.Status prevStatus = game.getStatus();
-                game.decrementScore(team);
-                Utils.saveGameDetails(getActivity().getBaseContext(), game);
+                changeScore(game, team, false);
                 afterPointsChange(prevStatus, game.getStatus());
             }
         });
     }
 
     /**
+     * Increments or decrements the score
+     * @param game              Game object
+     * @param teamPos           Team that is gaining/losing a point
+     * @param incrementScore    True - increment, false - decrement
+     */
+    private void changeScore(Game game, int teamPos, boolean incrementScore) {
+        if (incrementScore) {
+            game.incrementScore(teamPos);
+        } else {
+            game.decrementScore(teamPos);
+        }
+        Utils.saveGameDetails(getActivity().getBaseContext(), game);
+
+    }
+
+    /**
      * Function defines what happens to the view after the score changes
+     * @param prevStatus    previous status
+     * @param newStatus     new status
      */
     private void afterPointsChange(Game.Status prevStatus, Game.Status newStatus) {
         // Handle game statuses
