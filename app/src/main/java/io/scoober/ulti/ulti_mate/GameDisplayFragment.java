@@ -13,8 +13,7 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.ColorInt;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.NotificationManagerCompat;
-import android.support.v4.app.TaskStackBuilder;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -28,7 +27,6 @@ import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -245,7 +243,6 @@ public class GameDisplayFragment extends Fragment {
                 Game.Status prevStatus = game.getStatus();
                 game.decrementScore(team);
                 Utils.saveGameDetails(getActivity().getBaseContext(), game);
-
                 afterPointsChange(prevStatus, game.getStatus());
             }
         });
@@ -285,8 +282,6 @@ public class GameDisplayFragment extends Fragment {
                 if (timeCapBar.getVisibility() == View.VISIBLE) {
                     timeCapBar.showNext();
                     startTimers();
-
-                    // TODO: change background color based of soft / hard cap
                 }
 
                 refreshWidgets();
@@ -478,8 +473,54 @@ public class GameDisplayFragment extends Fragment {
                 getActivity().getBaseContext()));
     }
 
+    /**
+     * Function creates and shows a notification when a game's status reaches halftime
+     */
     private void showHalftimeNotification() {
-        //TODO
+        Intent intent = new Intent(getActivity(), GameDisplayActivity.class);
+
+        intent.putExtra(MainMenuActivity.GAME_ID_EXTRA, gameId);
+        intent.putExtra(MainMenuActivity.GAME_DISPLAY_ARG_EXTRA,
+                MainMenuActivity.DisplayToLaunch.RESUME);
+
+        int id = Utils.getGameNotificationID(gameId,
+                GameDisplayActivity.GameNotificationType.HALFTIME);
+
+        PendingIntent notificationIntent = PendingIntent.getActivity(getActivity(), id,
+                intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        String name1 = game.getTeam(1).getName();
+        String name2 = game.getTeam(2).getName();
+
+        // Truncate team name if it's too long
+        if (name1.length() > GameDisplayActivity.MAX_TEAM_NAME_LENGTH) {
+            name1 = name1.substring(0, GameDisplayActivity.MAX_TEAM_NAME_LENGTH);
+            name1 += (char) 8230;
+        }
+        if (name2.length() > GameDisplayActivity.MAX_TEAM_NAME_LENGTH) {
+            name2 = name2.substring(0, GameDisplayActivity.MAX_TEAM_NAME_LENGTH);
+            name2 += (char) 8230;
+        }
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getActivity())
+                .setSmallIcon(R.drawable.ic_hourglass_empty_black_24dp)
+                .setContentTitle(getResources().getString(
+                        R.string.notific_message_halftime_title,
+                        game.getScore(1), game.getScore(2)
+                ))
+                .setContentText(getResources().getString(
+                        R.string.notific_message_halftime_text,
+                        name1, name2
+                ))
+                .setTicker(getResources().getString(R.string.notific_message_halftime_alert))
+                .setAutoCancel(true)
+                .setContentIntent(notificationIntent)
+                .setDefaults(NotificationCompat.DEFAULT_VIBRATE);
+
+        NotificationManager notifManager = (NotificationManager)
+                getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+
+        notifManager.notify(id, builder.build());
     }
 
     private void getWidgetReferences(View v) {

@@ -43,6 +43,7 @@ public class GameDisplayActivity extends AppCompatActivity
 
     public final static int TEAM_CIRCLE_SIZE = 100;
     public final static int PULLING_STROKE_SIZE = 8;
+    public final static int MAX_TEAM_NAME_LENGTH = 12;
 
     private MainMenuActivity.DisplayToLaunch displayToLaunch;
     private long gameId;
@@ -59,7 +60,7 @@ public class GameDisplayActivity extends AppCompatActivity
         public EditText nameEdit;
     }
 
-    public enum GameNotificationType {SOFT_CAP, HARD_CAP}
+    public enum GameNotificationType {SOFT_CAP, HARD_CAP, HALFTIME}
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -66,16 +66,14 @@ public class AlertReceiver extends BroadcastReceiver {
                 .setContentTitle(msg)
                 .setContentText(msgText)
                 .setTicker(msgAlert)
-                .setAutoCancel(true);
-
-        mBuilder.setContentIntent(notificationIntent);
-
-        mBuilder.setDefaults(NotificationCompat.DEFAULT_VIBRATE);
+                .setAutoCancel(true)
+                .setContentIntent(notificationIntent)
+                .setDefaults(NotificationCompat.DEFAULT_VIBRATE);
 
         NotificationManager mNotificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
-        // 1 is unique ID for this notification
+        // id is unique ID for this notification
         mNotificationManager.notify(id, mBuilder.build());
     }
 }

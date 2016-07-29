@@ -564,6 +564,9 @@ public class Utils {
                 case HARD_CAP:
                     gameNotId = baseID + 2;
                     break;
+                case HALFTIME:
+                    gameNotId = baseID + 3;
+                    break;
                 default:
                     gameNotId = 0;
                     break;
