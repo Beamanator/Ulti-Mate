@@ -11,6 +11,8 @@ import android.support.annotation.ColorInt;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -95,6 +97,8 @@ public class GameDisplayFragment extends Fragment {
             }
         });
 
+        setHasOptionsMenu(true);
+
         // Inflate the layout for this fragment
         return fragmentLayout;
     }
@@ -120,6 +124,12 @@ public class GameDisplayFragment extends Fragment {
         // inflate team data and populate private variables
         game = Utils.getGameDetails(getActivity(),gameId);
         refreshWidgets();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.findItem(R.id.action_game_settings).setVisible(true);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     public void refreshWidgets() {

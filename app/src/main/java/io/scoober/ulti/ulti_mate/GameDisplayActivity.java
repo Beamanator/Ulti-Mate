@@ -58,8 +58,6 @@ public class GameDisplayActivity extends AppCompatActivity
         public EditText nameEdit;
     }
 
-    private Menu actionMenu;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -128,25 +126,14 @@ public class GameDisplayActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        actionMenu = menu;
         getMenuInflater().inflate(R.menu.menu_game_display, menu);
-
-        if (displayToLaunch == MainMenuActivity.DisplayToLaunch.VIEW ||
-                displayToLaunch == MainMenuActivity.DisplayToLaunch.EDIT ) {
-            actionMenu.findItem(R.id.action_game_settings).setVisible(false);
-        }
-
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         switch(id) {
             case R.id.action_share:
                 return true;
@@ -182,9 +169,6 @@ public class GameDisplayActivity extends AppCompatActivity
         Bundle args = new Bundle();
         args.putSerializable(MainMenuActivity.GAME_DISPLAY_ARG_EXTRA, displayToLaunch);
         args.putLong(MainMenuActivity.GAME_ID_EXTRA, gameId);
-
-        // Disable specified menu options
-        actionMenu.findItem(R.id.action_game_settings).setVisible(false);
 
         // Replace current fragment with gameEditFragment
         FragmentManager fm = getSupportFragmentManager();
