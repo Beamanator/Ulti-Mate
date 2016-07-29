@@ -17,7 +17,7 @@
     <string name="dialog_cancel">Cancel</string>
     <string name="error_text_empty">%1$s is a required field.</string>
     <string name="time_basic_hhmm_a">00:00 AM</string>
-    <string name="time_basic_h_m_s">%1$d:%2$d:%3$d</string>
+    <string name="time_basic_h_m_s">%1$s : %2$s : %3$s</string>
 
     <!--Main Menu Activity Strings-->
     <string name="resume_button">Resume</string>
@@ -134,4 +134,11 @@
     <string name="text_dialog_fragment_default_title">Title Goes Here</string>
     <string name="text_positive_action">Save</string>
     <string name="text_negative_action">Cancel</string>
+
+    <!--Notification Strings-->
+    <string name="notific_message_time_cap_hit">Time Cap Hit</string>
+    <string name="notific_message_soft_cap_hit">Soft Cap Time Hit</string>
+    <string name="notific_message_hard_cap_hit">Hard Cap Time Hit</string>
+    <string name="notific_message_alert_time_cap_hit">Time Cap Hit</string>
+    <string name="notific_message_text_game_hint">Click To Return To Game</string>
 </resources>

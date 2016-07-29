@@ -1,6 +1,9 @@
 package io.scoober.ulti.ulti_mate;
 
+import android.app.AlarmManager;
 import android.app.DatePickerDialog;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -8,6 +11,8 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -24,6 +29,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.Map;
 
 import io.scoober.ulti.ulti_mate.widgets.TeamImageButton;
@@ -48,6 +54,8 @@ public class GameDisplayActivity extends AppCompatActivity
         public EditText nameEdit;
     }
 
+    public enum GameNotificationType {SOFT_CAP, HARD_CAP}
+
     private GameDisplayEditFragment gameEditFrag;
 
     @Override
@@ -64,7 +72,6 @@ public class GameDisplayActivity extends AppCompatActivity
 
         // get data from intent
         Intent oldIntent = getIntent();
-//        long id = oldIntent.getExtras().getLong(MainMenuActivity.GAME_ID_EXTRA, 0);
         displayToLaunch = (MainMenuActivity.DisplayToLaunch)
                 oldIntent.getSerializableExtra(MainMenuActivity.GAME_DISPLAY_ARG_EXTRA);
         gameId = oldIntent.getExtras().getLong(MainMenuActivity.GAME_ID_EXTRA,0);
