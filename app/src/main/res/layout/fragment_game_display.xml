@@ -30,7 +30,8 @@
             android:text="@string/field_setup_button"
             android:id="@+id/fieldSetup"
             android:layout_gravity="center_horizontal"
-            android:visibility="visible"/>
+            android:visibility="visible"
+            android:enabled="false" />
 
         <!--Layout that contains team color & Field images-->
         <LinearLayout
@@ -47,7 +48,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="0.25"
                 android:padding="25dp"
-                android:id="@+id/leftTeamCircle"
+                android:id="@+id/leftTeamImageButton"
                 android:cropToPadding="false" />
 
             <!--Field image view-->
@@ -65,7 +66,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="0.25"
                 android:padding="25dp"
-                android:id="@+id/rightTeamCircle"/>
+                android:id="@+id/rightTeamImageButton"/>
 
         </LinearLayout>
 

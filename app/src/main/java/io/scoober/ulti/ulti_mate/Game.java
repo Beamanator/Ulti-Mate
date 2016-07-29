@@ -33,8 +33,8 @@ public class Game {
     private int leftTeamPos; // team on the left at the current game state
 
     private Status status;
-    public enum Status { NOT_STARTED, FIRST_HALF, HALFTIME, SECOND_HALF,
-        SOFT_CAP, HARD_CAP, GAME_OVER, IN_PROGRESS}
+    public enum Status { NOT_STARTED, IN_PROGRESS, FIRST_HALF, HALFTIME, SECOND_HALF,
+        SOFT_CAP, HARD_CAP, GAME_OVER}
 
     // Template info
     private boolean isTemplate;
@@ -130,8 +130,30 @@ public class Game {
         return leftTeamPos;
     }
 
+    public void setLeftTeamPos(int leftTeamPos) {
+        this.leftTeamPos = leftTeamPos;
+
+        // Set the initial left team position, if it's prior to halftime
+        if (scoreMap.get(1) == 0 && scoreMap.get(2) == 0) {
+            this.initLeftTeamPos = leftTeamPos;
+        } else if (status.compareTo(Status.HALFTIME) < 0) {
+            // If it's prior to halftime, then check if the sum scores is even
+            this.initLeftTeamPos = ((scoreMap.get(1) + scoreMap.get(2)) % 2 == 0)
+                    ? leftTeamPos : getOpposingTeamPos(leftTeamPos);
+        }
+    }
+
     public int getPullingTeamPos() {
         return pullingTeamPos;
+    }
+
+    public void setPullingTeamPos(int pullingTeamPos) {
+        this.pullingTeamPos = pullingTeamPos;
+
+        // Set the initial pulling team position, if the score is 0-0
+        if (scoreMap.get(1) == 0 && scoreMap.get(2) == 0) {
+            this.initPullingTeamPos = pullingTeamPos;
+        }
     }
 
     public Status getStatus() { return status; }
@@ -162,9 +184,26 @@ public class Game {
         this.scoreMap.put(1,0);
         this.scoreMap.put(2,0);
 
+        this.initLeftTeamPos = 0;
+        this.initPullingTeamPos = 0;
+        this.leftTeamPos = 0;
+        this.initPullingTeamPos = 0;
+
         this.startDate = 0;
         this.endDate = 0;
         this.status = Status.NOT_STARTED;
+    }
+
+    /*
+    Constructor for copying a game object (except ID) - useful for making temporary copies
+     */
+    public Game(Game game) {
+        this(0, game.getGameName(), game.getStatus(), game.getWinningScore(), game.getScore(1),
+                game.getScore(2), game.getTeam(1).getName(), game.getTeam(1).getColor(),
+                game.getTeam(2).getName(), game.getTeam(2).getColor(), game.getSoftCapTime(),
+                game.getHardCapTime(), game.getInitPullingTeamPos(), game.getInitLeftTeamPos(),
+                game.getPullingTeamPos(), game.getLeftTeamPos(), game.isTemplate(),
+                game.getTemplateName(), game.getCreateDate(), game.getStartDate(), game.getEndDate());
     }
 
     /*
@@ -172,7 +211,7 @@ public class Game {
      */
     public Game(long id, String gameName, Status status, int winningScore, int team1Score, int team2Score,
                 String team1Name, int team1Color, String team2Name, int team2Color,
-                long softCapTime, long hardCapTime, int initPullingTeamPos, int initTeamLeftId,
+                long softCapTime, long hardCapTime, int initPullingTeamPos, int initTeamLeftPos,
                 int pullingTeamPos, int leftTeamPos, boolean isTemplate, String templateName,
                 long createDate, long sDate, long eDate) {
         this.id = id;
@@ -192,7 +231,7 @@ public class Game {
         this.softCapTime = softCapTime;
         this.hardCapTime = hardCapTime;
         this.initPullingTeamPos = initPullingTeamPos;
-        this.initLeftTeamPos = initTeamLeftId;
+        this.initLeftTeamPos = initTeamLeftPos;
         this.pullingTeamPos = pullingTeamPos;
         this.leftTeamPos = leftTeamPos;
         this.isTemplate = isTemplate;

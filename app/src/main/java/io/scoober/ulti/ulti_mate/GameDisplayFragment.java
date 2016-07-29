@@ -10,17 +10,15 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
-import android.support.annotation.ColorInt;
 import android.os.CountDownTimer;
+import android.support.annotation.ColorInt;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.AlertDialog;
-import android.support.v4.app.NotificationCompat;
-import android.support.v7.widget.PopupMenu;
-import android.support.v7.widget.ViewStubCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -40,6 +38,8 @@ public class GameDisplayFragment extends Fragment {
     private final static int PULLING_STROKE_SIZE = 8;
     private final static int TEAM_CIRCLE_SIZE = 100;
 
+    private StatusChangeListener statusListener;
+
     private Button setupFieldButton, startButton, endButton;
     private TextView gameTitleView, gameStatusText, timeCapTimer;
     private TextView timeCapTimerText, softCapTimeView, hardCapTimeView;
@@ -52,12 +52,25 @@ public class GameDisplayFragment extends Fragment {
     private LinearLayout gameImagesLayout;
     private long gameId;
     private Game game;
-    private MainMenuActivity.DisplayToLaunch displayToLaunch;
 
     private Map<Integer, GameDisplayActivity.TeamViewHolder> teamViewMap;
 
+    public interface StatusChangeListener {
+        void onStatusChange(Game.Status newStatus);
+    }
+
     public GameDisplayFragment() {
         // Required empty public constructor
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            statusListener = (StatusChangeListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString() + " must implement StatusChangeListener");
+        }
     }
 
     @Override
@@ -67,9 +80,8 @@ public class GameDisplayFragment extends Fragment {
         View fragmentLayout = inflater.inflate(R.layout.fragment_game_display,
                 container, false);
 
-        // get data from intent:
-        Intent intent = getActivity().getIntent();
-        gameId = intent.getExtras().getLong(MainMenuActivity.GAME_ID_EXTRA, 0);
+        Bundle args = getArguments();
+        gameId = args.getLong(MainMenuActivity.GAME_ID_EXTRA, 0);
 
         // set up widget references
         getWidgetReferences(fragmentLayout);
@@ -82,13 +94,18 @@ public class GameDisplayFragment extends Fragment {
         startGame(startButton, endButton);
 
         // Build listener & dialogs for field setup:
-        final View fl = fragmentLayout;
         setupFieldButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                buildFieldSetupDialogs(fl);
+                Intent intent = new Intent(getActivity(), GameSetupActivity.class);
+                intent.putExtra(MainMenuActivity.GAME_SETUP_ARG_EXTRA, MainMenuActivity.SetupToLaunch.UPDATE_GAME);
+                intent.putExtra(MainMenuActivity.GAME_ID_EXTRA, gameId);
+                intent.putExtra(MainMenuActivity.GAME_SETUP_FIELD_ONLY_EXTRA, true);
+                startActivity(intent);
             }
         });
+
+        setHasOptionsMenu(true);
 
         // Inflate the layout for this fragment
         return fragmentLayout;
@@ -117,6 +134,12 @@ public class GameDisplayFragment extends Fragment {
         refreshWidgets();
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.findItem(R.id.action_game_settings).setVisible(true);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
     public void refreshWidgets() {
         // set Game title:
         gameTitleView.setText(game.getGameName());
@@ -137,11 +160,12 @@ public class GameDisplayFragment extends Fragment {
         rightTeamCircle.setImageDrawable(rightCircle);
 
         // Hard cap / Soft cap bar information:
+        Game.Status status = game.getStatus();
         if (game.getHardCapTime() < 1 && game.getSoftCapTime() < 1) {
             timeCapBar.setVisibility(View.GONE);
         } else {
             timeCapBar.setVisibility(View.VISIBLE);
-            if (game.getStatus() == Game.Status.NOT_STARTED) {
+            if (status == Game.Status.NOT_STARTED) {
                 // display soft / hard cap times - only if they exist!
                 if (game.getSoftCapTime() < 1) {
                     softCapTimeView.setText("None");
@@ -166,13 +190,13 @@ public class GameDisplayFragment extends Fragment {
         }
 
         // Set the field layout
-        if (game.getInitPullingTeamPos() != 0 && game.getInitLeftTeamPos() != 0) {
+        if (game.getInitLeftTeamPos() != 0) {
             showFieldLayout();
             setFieldOrientation();
         }
 
         // Hide start button / unhide end button if game has already started
-        if (game.getStatus() != Game.Status.NOT_STARTED) {
+        if (status != Game.Status.NOT_STARTED) {
             if (endButton.getVisibility() != View.VISIBLE) {
                 endButton.setVisibility(View.VISIBLE);
             }
@@ -182,7 +206,23 @@ public class GameDisplayFragment extends Fragment {
         }
 
         // Set the game status
-        setGameStatusText(game.getStatus());
+        setGameStatusText(status);
+
+        /*
+        Enable or disable the score buttons, depending on the score
+        Not started will be handled by the
+         */
+        GameDisplayActivity.enableDisableScoreButtons(1, game, teamViewMap, true);
+        GameDisplayActivity.enableDisableScoreButtons(2, game, teamViewMap, true);
+
+        /*
+        Enable or disable the field setup button, depending on status
+         */
+        if (status.compareTo(Game.Status.HALFTIME) >= 0) {
+            setupFieldButton.setEnabled(false);
+        } else {
+            setupFieldButton.setEnabled(true);
+        }
     }
 
     private void setupScoreButtonListeners(final int team) {
@@ -191,10 +231,10 @@ public class GameDisplayFragment extends Fragment {
         teamViewHolder.addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int score = game.incrementScore(team);
+                Game.Status prevStatus = game.getStatus();
+                game.incrementScore(team);
                 Utils.saveGameDetails(getActivity().getBaseContext(), game);
-
-                afterPointsChange(team, score);
+                afterPointsChange(prevStatus, game.getStatus());
 
             }
         });
@@ -202,31 +242,29 @@ public class GameDisplayFragment extends Fragment {
         teamViewHolder.subtractButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int score = game.decrementScore(team);
+                Game.Status prevStatus = game.getStatus();
+                game.decrementScore(team);
                 Utils.saveGameDetails(getActivity().getBaseContext(), game);
-                afterPointsChange(team, score);
+
+                afterPointsChange(prevStatus, game.getStatus());
             }
         });
     }
 
     /**
      * Function defines what happens to the view after the score changes
-     *
-     * @param team  Team number whose score was modified
-     * @param score New team score
      */
-    private void afterPointsChange(int team, int score) {
-        teamViewMap.get(team).scoreView.setText(Integer.toString(score));
-        GameDisplayActivity.enableDisableScoreButtons(team, game, teamViewMap);
-        setFieldOrientation();
-
+    private void afterPointsChange(Game.Status prevStatus, Game.Status newStatus) {
         // Handle game statuses
-        Game.Status status = game.getStatus();
-        setGameStatusText(status);
-
-        if (status == Game.Status.HALFTIME) {
+        if (newStatus == Game.Status.HALFTIME) {
             showHalftimeNotification();
         }
+
+        if (prevStatus != newStatus) {
+            statusListener.onStatusChange(newStatus);
+        }
+
+        refreshWidgets();
     }
 
     /**
@@ -239,21 +277,9 @@ public class GameDisplayFragment extends Fragment {
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                // Enable or disable the score buttons, depending on the score
-                GameDisplayActivity.enableDisableScoreButtons(1, game, teamViewMap);
-                GameDisplayActivity.enableDisableScoreButtons(2, game, teamViewMap);
-
                 // Update the game status to started if it hasn't been started yet
-                if (game.getStatus() == Game.Status.NOT_STARTED) {
-                    game.start();
-                    Utils.saveGameDetails(getActivity(), game);
-                }
-                // Update status bar to reflect game status
-                setGameStatusText(game.getStatus());
-
-                endButton.setVisibility(View.VISIBLE);
-                startButton.setVisibility(View.GONE);
+                game.start();
+                Utils.saveGameDetails(getActivity(),game);
 
                 // Start time cap timer & display timer
                 if (timeCapBar.getVisibility() == View.VISIBLE) {
@@ -262,6 +288,8 @@ public class GameDisplayFragment extends Fragment {
 
                     // TODO: change background color based of soft / hard cap
                 }
+
+                refreshWidgets();
             }
         });
 
@@ -438,11 +466,7 @@ public class GameDisplayFragment extends Fragment {
         game.end();
         Utils.saveGameDetails(v.getContext(), game);
 
-        Intent intent = new Intent(v.getContext(),GameDisplayActivity.class);
-        intent.putExtra(MainMenuActivity.GAME_ID_EXTRA, game.getId());
-        intent.putExtra(MainMenuActivity.GAME_DISPLAY_ARG_EXTRA,
-                MainMenuActivity.DisplayToLaunch.VIEW);
-        startActivity(intent);
+        statusListener.onStatusChange(game.getStatus());
     }
 
     /**
@@ -469,8 +493,8 @@ public class GameDisplayFragment extends Fragment {
         gameImagesLayout = (LinearLayout) v.findViewById(R.id.gameImagesLayout);
 
         // Image Views
-        leftTeamCircle = (ImageView) v.findViewById(R.id.leftTeamCircle);
-        rightTeamCircle = (ImageView) v.findViewById(R.id.rightTeamCircle);
+        leftTeamCircle = (ImageView) v.findViewById(R.id.leftTeamImageButton);
+        rightTeamCircle = (ImageView) v.findViewById(R.id.rightTeamImageButton);
 
         // Time Cap Views
         timeCapBar = (ViewSwitcher) v.findViewById(R.id.timeCapBar);
@@ -537,77 +561,6 @@ public class GameDisplayFragment extends Fragment {
 
     }
 
-    /*
-    Dialogs
-     */
-    public void buildFieldSetupDialogs(final View v) {
-        AlertDialog pullDialog;
-
-        final String t1Name = game.getTeam(1).getName();
-        final String t2Name = game.getTeam(2).getName();
-
-        // items to display in dialog boxes:
-        final String[] items = {t1Name, t2Name};
-
-        // First dialog box gets initial pulling team:
-        AlertDialog.Builder dialogBox = new AlertDialog.Builder(v.getContext());
-        dialogBox.setTitle(R.string.dialog_init_pulling_team);
-        dialogBox.setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which) {
-                    case 0:
-                        game.setInitPullingTeamPos(1);
-                        break;
-                    case 1:
-                        game.setInitPullingTeamPos(2);
-                        break;
-                }
-                dialog.dismiss();
-                buildTeamOrientationDialog(game, t1Name, v);
-            }
-        });
-
-        pullDialog = dialogBox.create();
-        pullDialog.show();
-    }
-
-    private void buildTeamOrientationDialog(final Game g, final String t1,
-                                            final View v) {
-
-        AlertDialog orientationDialog;
-
-        // Strings to show in Dialog with Radio Buttons:
-        Resources res = v.getResources();
-        final CharSequence[] items = {res.getString(R.string.left), res.getString(R.string.right)};
-
-        AlertDialog.Builder dialogBox = new AlertDialog.Builder(v.getContext());
-
-        dialogBox.setTitle(res.getString(R.string.dialog_left_team, t1));
-
-        // 2nd param = automatically checked item
-        dialogBox.setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int item) {
-                switch (item) {
-                    case 0:
-                        g.setInitLeftTeamPos(1);
-                        break;
-                    case 1:
-                        g.setInitLeftTeamPos(2);
-                        break;
-                }
-                dialog.dismiss();
-
-                // At this point, both dialog boxes must have been hit & populated Game.
-                Utils.saveGameDetails(v.getContext(), g);
-
-                refreshWidgets();
-            }
-        });
-
-        orientationDialog = dialogBox.create();
-        orientationDialog.show();
-    }
 
     /**
      * Function hides setupFieldButton and makes gameImagesLayout visible

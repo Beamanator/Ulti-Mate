@@ -60,10 +60,10 @@ public class GameDisplayEditFragment extends Fragment {
                 container, false);
 
         // get data from intent:
-        Intent intent = getActivity().getIntent();
-        long id = intent.getExtras().getLong(MainMenuActivity.GAME_ID_EXTRA, 0);
+        Bundle args = getArguments();
+        long id = args.getLong(MainMenuActivity.GAME_ID_EXTRA, 0);
         displayToLaunch = (MainMenuActivity.DisplayToLaunch)
-                intent.getSerializableExtra(MainMenuActivity.GAME_DISPLAY_ARG_EXTRA);
+                args.getSerializable(MainMenuActivity.GAME_DISPLAY_ARG_EXTRA);
         game = Utils.getGameDetails(getActivity().getBaseContext(), id);
 
         // set up widget references
@@ -95,7 +95,7 @@ public class GameDisplayEditFragment extends Fragment {
                 int score = game.incrementScore(team);
                 teamViewHolder.scoreView.setText(Integer.toString(score));
                 Utils.saveGameDetails(getActivity().getBaseContext(), game);
-                GameDisplayActivity.enableDisableScoreButtons(team,game,teamViewMap);
+                GameDisplayActivity.enableDisableScoreButtons(team, game, teamViewMap, false);
             }
         });
 
@@ -105,7 +105,7 @@ public class GameDisplayEditFragment extends Fragment {
                 int score = game.decrementScore(team);
                 teamViewHolder.scoreView.setText(Integer.toString(score));
                 Utils.saveGameDetails(getActivity().getBaseContext(), game);
-                GameDisplayActivity.enableDisableScoreButtons(team,game,teamViewMap);
+                GameDisplayActivity.enableDisableScoreButtons(team, game, teamViewMap, false);
             }
         });
     }
@@ -130,8 +130,8 @@ public class GameDisplayEditFragment extends Fragment {
         teamViewMap.get(2).colorButton.setClickable(true);
 
         // Enable Score Buttons
-        GameDisplayActivity.enableDisableScoreButtons(1, game, teamViewMap);
-        GameDisplayActivity.enableDisableScoreButtons(2, game, teamViewMap);
+        GameDisplayActivity.enableDisableScoreButtons(1, game, teamViewMap, false);
+        GameDisplayActivity.enableDisableScoreButtons(2, game, teamViewMap, false);
 
         // Add listeners to text buttons
         gameTitleEdit.addTextChangedListener(new TextValidator(gameTitleEdit) {

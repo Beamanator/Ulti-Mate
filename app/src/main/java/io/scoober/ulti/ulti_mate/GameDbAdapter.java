@@ -153,6 +153,8 @@ public class GameDbAdapter {
 
         Team team1 = game.getTeam(1);
         Team team2 = game.getTeam(2);
+        long createDate = game.getCreateDate();
+        createDate = (createDate == 0) ? Calendar.getInstance().getTimeInMillis() : createDate;
         values.put(C_TEAM_1_NAME, team1.getName());
         values.put(C_TEAM_1_COLOR, team1.getColor());
         values.put(C_TEAM_1_SCORE, game.getScore(1));
@@ -165,7 +167,7 @@ public class GameDbAdapter {
         values.put(C_LEFT_TEAM_POS, game.getLeftTeamPos());
         values.put(C_IS_TEMPLATE, game.isTemplate());
         values.put(C_TEMPLATE_NAME, game.getTemplateName());
-        values.put(C_DATE_CREATED, game.getCreateDate());
+        values.put(C_DATE_CREATED, createDate);
         values.put(C_DATE_UPDATED, Calendar.getInstance().getTimeInMillis());
         values.put(C_DATE_STARTED, game.getStartDate());
         values.put(C_DATE_ENDED, game.getEndDate());
@@ -270,7 +272,8 @@ public class GameDbAdapter {
         ArrayList<Game> games = new ArrayList<>();
 
         String selection = C_IS_TEMPLATE + " = 1";
-        Cursor cursor = sqlDB.query(GAMES_TABLE, allGameColumns, selection, null, null, null, C_TEMPLATE_NAME + " ASC", null);
+        Cursor cursor = sqlDB.query(GAMES_TABLE, allGameColumns, selection,
+                null, null, null, C_TEMPLATE_NAME + " COLLATE NOCASE ASC", null);
 
         for(cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
             Game game = cursorToGame(cursor);
