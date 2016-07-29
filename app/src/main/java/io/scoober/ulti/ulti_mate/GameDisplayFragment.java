@@ -1,14 +1,20 @@
 package io.scoober.ulti.ulti_mate;
 
 
+import android.app.AlarmManager;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.ColorInt;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -22,7 +28,9 @@ import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class GameDisplayFragment extends Fragment {
@@ -45,7 +53,7 @@ public class GameDisplayFragment extends Fragment {
     private long gameId;
     private Game game;
 
-    private Map<Integer,GameDisplayActivity.TeamViewHolder> teamViewMap;
+    private Map<Integer, GameDisplayActivity.TeamViewHolder> teamViewMap;
 
     public interface StatusChangeListener {
         void onStatusChange(Game.Status newStatus);
@@ -122,7 +130,7 @@ public class GameDisplayFragment extends Fragment {
         super.onResume();
 
         // inflate team data and populate private variables
-        game = Utils.getGameDetails(getActivity(),gameId);
+        game = Utils.getGameDetails(getActivity(), gameId);
         refreshWidgets();
     }
 
@@ -162,20 +170,22 @@ public class GameDisplayFragment extends Fragment {
                 if (game.getSoftCapTime() < 1) {
                     softCapTimeView.setText("None");
                 } else {
-                    softCapTimeView.setText( Utils.getTimeString(game.getSoftCapTime()) );
+                    softCapTimeView.setText(Utils.getTimeString(game.getSoftCapTime()));
                 }
                 if (game.getHardCapTime() < 1) {
                     hardCapTimeView.setText("None");
                 } else {
-                    hardCapTimeView.setText( Utils.getTimeString(game.getHardCapTime()) );
+                    hardCapTimeView.setText(Utils.getTimeString(game.getHardCapTime()));
                 }
             } else {
                 // display soft / hard cap timers!
                 if (timeCapBar.getCurrentView().getId() != R.id.timeCapTimerBar) {
                     timeCapBar.showNext();
                 }
-                // Start game cap timer
-                startCapTimer();
+                // Start game cap timers
+                startTimers();
+
+                // TODO: change background color based of soft / hard cap
             }
         }
 
@@ -273,8 +283,9 @@ public class GameDisplayFragment extends Fragment {
 
     /**
      * Function to allow users to start changing scores and viewing game statuses.
-     * @param startButton   Start / Resume button. Once clicked, game is started / resumed
-     * @param endButton     End button stores data to database and locks game settings
+     *
+     * @param startButton Start / Resume button. Once clicked, game is started / resumed
+     * @param endButton   End button stores data to database and locks game settings
      */
     private void startGame(final Button startButton, final Button endButton) {
         startButton.setOnClickListener(new View.OnClickListener() {
@@ -284,10 +295,12 @@ public class GameDisplayFragment extends Fragment {
                 game.start();
                 Utils.saveGameDetails(getActivity(),game);
 
-                // Start time cap timer
+                // Start time cap timer & display timer
                 if (timeCapBar.getVisibility() == View.VISIBLE) {
                     timeCapBar.showNext();
-                    startCapTimer();
+                    startTimers();
+
+                    // TODO: change background color based of soft / hard cap
                 }
 
                 refreshWidgets();
@@ -314,10 +327,7 @@ public class GameDisplayFragment extends Fragment {
         });
     }
 
-    private void startCapTimer() {
-        // TODO: change 60000 [1 min] to final variable
-        // TODO: insert logic to figure out if soft cap or hard cap is next.
-
+    private void startTimers() {
         Calendar softCap = Calendar.getInstance();
         Calendar hardCap = Calendar.getInstance();
         Calendar now = Calendar.getInstance();
@@ -325,77 +335,135 @@ public class GameDisplayFragment extends Fragment {
         softCap.setTimeInMillis(game.getSoftCapTime());
         hardCap.setTimeInMillis(game.getHardCapTime());
 
+        boolean timerCreated = startCapTimer(now);
+        if (timerCreated) {
+            // NO need to check to see if alarms already exist. If they do, they'll be
+            //  canceled & overwritten
+            Resources r = getResources();
+            if (Utils.isFuture(now, softCap)) {
+                setAlarm(softCap.getTimeInMillis(),
+                        Utils.getGameNotificationID(game.getId(),
+                                GameDisplayActivity.GameNotificationType.SOFT_CAP),
+                        r.getString(R.string.notific_message_soft_cap_hit),
+                        r.getString(R.string.notific_message_text_game_hint),
+                        r.getString(R.string.notific_message_alert_time_cap_hit));
+            }
+            if (Utils.isFuture(now, hardCap)) {
+                setAlarm(hardCap.getTimeInMillis(),
+                        Utils.getGameNotificationID(game.getId(),
+                                GameDisplayActivity.GameNotificationType.HARD_CAP),
+                        r.getString(R.string.notific_message_hard_cap_hit),
+                        r.getString(R.string.notific_message_text_game_hint),
+                        r.getString(R.string.notific_message_alert_time_cap_hit));
+            }
+        }
+    }
+
+    private boolean startCapTimer(Calendar now) {
+        Calendar softCap = Calendar.getInstance();
+        Calendar hardCap = Calendar.getInstance();
+
+        softCap.setTimeInMillis(game.getSoftCapTime());
+        hardCap.setTimeInMillis(game.getHardCapTime());
+
+        Resources r = getResources();
+
         // Create timer based on which time is next in future
         if (Utils.isFuture(now, softCap)) {
-            softCapTimer = createCountDownTimer(game.getSoftCapTime(), 1000, true);
+            softCapTimer = createCountDownTimer(now.getTimeInMillis(), game.getSoftCapTime(),
+                    1000, true);
             timeCapTimerText.setText(getActivity().getResources()
                     .getString(R.string.soft_cap_timer_text));
             softCapTimer.start();
+
+            timeCapBar.setBackgroundColor(r.getColor(R.color.md_amber_500));
+            return true;
         } else if (Utils.isFuture(now, hardCap)) {
-            hardCapTimer = createCountDownTimer(game.getHardCapTime(), 1000, false);
+            hardCapTimer = createCountDownTimer(now.getTimeInMillis(), game.getHardCapTime(),
+                    1000, false);
             timeCapTimerText.setText(getActivity().getResources()
                     .getString(R.string.hard_cap_timer_text));
             hardCapTimer.start();
+
+            timeCapBar.setBackgroundColor(r.getColor(R.color.md_red_A700));
+            return true;
         } else {
             timeCapTimerText.setText(getActivity().getResources()
                     .getString(R.string.hard_cap_timer_text));
             timeCapTimer.setText(getActivity().getResources().getString(
-                    R.string.time_basic_h_m_s, 0, 0, 0) );
+                    R.string.time_basic_h_m_s, "00", "00", "00") );
 
-            /*
-            Time has passed Hard cap. Maybe create a SnackBar that recommends ending game?
-             */
+            timeCapBar.setBackgroundColor(r.getColor(R.color.md_red_A700));
 
-            // TODO: create notification for user
+            return false;
         }
     }
 
-    private CountDownTimer createCountDownTimer(long capTime, long countDownInterval,
+    public void setAlarm(long alertTime, int notificId, String msg, String msgText, String msgAlert) {
+
+        Intent alertIntent = new Intent(getActivity(), AlertReceiver.class);
+
+        // put notification extras into intent
+        alertIntent.putExtra(MainMenuActivity.NOTIFICATION_NEXT_CLASS, GameDisplayActivity.class);
+        alertIntent.putExtra(MainMenuActivity.NOTIFICATION_MESSAGE, msg);
+        alertIntent.putExtra(MainMenuActivity.NOTIFICATION_MESSAGE_TEXT, msgText);
+        alertIntent.putExtra(MainMenuActivity.NOTIFICATION_MESSAGE_ALERT, msgAlert);
+        alertIntent.putExtra(MainMenuActivity.NOTIFICATION_ID, notificId);
+
+        // put game extras into intent
+        alertIntent.putExtra(MainMenuActivity.GAME_ID_EXTRA, gameId);
+        alertIntent.putExtra(MainMenuActivity.GAME_DISPLAY_ARG_EXTRA,
+                MainMenuActivity.DisplayToLaunch.RESUME);
+
+        AlarmManager alarmManager = (AlarmManager)
+                getActivity().getSystemService(Context.ALARM_SERVICE);
+
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, alertTime,
+                PendingIntent.getBroadcast(getActivity(), notificId, alertIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT));
+    }
+
+    private CountDownTimer createCountDownTimer(final long now, long capTime, long countDownInterval,
                                                 final boolean startNext) {
-        // Get current time
-        long now = Calendar.getInstance().getTimeInMillis();
 
         // Calculate time between now and capTime
-        long millisInFuture = capTime - now;
+        final long millisInFuture = capTime - now;
 
         return new CountDownTimer(millisInFuture, countDownInterval) {
             @Override
             public void onTick(long millisUntilFinished) {
+                long hours = millisUntilFinished / 3600000;
+                long minutes = (millisUntilFinished - (hours * 3600000)) / 60000;
+                long seconds = (millisUntilFinished - (hours * 3600000) - (minutes * 60000)) / 1000;
+
+                String sHours = String.format(Locale.getDefault(), "%02d", hours);
+                String sMinutes = String.format(Locale.getDefault(), "%02d", minutes);
+                String sSeconds = String.format(Locale.getDefault(), "%02d", seconds);
+
                 timeCapTimer.setText(getActivity().getResources().getString(
                         R.string.time_basic_h_m_s,
-                        (millisUntilFinished / 3600000),
-                        (millisUntilFinished / 60000),
-                        (millisUntilFinished / 1000)
+                        sHours, sMinutes, sSeconds
                 ));
             }
 
             @Override
             public void onFinish() {
                 timeCapTimer.setText(getActivity().getResources().getString(
-                        R.string.time_basic_h_m_s, 0, 0, 0) );
-
-                // TODO: add to String resource file
-                String message;
+                        R.string.time_basic_h_m_s, "00" , "00", "00") );
 
                 if (startNext) {
                     // Start next timer (hard cap timer)
-                    hardCapTimer = createCountDownTimer(game.getHardCapTime(), 1000,
+                    hardCapTimer = createCountDownTimer(Calendar.getInstance().getTimeInMillis(),
+                            game.getHardCapTime(), 1000,
                             false);
                     hardCapTimer.start();
+
+                    timeCapBar.setBackgroundColor(getResources().getColor(R.color.md_red_A700));
 
                     // Change text of soft cap timer to "Hard Cap"
                     timeCapTimerText.setText(getActivity().getResources()
                             .getString(R.string.hard_cap_timer_text));
-
-                    // Soft cap hit.
-                    message = "Soft Cap Limit Hit!";
-                } else {
-                    // Hard cap hit.
-                    message = "Hard Cap Limit Hit!";
                 }
-
-                // TODO: Create Notification for user to hear / feel
-                // Text to send is stored in message variable
             }
         };
     }

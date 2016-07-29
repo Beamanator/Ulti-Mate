@@ -328,7 +328,7 @@
                 android:text="@string/soft_cap_timer_text"
                 android:id="@+id/capTimerText"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="#ffffff" />
+                android:textColor="#000000" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -337,7 +337,7 @@
                 android:id="@+id/capTimer"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textAlignment="center"
-                android:textColor="#ffffff"/>
+                android:textColor="#000000"/>
 
         </LinearLayout>
 

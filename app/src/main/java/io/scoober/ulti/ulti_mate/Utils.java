@@ -202,6 +202,8 @@ public class Utils {
 
         if (fDayOfYear > pDayOfYear) {
             return true;
+        } else if (fDayOfYear < pDayOfYear) {
+            return false;
         } else {
             return Utils.isFutureToday(
                     p.get(Calendar.HOUR_OF_DAY),
@@ -520,4 +522,64 @@ public class Utils {
         activity.registerForContextMenu(clickable);
         activity.openContextMenu(contextView);
     }
+
+    /*
+    Timer Utilities
+     */
+
+    /**
+     * Function attempts to convert a long to an integer. Thorws error if unable.
+     * @param num
+     */
+    public static int convertLongToInt(long num) {
+        if ( num > (long)Integer.MAX_VALUE ) {
+            // x is too big to convert, throw an exception or something useful
+            Log.e("Utils", "Game ID is too large to convert to notification id");
+            return 0;
+        }
+        else {
+            return (int) num;
+        }
+    }
+
+    /**
+     * Function converts a long game ID to an integer game notification Id based on the
+     * notification type
+     * @param gameID            long game ID
+     * @param notificationType  enum describing the type of game ID needed
+     * @return                  (int) (gameID * 10) + type
+     */
+    public static int getGameNotificationID(long gameID,
+                                               GameDisplayActivity.GameNotificationType notificationType) {
+        int baseID = convertLongToInt(gameID) * 10;
+        if (baseID == 0) {
+            Log.e("Utils","Notification ID cannot be created");
+            return 0;
+        } else {
+            int gameNotId;
+            switch (notificationType) {
+                case SOFT_CAP:
+                    gameNotId = baseID + 1;
+                    break;
+                case HARD_CAP:
+                    gameNotId = baseID + 2;
+                    break;
+                default:
+                    gameNotId = 0;
+                    break;
+            }
+            return gameNotId;
+        }
+    }
+//
+//    public static int getHardCapNotificationID(long gameID,
+//                                               GameDisplayActivity.GameNotificationType notificationType) {
+//        int baseID = getBaseCapIdFromGameId(gameID);
+//        if (baseID == 0) {
+//            Log.e("Utils","Hard Cap Notification ID cannot be created");
+//            return 0;
+//        } else {
+//            return baseID + 2;
+//        }
+//    }
 }
