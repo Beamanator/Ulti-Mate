@@ -37,7 +37,8 @@
             android:label="@string/title_activity_game_display"
             android:parentActivityName=".MainMenuActivity"
             android:theme="@style/AppTheme.NoActionBar"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:launchMode="singleTask"/>
         <activity
             android:name=".MyGamesActivity"
             android:label="@string/title_activity_my_games"
