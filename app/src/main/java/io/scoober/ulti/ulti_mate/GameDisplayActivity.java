@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.support.annotation.ColorInt;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
@@ -38,6 +39,9 @@ public class GameDisplayActivity extends AppCompatActivity
                     GameLengthDialogFragment.OnNegativeButtonClickListener,
                     GameLengthDialogFragment.OnPositiveButtonClickListener,
                     GameDisplayFragment.StatusChangeListener {
+
+    public final static int TEAM_CIRCLE_SIZE = 100;
+    public final static int PULLING_STROKE_SIZE = 8;
 
     private MainMenuActivity.DisplayToLaunch displayToLaunch;
     private long gameId;
@@ -130,7 +134,6 @@ public class GameDisplayActivity extends AppCompatActivity
         if (displayToLaunch == MainMenuActivity.DisplayToLaunch.VIEW ||
                 displayToLaunch == MainMenuActivity.DisplayToLaunch.EDIT ) {
             actionMenu.findItem(R.id.action_game_settings).setVisible(false);
-            actionMenu.findItem(R.id.action_edit_field_setup).setVisible(false);
         }
 
         return super.onCreateOptionsMenu(menu);
@@ -148,14 +151,10 @@ public class GameDisplayActivity extends AppCompatActivity
             case R.id.action_share:
                 return true;
             case R.id.action_game_settings:
-                Intent intent = new Intent(getBaseContext(), GameSetupActivity.class);
+                Intent intent = new Intent(this, GameSetupActivity.class);
                 intent.putExtra(MainMenuActivity.GAME_SETUP_ARG_EXTRA, MainMenuActivity.SetupToLaunch.UPDATE_GAME);
                 intent.putExtra(MainMenuActivity.GAME_ID_EXTRA, gameId);
                 startActivity(intent);
-                return true;
-            case R.id.action_edit_field_setup:
-                View gameDisplayView = findViewById(R.id.game_container);
-                gameFrag.buildFieldSetupDialogs(gameDisplayView);
                 return true;
         }
 
@@ -165,12 +164,6 @@ public class GameDisplayActivity extends AppCompatActivity
     @Override
     public void onStatusChange(Game.Status newStatus) {
         switch(newStatus) {
-            case FIRST_HALF:
-                actionMenu.findItem(R.id.action_edit_field_setup).setVisible(true);
-                break;
-            case HALFTIME:
-                actionMenu.findItem(R.id.action_edit_field_setup).setVisible(false);
-                break;
             case GAME_OVER:
                 onGameEnd();
                 break;
@@ -192,7 +185,6 @@ public class GameDisplayActivity extends AppCompatActivity
 
         // Disable specified menu options
         actionMenu.findItem(R.id.action_game_settings).setVisible(false);
-        actionMenu.findItem(R.id.action_edit_field_setup).setVisible(false); // also occurs at halftime
 
         // Replace current fragment with gameEditFragment
         FragmentManager fm = getSupportFragmentManager();
@@ -244,6 +236,44 @@ public class GameDisplayActivity extends AppCompatActivity
 
         teamView.addButton.setEnabled(addButtonEnabled);
         teamView.subtractButton.setEnabled(subtractButtonEnabled);
+    }
+
+    /**
+     * Sets the orientation of the field, depending on what information the game has
+     */
+    public static void setFieldOrientation(Game game, Context ctx,
+                                           TeamImageButton leftTeamImage, TeamImageButton rightTeamImage) {
+        int leftTeamPos = game.getLeftTeamPos();
+        if (game.getLeftTeamPos() != 0) {
+            // Set the field orientation
+            int rightTeamPos = game.getOpposingTeamPos(leftTeamPos);
+
+            leftTeamImage.setVisibility(View.VISIBLE);
+            rightTeamImage.setVisibility(View.VISIBLE);
+
+
+            // Set the pulling team
+            @ColorInt int strokeColor = ctx.getResources().getColor(R.color.stroke_color);
+            int pullingTeam = game.getPullingTeamPos();
+            int leftCircleStrokeSize = 0;
+            int rightCircleStrokeSize = 0;
+            if (pullingTeam != 0) {
+                if (pullingTeam == leftTeamPos) {
+                    leftCircleStrokeSize = PULLING_STROKE_SIZE;
+                } else {
+                    rightCircleStrokeSize = PULLING_STROKE_SIZE;
+                }
+            }
+
+            leftTeamImage.build(TEAM_CIRCLE_SIZE, game.getTeam(leftTeamPos).getColor(),
+                    leftCircleStrokeSize, strokeColor);
+            rightTeamImage.build(TEAM_CIRCLE_SIZE, game.getTeam(rightTeamPos).getColor(),
+                    rightCircleStrokeSize, strokeColor);
+
+        } else {
+            leftTeamImage.setVisibility(View.INVISIBLE);
+            rightTeamImage.setVisibility(View.INVISIBLE);
+        }
     }
 
     /*

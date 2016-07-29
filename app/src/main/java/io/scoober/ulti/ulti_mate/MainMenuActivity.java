@@ -8,11 +8,13 @@ import android.view.MenuItem;
 
 public class MainMenuActivity extends AppCompatActivity {
 
-    public static final String GAME_ID_EXTRA = "io.scoober.ulti.ulti_mate.Game_Id";
-    public static final String TEMPLATE_ID_EXTRA = "io.scoober.ulti.ulti_mate.Template_Id";
-    public static final String GAME_DISPLAY_ARG_EXTRA = "io.scoober.ulti.ulti_mate.Game_Display_To_Launch";
-    public static final String GAME_SETUP_ARG_EXTRA = "io.scoober.ulti.ulti_mate.Game_Setup_To_Launch";
-    public static final String GAMES_TO_SHOW_EXTRA = "io.scoober.ulti.ulti_mate.games_to_show";
+    public static final String PACKAGE_NAME = "io.scoober.ulti.ulti_mate";
+    public static final String GAME_ID_EXTRA = PACKAGE_NAME + ".Game_Id";
+    public static final String TEMPLATE_ID_EXTRA = PACKAGE_NAME + ".Template_Id";
+    public static final String GAME_DISPLAY_ARG_EXTRA = PACKAGE_NAME + ".Game_Display_To_Launch";
+    public static final String GAME_SETUP_ARG_EXTRA = PACKAGE_NAME + ".Game_Setup_To_Launch";
+    public static final String GAME_SETUP_FIELD_ONLY_EXTRA = PACKAGE_NAME + ".Game_Setup_Field_Only";
+    public static final String GAMES_TO_SHOW_EXTRA = PACKAGE_NAME + ".Games_To_Show";
 
     public static final int PERSISTENT_GAME_NOTIFICATION_ID = 1;
 

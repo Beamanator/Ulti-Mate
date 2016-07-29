@@ -334,16 +334,23 @@ public class Utils {
 
     /**
      * Function saves game information to database via a given id and a specified context
-     * @param c         Context to pass to GameDbAdapter
-     * @param g         Game object to save to database
+     * @param ctx         Context to pass to GameDbAdapter
+     * @param game         Game object to save to database
      * @return          long ID of game saved
      */
-    public static long saveGameDetails(Context c, Game g) {
-        GameDbAdapter gameDbAdapter = new GameDbAdapter(c);
+    public static long saveGameDetails(Context ctx, Game game) {
+        // store game to database
+        GameDbAdapter gameDbAdapter = new GameDbAdapter(ctx);
         gameDbAdapter.open();
-        long gameID = gameDbAdapter.saveGame(g);
+        long gameId;
+        if (game.getId() > 0) {
+            gameId = gameDbAdapter.saveGame(game);
+        } else {
+            gameId = gameDbAdapter.createGame(game);
+        }
         gameDbAdapter.close();
-        return gameID;
+
+        return gameId;
     }
 
     /**

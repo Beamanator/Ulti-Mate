@@ -2,14 +2,20 @@ package io.scoober.ulti.ulti_mate;
 
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -21,10 +27,10 @@ import io.scoober.ulti.ulti_mate.widgets.TeamImageButton;
 
 public class GameSetupOverviewFragment extends Fragment {
 
-
     private Button createFromSetupButton;
-    private CardView detailSetupCard, teamSetupCard;
-    private TeamImageButton team1ImageButton, team2ImageButton;
+    private CardView detailSetupCard, teamSetupCard, fieldSetupCard;
+    private TeamImageButton team1TeamSetupImage, team2TeamSetupImage,
+            leftTeamFieldSetupImage, rightTeamFieldSetupImage;
     private EditText templateTitleText;
     private TextView gameTitleText, winningScoreText, timeCapsText,
             team1NameText, team2NameText, templateTitleLabelText;
@@ -33,7 +39,7 @@ public class GameSetupOverviewFragment extends Fragment {
     MainMenuActivity.SetupToLaunch setupToLaunch;
     private long gameId, templateId;
     private Game game;
-    private OnCardClickedListener cardListener;
+    private OnFragActionListener fragListener;
 
     public GameSetupOverviewFragment() {
         // Required empty public constructor
@@ -43,9 +49,9 @@ public class GameSetupOverviewFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            cardListener = (OnCardClickedListener) context;
+            fragListener = (OnFragActionListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement OnCardClickedListener");
+            throw new ClassCastException(context.toString() + " must implement OnFragActionListener");
         }
     }
 
@@ -53,7 +59,7 @@ public class GameSetupOverviewFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View gameSetupFragView = inflater.inflate(R.layout.fragment_game_setup, container, false);
+        View gameSetupFragView = inflater.inflate(R.layout.fragment_game_setup_overview, container, false);
 
         Bundle args = getArguments();
         gameId = args.getLong(MainMenuActivity.GAME_ID_EXTRA);
@@ -81,11 +87,11 @@ public class GameSetupOverviewFragment extends Fragment {
                 //TODO Create a listener interface for launching next activities
                 switch (setupToLaunch) {
                     case CREATE_GAME:
-                        gameId = storeGame(game);
+                        gameId = Utils.saveGameDetails(getActivity(), game);
                         launchGameDisplay();
                         break;
                     case UPDATE_GAME:
-                        gameId = storeGame(game);
+                        gameId = Utils.saveGameDetails(getActivity(), game);
                         finishActivity();
                         break;
                     case CREATE_TEMPLATE:
@@ -101,16 +107,47 @@ public class GameSetupOverviewFragment extends Fragment {
         return gameSetupFragView;
     }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_game_setup, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        switch (id) {
+            case R.id.action_template_create:
+                showTemplateNameDialog();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
     /**
      * Gets references to widgets to use in other functions
      */
     private void getWidgetReferences(View v) {
         createFromSetupButton = (Button) v.findViewById(R.id.createFromSetupButton);
-        team1ImageButton = (TeamImageButton) v.findViewById(R.id.team1ImageButton);
-        team2ImageButton = (TeamImageButton) v.findViewById(R.id.team2ImageButton);
+        team1TeamSetupImage = (TeamImageButton) v.findViewById(R.id.team1ImageButton);
+        team2TeamSetupImage = (TeamImageButton) v.findViewById(R.id.team2ImageButton);
+        leftTeamFieldSetupImage = (TeamImageButton) v.findViewById(R.id.leftTeamImageButton);
+        rightTeamFieldSetupImage = (TeamImageButton) v.findViewById(R.id.rightTeamImageButton);
 
         detailSetupCard = (CardView) v.findViewById(R.id.detailSetupCard);
         teamSetupCard = (CardView) v.findViewById(R.id.teamSetupCard);
+        fieldSetupCard = (CardView) v.findViewById(R.id.fieldSetupCard);
 
         gameTitleText = (TextView) v.findViewById(R.id.gameTitle);
         winningScoreText = (TextView) v.findViewById(R.id.winningScore);
@@ -120,6 +157,7 @@ public class GameSetupOverviewFragment extends Fragment {
         templateTitleLabelText = (TextView) v.findViewById(R.id.templateNameLabel);
 
         templateTitleText = (EditText) v.findViewById(R.id.templateNameEdit);
+
     }
 
 
@@ -176,23 +214,34 @@ public class GameSetupOverviewFragment extends Fragment {
         timeCapsText.setText(timeCapString);
 
         // Set the team information
-        team1ImageButton.build(80, game.getTeam(1).getColor());
-        team2ImageButton.build(80, game.getTeam(2).getColor());
+        team1TeamSetupImage.build(GameDisplayActivity.TEAM_CIRCLE_SIZE, game.getTeam(1).getColor());
+        team2TeamSetupImage.build(GameDisplayActivity.TEAM_CIRCLE_SIZE, game.getTeam(2).getColor());
         team1NameText.setText(game.getTeam(1).getName());
         team2NameText.setText(game.getTeam(2).getName());
+
+        // Set the field information
+        GameDisplayActivity.setFieldOrientation(game, getActivity(),
+                leftTeamFieldSetupImage, rightTeamFieldSetupImage);
 
         // Set OnClickListeners
         detailSetupCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                cardListener.onCardClicked(GameSetupActivity.Setup.GAME_SETUP);
+                fragListener.onCardClicked(GameSetupActivity.Setup.GAME_SETUP);
             }
         });
 
         teamSetupCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                cardListener.onCardClicked(GameSetupActivity.Setup.TEAM_SETUP);
+                fragListener.onCardClicked(GameSetupActivity.Setup.TEAM_SETUP);
+            }
+        });
+
+        fieldSetupCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fragListener.onCardClicked(GameSetupActivity.Setup.FIELD_SETUP);
             }
         });
 
@@ -247,27 +296,6 @@ public class GameSetupOverviewFragment extends Fragment {
     }
 
     /**
-     * Stores the game to the database, returning the database ID
-     * @param game      Game object to store
-     * @return          ID generated from the SQL database
-     */
-    private long storeGame(Game game) {
-        // store game to database
-        GameDbAdapter gameDbAdapter = new GameDbAdapter(getActivity().getBaseContext());
-        gameDbAdapter.open();
-        long newId;
-        if (game.getId() > 0) {
-            newId = gameDbAdapter.saveGame(game);
-        } else {
-            newId = gameDbAdapter.createGame(game);
-        }
-        gameDbAdapter.close();
-
-        return newId;
-
-    }
-
-    /**
      * Creates templates from user populated fields in the game setup activity
      * @param templateName      Name of the new template
      * @param storeToGame       Set to true if the game should be stored for further editing by
@@ -279,7 +307,7 @@ public class GameSetupOverviewFragment extends Fragment {
         Game template = new Game(game.getGameName(), game.getWinningScore(),
                 game.getTeam(1), game.getTeam(2), game.getSoftCapTime(), game.getHardCapTime());
         template.convertToTemplate(templateName);
-        templateId = storeGame(template);
+        templateId = Utils.saveGameDetails(getActivity(), template);
 
         if (storeToGame) {
             game = template;
@@ -295,8 +323,47 @@ public class GameSetupOverviewFragment extends Fragment {
             Utils.showValidationFailedDialog(getActivity());
             return;
         }
-        storeGame(game);
+        Utils.saveGameDetails(getActivity(), game);
         finishActivity();
+    }
+
+    /**
+     * Shows a dialog that allows the user to create a template with a given name
+     */
+    private void showTemplateNameDialog() {
+
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.dialog_edit_text, null);
+        final EditText nameEdit = (EditText) dialogView.findViewById(R.id.templateNameEdit);
+
+        AlertDialog dialog = new AlertDialog.Builder(getActivity())
+                .setTitle(R.string.title_dialog_name_template)
+                .setView(dialogView)
+                .setPositiveButton(R.string.dialog_confirm, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String templateName = nameEdit.getText().toString();
+                        createTemplate(templateName, false);
+                        fragListener.onTemplateSaved(templateName);
+                    }
+                })
+                .setNegativeButton(R.string.dialog_cancel, null)
+                .create();
+
+        dialog.show();
+
+        /*
+        Add listener to the editText and disable positive button if validation fails
+         */
+        final Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+        nameEdit.addTextChangedListener(new TextValidator(nameEdit) {
+            @Override
+            public void validate(TextView textView, String text) {
+                boolean valid = Utils.validateTextNotEmpty(text, textView,
+                        getResources(), R.string.dialog_name_template);
+                positiveButton.setEnabled(valid);
+            }
+        });
     }
 
     /**
@@ -336,8 +403,9 @@ public class GameSetupOverviewFragment extends Fragment {
         return Utils.validateFieldsNotEmpty(requiredFields);
     }
 
-    public interface OnCardClickedListener {
+    public interface OnFragActionListener {
         void onCardClicked(GameSetupActivity.Setup setupToLaunch);
+        void onTemplateSaved(String templateName);
     }
 
 }

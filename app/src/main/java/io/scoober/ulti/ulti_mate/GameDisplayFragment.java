@@ -3,7 +3,7 @@ package io.scoober.ulti.ulti_mate;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.res.Resources;
+import android.content.Intent;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -84,11 +84,14 @@ public class GameDisplayFragment extends Fragment {
         startGame(startButton, endButton);
 
         // Build listener & dialogs for field setup:
-        final View fl = fragmentLayout;
         setupFieldButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                buildFieldSetupDialogs(fl);
+                Intent intent = new Intent(getActivity(), GameSetupActivity.class);
+                intent.putExtra(MainMenuActivity.GAME_SETUP_ARG_EXTRA, MainMenuActivity.SetupToLaunch.UPDATE_GAME);
+                intent.putExtra(MainMenuActivity.GAME_ID_EXTRA, gameId);
+                intent.putExtra(MainMenuActivity.GAME_SETUP_FIELD_ONLY_EXTRA, true);
+                startActivity(intent);
             }
         });
 
@@ -167,7 +170,7 @@ public class GameDisplayFragment extends Fragment {
         }
 
         // Set the field layout
-        if (game.getInitPullingTeamPos() != 0 && game.getInitLeftTeamPos() != 0) {
+        if (game.getInitLeftTeamPos() != 0) {
             showFieldLayout();
             setFieldOrientation();
         }
@@ -411,8 +414,8 @@ public class GameDisplayFragment extends Fragment {
         gameImagesLayout = (LinearLayout) v.findViewById(R.id.gameImagesLayout);
 
         // Image Views
-        leftTeamCircle = (ImageView) v.findViewById(R.id.leftTeamCircle);
-        rightTeamCircle = (ImageView) v.findViewById(R.id.rightTeamCircle);
+        leftTeamCircle = (ImageView) v.findViewById(R.id.leftTeamImageButton);
+        rightTeamCircle = (ImageView) v.findViewById(R.id.rightTeamImageButton);
 
         // Time Cap Views
         timeCapBar = (ViewSwitcher) v.findViewById(R.id.timeCapBar);
@@ -479,77 +482,6 @@ public class GameDisplayFragment extends Fragment {
 
     }
 
-    /*
-    Dialogs
-     */
-    public void buildFieldSetupDialogs(final View v) {
-        AlertDialog pullDialog;
-
-        final String t1Name = game.getTeam(1).getName();
-        final String t2Name = game.getTeam(2).getName();
-
-        // items to display in dialog boxes:
-        final String[] items = {t1Name, t2Name};
-
-        // First dialog box gets initial pulling team:
-        AlertDialog.Builder dialogBox = new AlertDialog.Builder(v.getContext());
-        dialogBox.setTitle(R.string.dialog_init_pulling_team);
-        dialogBox.setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which) {
-                    case 0:
-                        game.setInitPullingTeamPos(1);
-                        break;
-                    case 1:
-                        game.setInitPullingTeamPos(2);
-                        break;
-                }
-                dialog.dismiss();
-                buildTeamOrientationDialog(game, t1Name, v);
-            }
-        });
-
-        pullDialog = dialogBox.create();
-        pullDialog.show();
-    }
-
-    private void buildTeamOrientationDialog(final Game g, final String t1,
-                                            final View v) {
-
-        AlertDialog orientationDialog;
-
-        // Strings to show in Dialog with Radio Buttons:
-        Resources res = v.getResources();
-        final CharSequence[] items = {res.getString(R.string.left), res.getString(R.string.right)};
-
-        AlertDialog.Builder dialogBox = new AlertDialog.Builder(v.getContext());
-
-        dialogBox.setTitle(res.getString(R.string.dialog_left_team, t1));
-
-        // 2nd param = automatically checked item
-        dialogBox.setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int item) {
-                switch (item) {
-                    case 0:
-                        g.setInitLeftTeamPos(1);
-                        break;
-                    case 1:
-                        g.setInitLeftTeamPos(2);
-                        break;
-                }
-                dialog.dismiss();
-
-                // At this point, both dialog boxes must have been hit & populated Game.
-                Utils.saveGameDetails(v.getContext(), g);
-
-                refreshWidgets();
-            }
-        });
-
-        orientationDialog = dialogBox.create();
-        orientationDialog.show();
-    }
 
     /**
      * Function hides setupFieldButton and makes gameImagesLayout visible
