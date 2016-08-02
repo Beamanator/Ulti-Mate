@@ -149,4 +149,7 @@
     <string name="notific_message_hard_cap_hit">Hard Cap Time Hit</string>
     <string name="notific_message_alert_time_cap_hit">Time Cap Hit</string>
     <string name="notific_message_text_game_hint">Click To Return To Game</string>
+    <string name="notific_message_halftime_title">Halftime Score: %1$s - %2$s</string>
+    <string name="notific_message_halftime_text">%1$s vs %2$s</string>
+    <string name="notific_message_halftime_alert">Halftime!</string>
 </resources>

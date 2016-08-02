@@ -51,7 +51,7 @@ public class GameUpdateService extends IntentService {
     private void incrementScore(int teamPos) {
         game.incrementScore(teamPos);
         if (game.getStatus() == Game.Status.HALFTIME) {
-            GameDisplayFragment.showHalftimeNotification();
+            GameDisplayFragment.showHalftimeNotification(this, game);
         }
     }
 }

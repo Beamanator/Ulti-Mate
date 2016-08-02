@@ -2,6 +2,7 @@ package io.scoober.ulti.ulti_mate;
 
 
 import android.app.AlarmManager;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -12,6 +13,7 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.ColorInt;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -267,7 +269,7 @@ public class GameDisplayFragment extends Fragment {
     private void afterPointsChange(Game.Status prevStatus, Game.Status newStatus) {
         // Handle game statuses
         if (newStatus == Game.Status.HALFTIME) {
-            showHalftimeNotification();
+            showHalftimeNotification(getContext(), game);
         }
 
         if (prevStatus != newStatus) {
@@ -295,8 +297,6 @@ public class GameDisplayFragment extends Fragment {
                 if (timeCapBar.getVisibility() == View.VISIBLE) {
                     timeCapBar.showNext();
                     startTimers();
-
-                    // TODO: change background color based of soft / hard cap
                 }
 
                 refreshWidgets();
@@ -428,24 +428,21 @@ public class GameDisplayFragment extends Fragment {
         return new CountDownTimer(millisInFuture, countDownInterval) {
             @Override
             public void onTick(long millisUntilFinished) {
-                long hours = millisUntilFinished / 3600000;
-                long minutes = (millisUntilFinished - (hours * 3600000)) / 60000;
-                long seconds = (millisUntilFinished - (hours * 3600000) - (minutes * 60000)) / 1000;
+                long secondsUntilFinished = millisUntilFinished / 1000;
 
-                String sHours = String.format(Locale.getDefault(), "%02d", hours);
-                String sMinutes = String.format(Locale.getDefault(), "%02d", minutes);
-                String sSeconds = String.format(Locale.getDefault(), "%02d", seconds);
+                long hours = secondsUntilFinished / 3600;
+                long minutes = (secondsUntilFinished - (hours * 3600)) / 60;
+                long seconds = (secondsUntilFinished - (hours * 3600) - (minutes * 60));
 
-                timeCapTimer.setText(getActivity().getResources().getString(
-                        R.string.time_basic_h_m_s,
-                        sHours, sMinutes, sSeconds
-                ));
+                String time = String.format(Locale.getDefault(),"%02d:%02d:%02d",
+                        hours, minutes, seconds);
+
+                timeCapTimer.setText(time);
             }
 
             @Override
             public void onFinish() {
-                timeCapTimer.setText(getActivity().getResources().getString(
-                        R.string.time_basic_h_m_s, "00" , "00", "00") );
+                timeCapTimer.setText("00 : 00 : 00");
 
                 if (startNext) {
                     // Start next timer (hard cap timer)
@@ -488,8 +485,55 @@ public class GameDisplayFragment extends Fragment {
                 getActivity().getBaseContext()));
     }
 
-    public static void showHalftimeNotification() {
-        //TODO
+    /**
+     * Function creates and shows a notification when a game's status reaches halftime
+     */
+    public static void showHalftimeNotification(Context ctx, Game game) {
+        Intent intent = new Intent(ctx, GameDisplayActivity.class);
+
+        long gameId = game.getId();
+        intent.putExtra(MainMenuActivity.GAME_ID_EXTRA, gameId);
+        intent.putExtra(MainMenuActivity.GAME_DISPLAY_ARG_EXTRA,
+                MainMenuActivity.DisplayToLaunch.RESUME);
+
+        int id = Utils.getGameNotificationID(gameId,
+                GameDisplayActivity.GameNotificationType.HALFTIME);
+
+        PendingIntent notificationIntent = PendingIntent.getActivity(ctx, id,
+                intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        String name1 = game.getTeam(1).getName();
+        String name2 = game.getTeam(2).getName();
+
+        // Truncate team name if it's too long
+        if (name1.length() > GameDisplayActivity.MAX_TEAM_NAME_LENGTH) {
+            name1 = name1.substring(0, GameDisplayActivity.MAX_TEAM_NAME_LENGTH);
+            name1 += (char) 8230;
+        }
+        if (name2.length() > GameDisplayActivity.MAX_TEAM_NAME_LENGTH) {
+            name2 = name2.substring(0, GameDisplayActivity.MAX_TEAM_NAME_LENGTH);
+            name2 += (char) 8230;
+        }
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(ctx)
+                .setSmallIcon(R.drawable.ic_hourglass_empty_black_24dp)
+                .setContentTitle(ctx.getResources().getString(
+                        R.string.notific_message_halftime_title,
+                        game.getScore(1), game.getScore(2)
+                ))
+                .setContentText(ctx.getResources().getString(
+                        R.string.notific_message_halftime_text,
+                        name1, name2
+                ))
+                .setTicker(ctx.getResources().getString(R.string.notific_message_halftime_alert))
+                .setAutoCancel(true)
+                .setContentIntent(notificationIntent)
+                .setDefaults(NotificationCompat.DEFAULT_VIBRATE);
+
+        NotificationManager notifManager = (NotificationManager)
+                ctx.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        notifManager.notify(id, builder.build());
     }
 
     private void getWidgetReferences(View v) {

@@ -568,8 +568,11 @@ public class Utils {
                 case HARD_CAP:
                     gameNotId = baseID + 2;
                     break;
-                case UPDATE:
+                case HALFTIME:
                     gameNotId = baseID + 3;
+                    break;
+                case UPDATE:
+                    gameNotId = baseID + 4;
                     break;
                 default:
                     gameNotId = 0;

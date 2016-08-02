@@ -8,8 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
-import android.util.Log;
 
 /**
  * Created by Poo on 7/26/2016.
@@ -66,16 +64,14 @@ public class AlertReceiver extends BroadcastReceiver {
                 .setContentTitle(msg)
                 .setContentText(msgText)
                 .setTicker(msgAlert)
-                .setAutoCancel(true);
-
-        mBuilder.setContentIntent(notificationIntent);
-
-        mBuilder.setDefaults(NotificationCompat.DEFAULT_VIBRATE);
+                .setAutoCancel(true)
+                .setContentIntent(notificationIntent)
+                .setDefaults(NotificationCompat.DEFAULT_VIBRATE);
 
         NotificationManager mNotificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
-        // 1 is unique ID for this notification
+        // id is unique ID for this notification
         mNotificationManager.notify(id, mBuilder.build());
     }
 }
