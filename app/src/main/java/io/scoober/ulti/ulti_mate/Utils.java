@@ -572,7 +572,7 @@ public class Utils {
                     gameNotId = baseID + 3;
                     break;
                 case UPDATE:
-                    gameNotId = baseID + 4;
+                    gameNotId = MainMenuActivity.UPDATE_GAME_NOTIFICATION_ID;
                     break;
                 default:
                     gameNotId = 0;

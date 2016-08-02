@@ -23,6 +23,8 @@ public class MainMenuActivity extends AppCompatActivity {
     public static final String NOTIFICATION_NEXT_CLASS = PACKAGE_NAME + ".Notification_Next_Class";
     public static final String NOTIFICATION_ID = PACKAGE_NAME + ".Notification_ID";
 
+    public static final int UPDATE_GAME_NOTIFICATION_ID = 1;
+
     public enum DisplayToLaunch {NEW, RESUME, VIEW, EDIT, UPDATE}
     public enum SetupToLaunch {CREATE_GAME, UPDATE_GAME,
         CREATE_TEMPLATE, EDIT_TEMPLATE}
