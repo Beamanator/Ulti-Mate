@@ -64,7 +64,6 @@ public class GameSetupFieldFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        this.game = Utils.getGameDetails(getActivity(), game.getId());
         initializeWidgets();
     }
 
