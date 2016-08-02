@@ -217,6 +217,7 @@ public class GameSetupActivity extends AppCompatActivity
             Game template = Utils.getGameDetails(getBaseContext(), templateId);
             if (setupToLaunch == MainMenuActivity.SetupToLaunch.EDIT_TEMPLATE) {
                 game = template;
+                game.convertCapTimes();
             } else {
                 game = new Game(template.getGameName(), template.getWinningScore(),
                         template.getTeam(1), template.getTeam(2),

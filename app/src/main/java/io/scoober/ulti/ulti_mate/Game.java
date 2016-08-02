@@ -429,4 +429,12 @@ public class Game {
         this.isTemplate = true;
         this.templateName = templateName;
     }
+
+    /**
+     * Template function that converts the time caps from an old templates to today's time caps
+     */
+    public void convertCapTimes() {
+        this.softCapTime = Utils.getTodayMilliFrom12HrString(Utils.getTimeString(this.softCapTime));
+        this.hardCapTime = Utils.getTodayMilliFrom12HrString(Utils.getTimeString(this.hardCapTime));
+    }
 }
