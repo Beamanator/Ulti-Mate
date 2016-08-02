@@ -270,7 +270,7 @@ public class GameDisplayFragment extends Fragment {
     private void afterPointsChange(Game.Status prevStatus, Game.Status newStatus) {
         // Handle game statuses
         if (newStatus == Game.Status.HALFTIME) {
-            showHalftimeNotification();
+            showHalftimeNotification(getContext(), game);
         }
 
         if (prevStatus != newStatus) {
@@ -489,9 +489,10 @@ public class GameDisplayFragment extends Fragment {
     /**
      * Function creates and shows a notification when a game's status reaches halftime
      */
-    private void showHalftimeNotification() {
-        Intent intent = new Intent(getActivity(), GameDisplayActivity.class);
+    public static void showHalftimeNotification(Context ctx, Game game) {
+        Intent intent = new Intent(ctx, GameDisplayActivity.class);
 
+        long gameId = game.getId();
         intent.putExtra(MainMenuActivity.GAME_ID_EXTRA, gameId);
         intent.putExtra(MainMenuActivity.GAME_DISPLAY_ARG_EXTRA,
                 MainMenuActivity.DisplayToLaunch.RESUME);
@@ -499,7 +500,7 @@ public class GameDisplayFragment extends Fragment {
         int id = Utils.getGameNotificationID(gameId,
                 GameDisplayActivity.GameNotificationType.HALFTIME);
 
-        PendingIntent notificationIntent = PendingIntent.getActivity(getActivity(), id,
+        PendingIntent notificationIntent = PendingIntent.getActivity(ctx, id,
                 intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         String name1 = game.getTeam(1).getName();
@@ -515,23 +516,23 @@ public class GameDisplayFragment extends Fragment {
             name2 += (char) 8230;
         }
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(getActivity())
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(ctx)
                 .setSmallIcon(R.drawable.ic_hourglass_empty_black_24dp)
-                .setContentTitle(getResources().getString(
+                .setContentTitle(ctx.getResources().getString(
                         R.string.notific_message_halftime_title,
                         game.getScore(1), game.getScore(2)
                 ))
-                .setContentText(getResources().getString(
+                .setContentText(ctx.getResources().getString(
                         R.string.notific_message_halftime_text,
                         name1, name2
                 ))
-                .setTicker(getResources().getString(R.string.notific_message_halftime_alert))
+                .setTicker(ctx.getResources().getString(R.string.notific_message_halftime_alert))
                 .setAutoCancel(true)
                 .setContentIntent(notificationIntent)
                 .setDefaults(NotificationCompat.DEFAULT_VIBRATE);
 
         NotificationManager notifManager = (NotificationManager)
-                getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+                ctx.getSystemService(Context.NOTIFICATION_SERVICE);
 
         notifManager.notify(id, builder.build());
     }

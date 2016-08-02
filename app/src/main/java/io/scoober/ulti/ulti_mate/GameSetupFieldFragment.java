@@ -5,7 +5,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -65,6 +64,7 @@ public class GameSetupFieldFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        this.game = Utils.getGameDetails(getActivity(), game.getId());
         initializeWidgets();
     }
 
@@ -122,7 +122,6 @@ public class GameSetupFieldFragment extends Fragment {
 
         // Check RadioButtons depending on game info
         int leftTeamPos = tempGame.getLeftTeamPos();
-        Log.d("GameSetupFieldFragment", "initializeWidgets: " + Integer.toString(leftTeamPos)); //TODO
         if (leftTeamPos != 0) {
             if(leftTeamPos == 1) {
                 answerTeam1LeftQuestion.setChecked(true);
@@ -132,7 +131,6 @@ public class GameSetupFieldFragment extends Fragment {
         }
 
         int pullingTeamPos = tempGame.getPullingTeamPos();
-        Log.d("GameSetupFieldFragment", "initializeWidgets: " + Integer.toString(pullingTeamPos)); //TODO
         if (pullingTeamPos != 0) {
             if(pullingTeamPos == 1) {
                 answerTeam1PullingQuestion.setChecked(true);
@@ -142,7 +140,6 @@ public class GameSetupFieldFragment extends Fragment {
         }
 
         int initPullingTeamPos = tempGame.getInitPullingTeamPos();
-        Log.d("GameSetupFieldFragment", "initializeWidgets: " + Integer.toString(initPullingTeamPos)); //TODO
         if (initPullingTeamPos != 0) {
             if(initPullingTeamPos == 1) {
                 answerTeam1PullingInitQuestion.setChecked(true);

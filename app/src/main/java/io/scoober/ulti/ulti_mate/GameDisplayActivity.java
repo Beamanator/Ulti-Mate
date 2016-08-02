@@ -1,9 +1,9 @@
 package io.scoober.ulti.ulti_mate;
 
 import android.app.DatePickerDialog;
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.Notification;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +13,7 @@ import android.support.annotation.ColorInt;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -30,7 +31,6 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.Map;
 
 import io.scoober.ulti.ulti_mate.widgets.TeamImageButton;
@@ -48,6 +48,7 @@ public class GameDisplayActivity extends AppCompatActivity
 
     private MainMenuActivity.DisplayToLaunch displayToLaunch;
     private long gameId;
+    private boolean hideUpdateNotification = false; // indicates whether the app notification should be hidden
 
     private GameDisplayFragment gameFrag;
     private GameDisplayEditFragment gameEditFrag;
@@ -61,7 +62,7 @@ public class GameDisplayActivity extends AppCompatActivity
         public EditText nameEdit;
     }
 
-    public enum GameNotificationType {SOFT_CAP, HARD_CAP, HALFTIME}
+    public enum GameNotificationType {SOFT_CAP, HARD_CAP, HALFTIME, UPDATE}
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,7 +114,8 @@ public class GameDisplayActivity extends AppCompatActivity
 
     @Override
     protected void onResume() {
-        cancelAppNotification();
+        cancelUpdateNotification(this, gameId);
+        hideUpdateNotification = false; // reset this onResume
         super.onResume();
     }
 
@@ -122,7 +124,9 @@ public class GameDisplayActivity extends AppCompatActivity
         if (displayToLaunch == MainMenuActivity.DisplayToLaunch.NEW ||
                 displayToLaunch == MainMenuActivity.DisplayToLaunch.RESUME ||
                 displayToLaunch == MainMenuActivity.DisplayToLaunch.UPDATE) {
-            showAppNotification();
+            if (!hideUpdateNotification) {
+                showUpdateNotification(this, gameId);
+            }
         }
         super.onStop();
     }
@@ -142,6 +146,7 @@ public class GameDisplayActivity extends AppCompatActivity
             case R.id.action_share:
                 return true;
             case R.id.action_game_settings:
+                hideUpdateNotification = true; // don't show app notification in this case
                 Intent intent = new Intent(this, GameSetupActivity.class);
                 intent.putExtra(MainMenuActivity.GAME_SETUP_ARG_EXTRA, MainMenuActivity.SetupToLaunch.UPDATE_GAME);
                 intent.putExtra(MainMenuActivity.GAME_ID_EXTRA, gameId);
@@ -239,7 +244,6 @@ public class GameDisplayActivity extends AppCompatActivity
             leftTeamImage.setVisibility(View.VISIBLE);
             rightTeamImage.setVisibility(View.VISIBLE);
 
-
             // Set the pulling team
             @ColorInt int strokeColor = ctx.getResources().getColor(R.color.stroke_color);
             int pullingTeam = game.getPullingTeamPos();
@@ -271,35 +275,75 @@ public class GameDisplayActivity extends AppCompatActivity
     /**
      * Shows a persistent notification for the app that has various functions that it can handle.
      */
-    private void showAppNotification() {
-        RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.notification_game_display_persistent);
+    public static void showUpdateNotification(Context ctx, long gameId) {
 
-        Intent showGames = new Intent(this, GameDisplayActivity.class);
+        // Intent to get to the game display activity
+        Intent showGames = new Intent(ctx, GameDisplayActivity.class);
+        Game game = Utils.getGameDetails(ctx, gameId);
         showGames.putExtra(MainMenuActivity.GAME_ID_EXTRA, gameId);
-        showGames.putExtra(MainMenuActivity.GAME_DISPLAY_ARG_EXTRA, displayToLaunch);
-        PendingIntent showGamePI = PendingIntent.getActivity(this,
-                3, // TODO
-                showGames,
+        showGames.putExtra(MainMenuActivity.GAME_DISPLAY_ARG_EXTRA, MainMenuActivity.DisplayToLaunch.UPDATE);
+
+        // Create back stack and pending intent for setContentIntent
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(ctx);
+        stackBuilder.addParentStack(GameDisplayActivity.class);
+        stackBuilder.addNextIntent(showGames);
+        PendingIntent showGamePI = stackBuilder.getPendingIntent(
+                Utils.getGameNotificationID(gameId, GameNotificationType.UPDATE),
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
-        Notification notification = new NotificationCompat.Builder(this)
+        // Pending intent to increment Team scores
+        PendingIntent incrementTeam1ScorePI = getIncrementPendingIntent(ctx, gameId, 1);
+        PendingIntent incrementTeam2ScorePI = getIncrementPendingIntent(ctx, gameId, 2);
+
+
+        // Setup the notification View
+        RemoteViews notificationView = new RemoteViews(ctx.getPackageName(), R.layout.notification_game_display_persistent);
+        notificationView.setOnClickPendingIntent(R.id.incrementTeam1Button, incrementTeam1ScorePI);
+        notificationView.setOnClickPendingIntent(R.id.incrementTeam2Button, incrementTeam2ScorePI);
+        String teamText = ctx.getString(R.string.team_list_text, game.getTeam(1).getName(),
+                game.getTeam(2).getName());
+        String scoreText = ctx.getString(R.string.score_list_text, game.getScore(1), game.getScore(2));
+        notificationView.setTextViewText(R.id.title, game.getGameName());
+        notificationView.setTextViewText(R.id.teams, teamText);
+        notificationView.setTextViewText(R.id.score, scoreText);
+
+        // Generate the notification
+        Notification notification = new NotificationCompat.Builder(ctx)
                 .setSmallIcon(R.drawable.field)
-                .setContent(remoteViews)
-                .setOngoing(true)
+                .setContent(notificationView)
                 .setContentIntent(showGamePI)
                 .build();
 
-        NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        nm.notify(MainMenuActivity.PERSISTENT_GAME_NOTIFICATION_ID, notification);
+        NotificationManager nm = (NotificationManager) ctx.getSystemService(NOTIFICATION_SERVICE);
+        nm.notify(Utils.getGameNotificationID(gameId, GameNotificationType.UPDATE), notification);
 
+    }
+
+    /**
+     * Gets a pending intent that increases the score for the given team
+     * @param ctx       Context
+     * @param gameId    ID of the game to be updated
+     * @param teamPos   Position of the scoring team
+     * @return          PendingIntent that will call a service to update the score
+     */
+    private static PendingIntent getIncrementPendingIntent(Context ctx, long gameId, int teamPos) {
+        Intent updateTeamScore = new Intent(ctx, GameUpdateService.class);
+        updateTeamScore.setAction(GameUpdateService.ACTION_INCREMENT_SCORE);
+        updateTeamScore.putExtra(GameUpdateService.EXTRA_GAME_ID, gameId);
+        updateTeamScore.putExtra(GameUpdateService.EXTRA_TEAM_POS, teamPos);
+
+        return PendingIntent.getService(ctx,
+                teamPos,
+                updateTeamScore,
+                PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     /**
      * Cancels the persistent notification for the application
      */
-    private void cancelAppNotification() {
-        NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        nm.cancel(MainMenuActivity.PERSISTENT_GAME_NOTIFICATION_ID);
+    public static void cancelUpdateNotification(Context ctx, long gameId) {
+        NotificationManager nm = (NotificationManager) ctx.getSystemService(NOTIFICATION_SERVICE);
+        nm.cancel(Utils.getGameNotificationID(gameId, GameNotificationType.UPDATE));
     }
 
     /**

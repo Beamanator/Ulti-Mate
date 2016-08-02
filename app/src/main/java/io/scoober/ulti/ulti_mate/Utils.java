@@ -547,11 +547,15 @@ public class Utils {
      * notification type
      * @param gameID            long game ID
      * @param notificationType  enum describing the type of game ID needed
-     * @return                  (int) (gameID * 10) + type
+     * @return                  (int) (gameID * 100) + 1000 + type
      */
     public static int getGameNotificationID(long gameID,
                                                GameDisplayActivity.GameNotificationType notificationType) {
-        int baseID = convertLongToInt(gameID) * 10;
+        /*
+        Gives us the space of 1-1000 for other notifications and 100 different game notifications'
+        TODO clean this up if we make this into a web app
+         */
+        int baseID = convertLongToInt(gameID) * 100 + 1000;
         if (baseID == 0) {
             Log.e("Utils","Notification ID cannot be created");
             return 0;
@@ -566,6 +570,9 @@ public class Utils {
                     break;
                 case HALFTIME:
                     gameNotId = baseID + 3;
+                    break;
+                case UPDATE:
+                    gameNotId = baseID + 4;
                     break;
                 default:
                     gameNotId = 0;
