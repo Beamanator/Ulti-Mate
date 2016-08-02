@@ -428,24 +428,21 @@ public class GameDisplayFragment extends Fragment {
         return new CountDownTimer(millisInFuture, countDownInterval) {
             @Override
             public void onTick(long millisUntilFinished) {
-                long hours = millisUntilFinished / 3600000;
-                long minutes = (millisUntilFinished - (hours * 3600000)) / 60000;
-                long seconds = (millisUntilFinished - (hours * 3600000) - (minutes * 60000)) / 1000;
+                long secondsUntilFinished = millisUntilFinished / 1000;
 
-                String sHours = String.format(Locale.getDefault(), "%02d", hours);
-                String sMinutes = String.format(Locale.getDefault(), "%02d", minutes);
-                String sSeconds = String.format(Locale.getDefault(), "%02d", seconds);
+                long hours = secondsUntilFinished / 3600;
+                long minutes = (secondsUntilFinished - (hours * 3600)) / 60;
+                long seconds = (secondsUntilFinished - (hours * 3600) - (minutes * 60));
 
-                timeCapTimer.setText(getActivity().getResources().getString(
-                        R.string.time_basic_h_m_s,
-                        sHours, sMinutes, sSeconds
-                ));
+                String time = String.format(Locale.getDefault(),"%02d:%02d:%02d",
+                        hours, minutes, seconds);
+
+                timeCapTimer.setText(time);
             }
 
             @Override
             public void onFinish() {
-                timeCapTimer.setText(getActivity().getResources().getString(
-                        R.string.time_basic_h_m_s, "00" , "00", "00") );
+                timeCapTimer.setText("00 : 00 : 00");
 
                 if (startNext) {
                     // Start next timer (hard cap timer)
