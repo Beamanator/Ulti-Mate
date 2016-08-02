@@ -2,7 +2,6 @@ package io.scoober.ulti.ulti_mate;
 
 
 import android.app.AlarmManager;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -13,8 +12,6 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.ColorInt;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.NotificationManagerCompat;
-import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -28,7 +25,6 @@ import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -492,7 +488,7 @@ public class GameDisplayFragment extends Fragment {
                 getActivity().getBaseContext()));
     }
 
-    private void showHalftimeNotification() {
+    public static void showHalftimeNotification() {
         //TODO
     }
 

@@ -4,8 +4,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -160,6 +158,8 @@ public class MyGamesListFragment extends android.support.v4.app.ListFragment {
     }
 
     private void deleteGame(Game game, int rowPosition) {
+        // Delete notifications for game
+        GameDisplayActivity.cancelUpdateNotification(getContext(), game.getId());
         Utils.deleteGame(getActivity().getBaseContext(), game);
         games.remove(rowPosition);
         gamesListAdapter.notifyDataSetChanged();
