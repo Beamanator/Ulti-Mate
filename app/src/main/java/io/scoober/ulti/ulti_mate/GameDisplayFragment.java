@@ -15,6 +15,7 @@ import android.support.annotation.ColorInt;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -434,7 +435,7 @@ public class GameDisplayFragment extends Fragment {
                 long minutes = (secondsUntilFinished - (hours * 3600)) / 60;
                 long seconds = (secondsUntilFinished - (hours * 3600) - (minutes * 60));
 
-                String time = String.format(Locale.getDefault(),"%02d:%02d:%02d",
+                String time = String.format(Locale.getDefault(),"%02d : %02d : %02d",
                         hours, minutes, seconds);
 
                 timeCapTimer.setText(time);
