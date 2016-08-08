@@ -40,7 +40,9 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="16dp">
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp">
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -55,6 +57,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/dialog_confirm_read"
+                    android:textColor="@color/md_blue_500"
                     android:id="@+id/confirmRead"
                     android:background="@android:color/transparent"
                     android:layout_below="@+id/templateInstructionsText"
