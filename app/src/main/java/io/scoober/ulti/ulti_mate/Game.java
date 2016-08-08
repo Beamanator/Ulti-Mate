@@ -1,6 +1,7 @@
 package io.scoober.ulti.ulti_mate;
 
 import android.content.Context;
+import android.util.Log;
 import android.util.SparseArray;
 
 import java.util.Calendar;
@@ -434,7 +435,7 @@ public class Game {
      * Template function that converts the time caps from an old templates to today's time caps
      */
     public void convertCapTimes() {
-        this.softCapTime = Utils.getTodayMilliFrom12HrString(Utils.getTimeString(this.softCapTime));
-        this.hardCapTime = Utils.getTodayMilliFrom12HrString(Utils.getTimeString(this.hardCapTime));
+        Log.d("Game", "Soft Cap: " + this.softCapTime);
+        Log.d("Game", "Hard Cap: " + this.hardCapTime);
     }
 }

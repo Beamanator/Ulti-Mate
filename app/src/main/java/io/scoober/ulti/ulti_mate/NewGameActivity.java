@@ -1,9 +1,11 @@
 package io.scoober.ulti.ulti_mate;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -12,7 +14,11 @@ import android.widget.Button;
 
 public class NewGameActivity extends AppCompatActivity {
 
+    private static String TEMPLATE_READ_PREF_KEY = "template_read";
+
     private Button noTemplateButton;
+    private Button instructionsReadButton;
+    private CardView templateInstructionsCard;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,7 +30,9 @@ public class NewGameActivity extends AppCompatActivity {
         ActionBar ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
 
-        noTemplateButton = (Button) findViewById(R.id.button_no_template);
+
+        getWidgetReferences();
+        setupInstructions();
         noTemplateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -59,5 +67,32 @@ public class NewGameActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void getWidgetReferences() {
+        instructionsReadButton = (Button) findViewById(R.id.confirmRead);
+        noTemplateButton = (Button) findViewById(R.id.button_no_template);
+
+        templateInstructionsCard = (CardView) findViewById(R.id.templateInstructionsCard);
+    }
+
+    private void setupInstructions() {
+        final SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+
+        boolean instructionsRead = preferences.getBoolean(TEMPLATE_READ_PREF_KEY, false);
+        if (instructionsRead) {
+            templateInstructionsCard.setVisibility(View.GONE);
+        }
+
+        instructionsReadButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putBoolean(TEMPLATE_READ_PREF_KEY, true);
+                editor.apply();
+
+                templateInstructionsCard.setVisibility(View.GONE);
+            }
+        });
     }
 }
