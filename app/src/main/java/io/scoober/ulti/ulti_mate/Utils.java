@@ -55,7 +55,7 @@ public class Utils {
     /**
      * Function returns a 'h:mm a' date string from time in milliseconds
      * @param milli Time in milliseconds
-     * @return      MM/dd/yyyy formatted date string
+     * @return      h:mm a formatted date string
      */
     public static String getTimeString(long milli) {
         SimpleDateFormat sdf12 = new SimpleDateFormat("h:mm a", Locale.getDefault());
@@ -572,7 +572,7 @@ public class Utils {
                     gameNotId = baseID + 3;
                     break;
                 case UPDATE:
-                    gameNotId = baseID + 4;
+                    gameNotId = MainMenuActivity.UPDATE_GAME_NOTIFICATION_ID;
                     break;
                 default:
                     gameNotId = 0;

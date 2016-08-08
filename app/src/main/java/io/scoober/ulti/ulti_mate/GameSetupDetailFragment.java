@@ -301,7 +301,7 @@ public class GameSetupDetailFragment extends Fragment {
                             message = c.getString(R.string.snackbar_message_time_cap,
                                     capType.toLowerCase(), timeRemaining);
                             sb = makeSnackbar(message, 3000);
-                            sb.setAction("UNDO", new View.OnClickListener() {
+                            sb.setAction(R.string.snackbar_undo, new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
                                     // reset button data
@@ -310,7 +310,7 @@ public class GameSetupDetailFragment extends Fragment {
                                 }
                             });
                         } else {
-                            message = "Hard cap time must come before Soft cap time.";
+                            message = c.getString(R.string.dialog_cap_validation);
                             sb = makeSnackbar(message, Snackbar.LENGTH_INDEFINITE);
 
                             // reset button data

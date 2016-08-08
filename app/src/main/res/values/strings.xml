@@ -15,6 +15,7 @@
     <string name="dialog_confirm">Confirm</string>
     <string name="dialog_delete">Delete</string>
     <string name="dialog_cancel">Cancel</string>
+    <string name="snackbar_undo">UNDO</string>
     <string name="error_text_empty">%1$s is a required field.</string>
     <string name="time_basic_hhmm_a">00:00 AM</string>
     <string name="time_basic_h_m_s">%1$s : %2$s : %3$s</string>
@@ -103,6 +104,7 @@
     <string name="snackbar_template_save_successful">Saved template %1$s.</string>
     <string name="timepicker_soft_cap_title">Set Soft Cap</string>
     <string name="timepicker_hard_cap_title">Set Hard Cap</string>
+    <string name="dialog_cap_validation">Soft cap time must come before Hard cap time.</string>
     <!--Team Setup-->
     <string name="team_1_name_hint">Team 1</string>
     <string name="team_2_name_hint">Team 2</string>

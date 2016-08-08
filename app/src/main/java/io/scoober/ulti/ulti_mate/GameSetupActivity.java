@@ -5,8 +5,6 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
@@ -17,6 +15,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.Toast;
 
 public class GameSetupActivity extends AppCompatActivity
         implements GameSetupOverviewFragment.OnFragActionListener,
@@ -145,9 +144,8 @@ public class GameSetupActivity extends AppCompatActivity
 
     @Override
     public void onTemplateSaved(String templateName) {
-        CoordinatorLayout cl = (CoordinatorLayout) findViewById(R.id.gameSetupCoordinatorLayout);
         String message = getResources().getString(R.string.snackbar_template_save_successful, templateName);
-        Snackbar.make(cl,message,Snackbar.LENGTH_LONG).show();
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -219,6 +217,7 @@ public class GameSetupActivity extends AppCompatActivity
             Game template = Utils.getGameDetails(getBaseContext(), templateId);
             if (setupToLaunch == MainMenuActivity.SetupToLaunch.EDIT_TEMPLATE) {
                 game = template;
+                game.convertCapTimes();
             } else {
                 game = new Game(template.getGameName(), template.getWinningScore(),
                         template.getTeam(1), template.getTeam(2),
