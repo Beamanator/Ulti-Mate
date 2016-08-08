@@ -16,6 +16,7 @@
     <string name="dialog_delete">Delete</string>
     <string name="dialog_cancel">Cancel</string>
     <string name="snackbar_undo">UNDO</string>
+    <string name="dialog_confirm_read">Got it</string>
     <string name="error_text_empty">%1$s is a required field.</string>
     <string name="time_basic_hhmm_a">00:00 AM</string>
     <string name="time_basic_h_m_s">%1$s : %2$s : %3$s</string>
@@ -74,6 +75,9 @@
     <string name="item_edit_template">Edit Template</string>
     <string name="item_delete_template">Delete Template</string>
     <string name="dialog_delete_template">Are you sure you want to delete this game?</string>
+    <string name="instructions_template">Quickly create games in the future by creating templates.
+        You can create a new template by pressing on the + button.
+        \n\nYou can also start without a template by pressing the button below.</string>
 
     <!--Game Setup Activity-->
     <string name="title_activity_game_setup">Setup</string>

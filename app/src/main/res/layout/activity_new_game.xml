@@ -28,12 +28,45 @@
             </android.support.v7.widget.Toolbar>
         </android.support.design.widget.AppBarLayout>
 
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/appbar"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:id="@+id/templateInstructionsCard">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/instructions_template"
+                    android:textColor="@color/md_black_1000"
+                    android:textSize="16sp"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:id="@+id/templateInstructionsText" />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/dialog_confirm_read"
+                    android:id="@+id/confirmRead"
+                    android:background="@android:color/transparent"
+                    android:layout_below="@+id/templateInstructionsText"
+                    android:layout_alignParentEnd="true" />
+            </RelativeLayout>
+        </android.support.v7.widget.CardView>
         <fragment
             android:id="@+id/newGameFragment"
             android:name="io.scoober.ulti.ulti_mate.NewGameListFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/appbar"
+            android:layout_below="@+id/templateInstructionsCard"
             android:layout_above="@+id/button_no_template"/>
 
         <Button
