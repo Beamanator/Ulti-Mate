@@ -154,4 +154,12 @@
     <string name="notific_message_halftime_title">Halftime Score: %1$s - %2$s</string>
     <string name="notific_message_halftime_text">%1$s vs %2$s</string>
     <string name="notific_message_halftime_alert">Halftime!</string>
+
+    <!--Game Sharing-->
+    <string name="share_game_in_progress_winning_text">\u0020is winning against\u0020</string>
+    <string name="share_game_in_progress_tied_text">\u0020is tied with\u0020</string>
+    <string name="share_game_end_winning_text">\u0020defeated\u0020</string>
+    <string name="share_game_end_tied_text">\u0020tied with\u0020</string>
+    <string name="share_game_score_text">Score:\u0020</string>
+
 </resources>
