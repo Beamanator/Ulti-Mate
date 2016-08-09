@@ -6,4 +6,11 @@
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
+
+    <style name="NotificationText" parent="android:TextAppearance.Material.Notification" />
+    <style name="NotificationLine2" parent="android:TextAppearance.Material.Notification.Line2" />
+    <style name="NotificationInfo" parent="android:TextAppearance.Material.Notification.Info" />
+    <style name="NotificationTitle" parent="android:TextAppearance.Material.Notification.Title" />
+    <style name="NotificationTime" parent="android:TextAppearance.Material.Notification.Time" />
+    <style name="NotificationEmphasis" parent="android:TextAppearance.Material.Notification.Emphasis" />
 </resources>
