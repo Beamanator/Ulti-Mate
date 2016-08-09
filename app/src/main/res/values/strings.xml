@@ -125,7 +125,7 @@
     <string name="question_left_team">Which team is on the left?</string>
     <string name="question_pulling_team">Which team is pulling this point?</string>
     <string name="question_init_pulling_team">Which team pulled first?</string>
-    
+
     <!--Game Defaults-->
     <string name="default_game_name">Ultimate!</string>
     <string name="default_team_1_name">Home</string>
