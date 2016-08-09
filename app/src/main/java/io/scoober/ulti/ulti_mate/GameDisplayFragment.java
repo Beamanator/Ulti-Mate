@@ -9,15 +9,18 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.GradientDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.ColorInt;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -609,12 +612,7 @@ public class GameDisplayFragment extends Fragment {
 
         leftCircle.setStroke(leftCircleStrokeSize, strokeColor);
         rightCircle.setStroke(rightCircleStrokeSize, strokeColor);
-
-
-
-
     }
-
 
     /**
      * Function hides setupFieldButton and makes gameImagesLayout visible
@@ -622,5 +620,30 @@ public class GameDisplayFragment extends Fragment {
     private void showFieldLayout() {
         setupFieldButton.setVisibility(View.GONE);
         gameImagesLayout.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * Make sure Fragment participates in options menu handling. From SO:
+     * http://stackoverflow.com/questions/8308695/android-options-menu-in-fragment
+     */
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        switch(id) {
+            case R.id.action_share:
+                // send game as text
+                Utils.sendGameSMS(game, getActivity());
+
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

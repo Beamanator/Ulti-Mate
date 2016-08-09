@@ -4,11 +4,17 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -511,5 +517,30 @@ public class GameDisplayEditFragment extends Fragment {
 
     public void refreshGameLength() {
         displayGameLength();
+    }
+
+    /**
+     * Make sure Fragment participates in options menu handling. From SO:
+     * http://stackoverflow.com/questions/8308695/android-options-menu-in-fragment
+     */
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        switch(id) {
+            case R.id.action_share:
+                // send game as text
+                Utils.sendGameSMS(game, getActivity());
+
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

@@ -144,7 +144,9 @@ public class GameDisplayActivity extends AppCompatActivity
 
         switch(id) {
             case R.id.action_share:
-                return true;
+                // This should be handled inside the fragment b/c it needs game data.
+                //  to make sure fragment can consume this, return false here.
+                return false;
             case R.id.action_game_settings:
                 hideUpdateNotification = true; // don't show app notification in this case
                 Intent intent = new Intent(this, GameSetupActivity.class);

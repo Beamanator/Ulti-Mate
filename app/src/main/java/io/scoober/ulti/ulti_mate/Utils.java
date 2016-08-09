@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.drawable.GradientDrawable;
 import android.preference.PreferenceManager;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.StringRes;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -323,41 +325,6 @@ public class Utils {
     }
 
     /**
-     * Function gets game information from database via a given id and a specified context.
-     * @param c         Context to pass to GameDbAdapter
-     * @param gameID    ID of game to be returned
-     * @return          Game object with given ID
-     */
-    public static Game getGameDetails(Context c, long gameID) {
-        GameDbAdapter gameDbAdapter = new GameDbAdapter(c);
-        gameDbAdapter.open();
-        Game newGame = gameDbAdapter.getGame(gameID);
-        gameDbAdapter.close();
-        return newGame;
-    }
-
-    /**
-     * Function saves game information to database via a given id and a specified context
-     * @param ctx         Context to pass to GameDbAdapter
-     * @param game         Game object to save to database
-     * @return          long ID of game saved
-     */
-    public static long saveGameDetails(Context ctx, Game game) {
-        // store game to database
-        GameDbAdapter gameDbAdapter = new GameDbAdapter(ctx);
-        gameDbAdapter.open();
-        long gameId;
-        if (game.getId() > 0) {
-            gameId = gameDbAdapter.saveGame(game);
-        } else {
-            gameId = gameDbAdapter.createGame(game);
-        }
-        gameDbAdapter.close();
-
-        return gameId;
-    }
-
-    /**
      * Function checks if given Calendar time has same hour and minute as passed in variables.
      * @param time      Calendar time that is checked against hour and minute
      * @param hour      int hour from timepicker
@@ -595,15 +562,98 @@ public class Utils {
             return gameNotId;
         }
     }
-//
-//    public static int getHardCapNotificationID(long gameID,
-//                                               GameDisplayActivity.GameNotificationType notificationType) {
-//        int baseID = getBaseCapIdFromGameId(gameID);
-//        if (baseID == 0) {
-//            Log.e("Utils","Hard Cap Notification ID cannot be created");
-//            return 0;
-//        } else {
-//            return baseID + 2;
-//        }
-//    }
+
+    /*
+    Game Utilities
+     */
+
+    /**
+     * Function gets game information from database via a given id and a specified context.
+     * @param c         Context to pass to GameDbAdapter
+     * @param gameID    ID of game to be returned
+     * @return          Game object with given ID
+     */
+    public static Game getGameDetails(Context c, long gameID) {
+        GameDbAdapter gameDbAdapter = new GameDbAdapter(c);
+        gameDbAdapter.open();
+        Game newGame = gameDbAdapter.getGame(gameID);
+        gameDbAdapter.close();
+        return newGame;
+    }
+
+    /**
+     * Function saves game information to database via a given id and a specified context
+     * @param ctx         Context to pass to GameDbAdapter
+     * @param game         Game object to save to database
+     * @return          long ID of game saved
+     */
+    public static long saveGameDetails(Context ctx, Game game) {
+        // store game to database
+        GameDbAdapter gameDbAdapter = new GameDbAdapter(ctx);
+        gameDbAdapter.open();
+        long gameId;
+        if (game.getId() > 0) {
+            gameId = gameDbAdapter.saveGame(game);
+        } else {
+            gameId = gameDbAdapter.createGame(game);
+        }
+        gameDbAdapter.close();
+
+        return gameId;
+    }
+
+    public static String getGameDetailsMessage(Game g, Context c) {
+        String message, separator_text_winning, separator_text_tied;
+
+        String name1 = g.getTeam(1).getName();
+        String name2 = g.getTeam(2).getName();
+        int score1 = g.getScore(1);
+        int score2 = g.getScore(2);
+
+        if (g.getStatus() == Game.Status.GAME_OVER) {
+            separator_text_winning = c.getResources()
+                    .getString(R.string.share_game_end_winning_text);
+            separator_text_tied = c.getResources()
+                    .getString(R.string.share_game_end_tied_text);
+        } else {
+            separator_text_winning = c.getResources()
+                    .getString(R.string.share_game_in_progress_winning_text);
+            separator_text_tied = c.getResources()
+                    .getString(R.string.share_game_in_progress_tied_text);
+        }
+
+        String score_text = c.getResources()
+                .getString(R.string.share_game_score_text);
+
+        if (score1 > score2) {
+            message = name1 + separator_text_winning + name2 + ".\n";
+            message += score_text + score1 + "-" + score2;
+        } else if (score1 == score2) {
+            message = name1 + separator_text_tied + name2 + ".\n";
+            message += score_text + score1 + "-" + score2;
+        } else {
+            message = name2 + separator_text_winning + name1 + ".\n";
+            message += score_text + score2 + "-" + score1;
+        }
+
+        return message;
+    }
+
+    public static void sendGameSMS(Game g, Context c) {
+        // set up implicit intents to send game as text:
+        // define intent action:
+        Intent intent = new Intent(Intent.ACTION_SEND);
+
+        // common intents here:
+        //  https://developer.android.com/guide/components/intents-common.html
+        intent.setData(Uri.parse("sms:"));
+        intent.putExtra("sms_body", getGameDetailsMessage(g, c));
+        intent.setType("text/plain");
+
+        // create a list of applications that the user can select from to accept text:
+        Intent chooser = Intent.createChooser(intent, "Send Game");
+
+        // start chosen app w/ game data
+        c.startActivity(chooser);
+    }
 }
