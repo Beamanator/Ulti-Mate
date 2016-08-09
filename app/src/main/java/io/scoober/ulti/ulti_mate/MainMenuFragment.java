@@ -1,27 +1,42 @@
 package io.scoober.ulti.ulti_mate;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MainMenuActivityFragment extends Fragment {
+public class MainMenuFragment extends Fragment {
 
-    public MainMenuActivityFragment() {
+    public MainMenuFragment() {
+    }
+
+    private MainMenuFragmentListener fragListener;
+
+    public interface MainMenuFragmentListener {
+        void onSettingsSelected();
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            fragListener = (MainMenuFragmentListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString() + " must implement MainMenuFragmentListener");
+        }
     }
 
     @Override
@@ -105,15 +120,30 @@ public class MainMenuActivityFragment extends Fragment {
         return mainMenuLayout;
     }
 
-    /**
-     * stores latest game Id in Database to variable lastGameId
-     */
-    private long getLastGameId() {
-        GameDbAdapter gameDbAdapter = new GameDbAdapter(getActivity().getBaseContext());
-        gameDbAdapter.open();
-        long id = gameDbAdapter.getRecentGameId();
-        gameDbAdapter.close();
-
-        return id;
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        setHasOptionsMenu(true);
     }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        // Inflate the menu; this adds items to the action bar if it is present.
+        inflater.inflate(R.menu.menu_main_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            fragListener.onSettingsSelected();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
 }

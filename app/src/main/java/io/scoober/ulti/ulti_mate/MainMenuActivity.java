@@ -3,11 +3,11 @@ package io.scoober.ulti.ulti_mate;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
 
-public class MainMenuActivity extends AppCompatActivity {
+public class MainMenuActivity extends AppCompatActivity
+        implements MainMenuFragment.MainMenuFragmentListener{
 
+    // Intent constants
     public static final String PACKAGE_NAME = "io.scoober.ulti.ulti_mate";
     public static final String GAME_ID_EXTRA = PACKAGE_NAME + ".Game_Id";
     public static final String TEMPLATE_ID_EXTRA = PACKAGE_NAME + ".Template_Id";
@@ -30,33 +30,27 @@ public class MainMenuActivity extends AppCompatActivity {
         CREATE_TEMPLATE, EDIT_TEMPLATE}
     public enum GamesToShow {ACTIVE, ENDED}
 
+    private static final String TAG_MAIN_MENU_FRAGMENT = "MAIN_MENU_FRAGMENT";
+    private static final String TAG_SETTINGS_FRAGMENT = "SETTINGS_FRAGMENT";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        // Add the main menu fragment
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.mainActivityContent, new MainMenuFragment(), TAG_MAIN_MENU_FRAGMENT)
+                .commit();
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+    public void onSettingsSelected() {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.mainActivityContent, new SettingsFragment(), TAG_SETTINGS_FRAGMENT)
+                .addToBackStack(null)
+                .commit();
     }
 }

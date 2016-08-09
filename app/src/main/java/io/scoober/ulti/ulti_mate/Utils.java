@@ -2,8 +2,10 @@ package io.scoober.ulti.ulti_mate;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.drawable.GradientDrawable;
+import android.preference.PreferenceManager;
 import android.support.annotation.StringRes;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -524,8 +526,20 @@ public class Utils {
     }
 
     /*
-    Timer Utilities
+    Notification Utilities
      */
+
+    /**
+     * Utility function to be called before sending a notification that determines whether the user
+     * preferences indicate that the notification should be sent
+     * @param ctx       Context of the notification
+     * @return          Whether the notification should be sent
+     */
+    public static boolean sendNotification(Context ctx) {
+        final String NOTIFICATION_PREF_KEY = "pref_notify";
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(ctx);
+        return preferences.getBoolean(NOTIFICATION_PREF_KEY, true);
+    }
 
     /**
      * Function attempts to convert a long to an integer. Thorws error if unable.

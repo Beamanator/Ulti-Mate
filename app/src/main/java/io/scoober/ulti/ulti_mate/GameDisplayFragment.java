@@ -15,7 +15,6 @@ import android.support.annotation.ColorInt;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -269,7 +268,7 @@ public class GameDisplayFragment extends Fragment {
      */
     private void afterPointsChange(Game.Status prevStatus, Game.Status newStatus) {
         // Handle game statuses
-        if (newStatus == Game.Status.HALFTIME) {
+        if (newStatus == Game.Status.HALFTIME && Utils.sendNotification(getContext())) {
             showHalftimeNotification(getContext(), game);
         }
 
@@ -333,7 +332,7 @@ public class GameDisplayFragment extends Fragment {
         hardCap.setTimeInMillis(game.getHardCapTime());
 
         boolean timerCreated = startCapTimer(now);
-        if (timerCreated) {
+        if (timerCreated && Utils.sendNotification(getContext())) {
             // NO need to check to see if alarms already exist. If they do, they'll be
             //  canceled & overwritten
             Resources r = getResources();

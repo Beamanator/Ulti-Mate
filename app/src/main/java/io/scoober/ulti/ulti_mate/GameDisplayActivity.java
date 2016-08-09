@@ -124,7 +124,7 @@ public class GameDisplayActivity extends AppCompatActivity
         if (displayToLaunch == MainMenuActivity.DisplayToLaunch.NEW ||
                 displayToLaunch == MainMenuActivity.DisplayToLaunch.RESUME ||
                 displayToLaunch == MainMenuActivity.DisplayToLaunch.UPDATE) {
-            if (!hideUpdateNotification) {
+            if (!hideUpdateNotification && Utils.sendNotification(this)) {
                 showUpdateNotification(this, gameId);
             }
         }

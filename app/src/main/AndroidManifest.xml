@@ -64,7 +64,8 @@
 
         <service
             android:name=".GameUpdateService"
-            android:exported="false"></service>
+            android:exported="false" />
+
     </application>
 
 </manifest>

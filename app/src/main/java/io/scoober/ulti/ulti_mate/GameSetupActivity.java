@@ -60,7 +60,6 @@ public class GameSetupActivity extends AppCompatActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-
         // Pass parameters to GameSetupOverviewFragment
         GameSetupOverviewFragment setupFrag = new GameSetupOverviewFragment();
         Bundle bundle = new Bundle();
