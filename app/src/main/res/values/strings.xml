@@ -102,7 +102,7 @@
     <!--Game Setup-->
     <string name="hint_game_name">Game Name</string>
     <string name="label_winning_score">Winning Score</string>
-    <string name="hint_winning_score">13</string>
+    <string name="hint_winning_score">00</string>
     <string name="time_caps">Time caps</string>
     <string name="soft_cap">Soft cap</string>
     <string name="hard_cap">Hard cap</string>
