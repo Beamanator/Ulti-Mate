@@ -125,6 +125,9 @@
     <string name="question_left_team">Which team is on the left?</string>
     <string name="question_pulling_team">Which team is pulling this point?</string>
     <string name="question_init_pulling_team">Which team pulled first?</string>
+    <string name="title_dialog_field_setup_unavailable">Field Setup Unavailable</string>
+    <string name="dialog_field_setup_unavailable">You can\'t edit the field setup after halftime.</string>
+
 
     <!--Game Defaults-->
     <string name="default_game_name">Ultimate!</string>

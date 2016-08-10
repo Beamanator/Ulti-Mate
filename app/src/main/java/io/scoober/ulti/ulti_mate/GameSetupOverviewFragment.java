@@ -37,7 +37,7 @@ public class GameSetupOverviewFragment extends Fragment {
 
     // Argument information
     MainMenuActivity.SetupToLaunch setupToLaunch;
-    private long gameId, templateId;
+    private long gameId;
     private Game game;
     private OnFragActionListener fragListener;
 
@@ -307,7 +307,7 @@ public class GameSetupOverviewFragment extends Fragment {
         Game template = new Game(game.getGameName(), game.getWinningScore(),
                 game.getTeam(1), game.getTeam(2), game.getSoftCapTime(), game.getHardCapTime());
         template.convertToTemplate(templateName);
-        templateId = Utils.saveGameDetails(getActivity(), template);
+        Utils.saveGameDetails(getActivity(), template);
 
         if (storeToGame) {
             game = template;

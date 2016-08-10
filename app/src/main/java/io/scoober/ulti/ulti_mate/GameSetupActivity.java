@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
@@ -125,13 +126,17 @@ public class GameSetupActivity extends AppCompatActivity
 
         // Go to field setup
         if (fragmentToLaunch == Setup.FIELD_SETUP) {
-            GameSetupFieldFragment fieldFragment =
-                    (GameSetupFieldFragment) fm.findFragmentByTag(TAG_GAME_FIELD_SETUP_FRAGMENT);
-            if (fieldFragment == null) {
-                fieldFragment = new GameSetupFieldFragment();
-                fieldFragment.setGame(game);
+            if (game.getStatus().compareTo(Game.Status.HALFTIME) < 0) {
+                GameSetupFieldFragment fieldFragment =
+                        (GameSetupFieldFragment) fm.findFragmentByTag(TAG_GAME_FIELD_SETUP_FRAGMENT);
+                if (fieldFragment == null) {
+                    fieldFragment = new GameSetupFieldFragment();
+                    fieldFragment.setGame(game);
+                }
+                ft.replace(R.id.setupContainer, fieldFragment, TAG_GAME_FIELD_SETUP_FRAGMENT);
+            } else {
+                showFieldUnavailableDialog();
             }
-            ft.replace(R.id.setupContainer, fieldFragment, TAG_GAME_FIELD_SETUP_FRAGMENT);
         }
 
 
@@ -241,6 +246,15 @@ public class GameSetupActivity extends AppCompatActivity
         }
 
         return game;
+    }
+
+    private void showFieldUnavailableDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.title_dialog_field_setup_unavailable)
+                .setMessage(R.string.dialog_field_setup_unavailable)
+                .setPositiveButton(R.string.dialog_confirm_read, null)
+                .create()
+                .show();
     }
 
     /**
